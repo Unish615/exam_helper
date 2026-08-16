@@ -17,12 +17,12 @@ export default function Home() {
   const [savedKits, setSavedKits] = useState<GeneratedStudyKit[]>([]);
   const [currentKit, setCurrentKit] = useState<GeneratedStudyKit | null>(null);
   
-  // Generation loading states
+  // Generation loading state
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationStep, setGenerationStep] = useState('');
 
   useEffect(() => {
-    // Check disclaimer agreement
+    // Check disclaimer agreement state
     const agreed = localStorage.getItem('nyoria_disclaimer_agreed');
     if (!agreed) {
       setIsDisclaimerOpen(true);
@@ -38,9 +38,9 @@ export default function Home() {
       // Fallback
     }
 
-    // Pre-populate sample Photosynthesis study kit for instant preview
+    // Pre-populate sample Human Heart circulation study kit for instant preview
     const sampleKit = generateStudyKit(SAMPLE_PRESETS[0].text, {
-      difficulty: 'Intermediate',
+      difficulty: 'Medium',
       questionTypes: ['MCQ', 'Short', 'Essay', 'Definition', 'FillBlank'],
       questionCount: 8,
       includeFlashcards: true,
@@ -56,18 +56,18 @@ export default function Home() {
 
   const handleGenerate = (text: string, options: GeneratorOptions) => {
     setIsGenerating(true);
-    setGenerationStep('Reading study material & analyzing key concepts...');
+    setGenerationStep('Reading study notes & analyzing syntax...');
 
     setTimeout(() => {
-      setGenerationStep('Applying Zero-Duplication filtering rule...');
+      setGenerationStep('Applying strict Zero-Duplication rule...');
     }, 600);
 
     setTimeout(() => {
-      setGenerationStep('Synthesizing deduplicated MCQs & simple solutions...');
+      setGenerationStep('Building interactive MCQs & simple solutions...');
     }, 1200);
 
     setTimeout(() => {
-      setGenerationStep('Building visual diagram cards & 3D flashcards...');
+      setGenerationStep('Generating visual diagram cards & 3D flashcards...');
     }, 1800);
 
     setTimeout(() => {
@@ -115,7 +115,7 @@ export default function Home() {
 
   return (
     <div className={`min-h-screen font-sans transition-colors duration-300 ${
-      darkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
+      darkMode ? 'bg-slate-900 text-slate-100' : 'bg-slate-50 text-slate-900'
     }`}>
       
       {/* Navigation Header */}
@@ -152,14 +152,14 @@ export default function Home() {
         <div className="flex items-center justify-center gap-2">
           <span className="font-extrabold text-slate-300 tracking-tight">Nyoria</span>
           <span>•</span>
-          <span>Interactive AI Exam Preparation & Concept Visualizer</span>
+          <span>Interactive Study & Exam Preparation Platform</span>
         </div>
         <p className="text-slate-600 max-w-md mx-auto">
-          Crafted for students, educators, and exam candidates. Always cross-verify critical facts with official textbooks.
+          Crafted for students, educators, and exam candidates. Please cross-verify critical information with official textbooks.
         </p>
       </footer>
 
-      {/* First-Load Disclaimer Animated Modal */}
+      {/* First-Load Mandatory Disclaimer Modal */}
       <DisclaimerModal
         isOpen={isDisclaimerOpen}
         onClose={handleCloseDisclaimer}

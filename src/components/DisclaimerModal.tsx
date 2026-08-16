@@ -18,7 +18,7 @@ export const DisclaimerModal: React.FC<DisclaimerModalProps> = ({ isOpen, onClos
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
         
-        {/* Frosted-glass overlay backdrop */}
+        {/* Frosted Glass Background Blur Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -30,7 +30,7 @@ export const DisclaimerModal: React.FC<DisclaimerModalProps> = ({ isOpen, onClos
           }}
         />
 
-        {/* Animated Modal Container */}
+        {/* Modal Container */}
         <motion.div
           initial={{ opacity: 0, scale: 0.92, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -38,12 +38,12 @@ export const DisclaimerModal: React.FC<DisclaimerModalProps> = ({ isOpen, onClos
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           className="relative w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden z-10"
         >
-          {/* Top Decorative Gradient Accent Line */}
-          <div className="h-1.5 w-full bg-gradient-to-r from-amber-500 via-indigo-500 to-emerald-500" />
+          {/* Top Amber Gold Accent Bar */}
+          <div className="h-1.5 w-full bg-gradient-to-r from-amber-500 via-indigo-500 to-purple-500" />
 
           <div className="p-6 sm:p-7 space-y-6">
             
-            {/* Header Icon & Title */}
+            {/* Header */}
             <div className="flex items-start gap-4">
               <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 shrink-0">
                 <AlertTriangle className="w-6 h-6 animate-pulse" />
@@ -56,19 +56,19 @@ export const DisclaimerModal: React.FC<DisclaimerModalProps> = ({ isOpen, onClos
                   <span className="text-xs text-slate-400">Academic Guidelines</span>
                 </div>
                 <h3 className="text-xl font-bold text-white tracking-tight">
-                  Study Prep Safety & Accuracy Notice
+                  Accuracy & Verification Notice
                 </h3>
               </div>
             </div>
 
-            {/* Exact Warning Text Box */}
+            {/* Exact Disclaimer Message */}
             <div className="p-4 rounded-xl bg-slate-950/90 border border-slate-800 text-slate-300 text-sm leading-relaxed space-y-3">
               <p className="font-medium text-slate-200">
-                &ldquo;Important Notice: Nyoria processes study materials to generate exam prep resources. While highly accurate, AI-generated questions and answers may occasionally contain discrepancies. Always cross-verify critical dates and facts with your official textbooks.&rdquo;
+                &ldquo;Notice: Nyoria converts your notes into practice questions and simplified summaries. AI-generated responses can occasionally contain errors. Please cross-verify critical information with official textbooks.&rdquo;
               </p>
               <div className="pt-2 border-t border-slate-800/80 flex items-center gap-2 text-xs text-slate-400">
                 <BookOpen className="w-4 h-4 text-indigo-400 shrink-0" />
-                <span>Designed for active recall, concept visualization, and exam practice.</span>
+                <span>Nyoria is built to empower active recall, concept revision, and self-testing.</span>
               </div>
             </div>
 
@@ -81,18 +81,18 @@ export const DisclaimerModal: React.FC<DisclaimerModalProps> = ({ isOpen, onClos
                 className="mt-0.5 w-4 h-4 rounded border-slate-700 bg-slate-900 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-slate-900"
               />
               <span className="text-xs text-slate-300">
-                I acknowledge that generated study sets supplement official textbook reading and instructor guidance.
+                I understand that generated study materials supplement official textbook reading and instructor guidance.
               </span>
             </label>
 
-            {/* Action Button: "I Understand & Continue" */}
+            {/* Button: "I Understand & Continue" */}
             <div className="flex items-center justify-end gap-3 pt-2">
               <button
                 disabled={!hasChecked}
                 onClick={onClose}
                 className={`w-full sm:w-auto px-6 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-300 ${
                   hasChecked
-                    ? 'bg-gradient-to-r from-indigo-600 via-purple-600 to-emerald-600 hover:from-indigo-500 hover:to-emerald-500 text-white shadow-lg shadow-indigo-600/30 scale-[1.02] cursor-pointer glow-indigo'
+                    ? 'bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-600/30 scale-[1.02] cursor-pointer glow-primary'
                     : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/40'
                 }`}
               >
@@ -107,7 +107,7 @@ export const DisclaimerModal: React.FC<DisclaimerModalProps> = ({ isOpen, onClos
           <div className="px-6 py-3 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-xs text-slate-500">
             <div className="flex items-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
-              <span>Nyoria Privacy & Study Integrity First</span>
+              <span>Nyoria Privacy & Study Safety</span>
             </div>
             <span className="text-[11px]">Re-open anytime via top navigation</span>
           </div>

@@ -13,7 +13,6 @@ import {
   Award, 
   FileText,
   BarChart3,
-  Flag,
   CheckCircle2
 } from 'lucide-react';
 import { GeneratedStudyKit, QuestionItem } from '../lib/types';
@@ -71,7 +70,7 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
     return matchesSearch && matchesType;
   });
 
-  // Calculate live scorekeeper stats
+  // Calculate live score counter & accuracy
   const mcqQuestions = kit.questions.filter(q => q.type === 'MCQ');
   const solvedMCQs = mcqQuestions.filter(q => q.userSelectedOptionId !== undefined && q.userSelectedOptionId !== null);
   const correctMCQsCount = solvedMCQs.filter(q => {
@@ -81,26 +80,25 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
   
   const totalMCQsCount = mcqQuestions.length;
   const accuracyPercentage = solvedMCQs.length > 0 ? Math.round((correctMCQsCount / solvedMCQs.length) * 100) : 0;
-  const mcqSolvedPercentage = totalMCQsCount > 0 ? Math.round((solvedMCQs.length / totalMCQsCount) * 100) : 0;
+  const mcqProgressPercentage = totalMCQsCount > 0 ? Math.round((solvedMCQs.length / totalMCQsCount) * 100) : 0;
 
   const masteredCount = kit.questions.filter(q => q.learned).length;
-  const flaggedCount = kit.questions.filter(q => q.markedForReview).length;
   const totalQuestions = kit.questions.length;
   const overallMasteryPercentage = Math.round((masteredCount / totalQuestions) * 100) || 0;
 
-  // Copy Clean Text Export
-  const handleCopyCleanText = () => {
-    const cleanText = `=== NYORIA EXAM PREPARATION PACK ===\nTitle: ${kit.title}\nDifficulty: ${kit.difficulty}\n\n` + 
+  // Copy All Text Export
+  const handleCopyAllText = () => {
+    const fullText = `=== NYORIA STUDY PACK SUMMARY ===\nTitle: ${kit.title}\nDifficulty: ${kit.difficulty}\n\n` + 
       kit.questions.map((q, i) => (
         `Q${i + 1} [${q.type} - ${q.difficulty}]: ${q.question}\nANSWER: ${q.answer}\nEXPLANATION: ${q.explanation}\n\n`
       )).join('');
     
-    navigator.clipboard.writeText(cleanText);
+    navigator.clipboard.writeText(fullText);
     setCopiedAll(true);
     setTimeout(() => setCopiedAll(false), 2000);
   };
 
-  // Download PDF Study Sheet
+  // Download PDF Summary
   const handlePrintPDF = () => {
     window.print();
   };
@@ -108,7 +106,7 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
   return (
     <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
       
-      {/* Top Banner & Live Scorekeeper */}
+      {/* Kit Summary & Progress Counter Banner */}
       <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-6 relative overflow-hidden">
         
         <div className="flex items-start justify-between gap-4 flex-wrap">
@@ -118,7 +116,7 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
                 Nyoria Study Pack
               </span>
               <span className="px-2.5 py-0.5 rounded-full bg-slate-950 text-slate-400 border border-slate-800 font-semibold">
-                Level: {kit.difficulty}
+                Difficulty: {kit.difficulty}
               </span>
               <span className="text-slate-400">Created: {kit.createdAt}</span>
             </div>
@@ -132,7 +130,7 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
             </p>
           </div>
 
-          {/* Export & Save Menu */}
+          {/* Export Menu Buttons */}
           <div className="flex items-center gap-2 flex-wrap no-print">
             
             <button
@@ -148,41 +146,41 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
             </button>
 
             <button
-              onClick={handleCopyCleanText}
+              onClick={handleCopyAllText}
               className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-semibold flex items-center gap-1.5 border border-slate-700 transition-colors shadow-sm"
-              title="Copy clean text output"
+              title="Copy all text to clipboard"
             >
               {copiedAll ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-indigo-400" />}
-              <span>{copiedAll ? 'Copied Text!' : 'Copy Clean Text'}</span>
+              <span>{copiedAll ? 'Copied Text!' : 'Copy All Text'}</span>
             </button>
 
             <button
               onClick={handlePrintPDF}
               className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-semibold flex items-center gap-1.5 border border-slate-700 transition-colors shadow-sm"
-              title="Download PDF Study Sheet"
+              title="Download PDF Summary"
             >
               <Download className="w-4 h-4 text-indigo-400" />
-              <span>Download PDF Study Sheet</span>
+              <span>Download PDF Summary</span>
             </button>
 
           </div>
         </div>
 
-        {/* Live Quiz Scorekeeper Bar */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-xl bg-slate-950 border border-slate-800">
+        {/* Real-time Progress Bar & Score Counter */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-slate-950 border border-slate-800">
           
-          {/* Tracker 1: Solved MCQs & Accuracy */}
+          {/* Tracker 1: Solved MCQs & Correct Answer Counter */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs font-semibold">
               <span className="flex items-center gap-1.5 text-slate-300">
                 <BarChart3 className="w-4 h-4 text-emerald-400" />
-                <span>MCQ Quiz Accuracy</span>
+                <span>MCQs Answered Correctly</span>
               </span>
               <span className="font-mono text-slate-400">
-                <strong className="text-emerald-400">{correctMCQsCount}/{solvedMCQs.length} Correct</strong> ({accuracyPercentage}%)
+                <strong className="text-emerald-400">{correctMCQsCount} / {solvedMCQs.length} Correct</strong> ({accuracyPercentage}%)
               </span>
             </div>
-            <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+            <div className="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
               <div
                 className="h-full bg-emerald-500 transition-all duration-500 rounded-full"
                 style={{ width: `${accuracyPercentage}%` }}
@@ -190,26 +188,7 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
             </div>
           </div>
 
-          {/* Tracker 2: MCQs Solved Progress */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs font-semibold">
-              <span className="flex items-center gap-1.5 text-slate-300">
-                <CheckCircle2 className="w-4 h-4 text-indigo-400" />
-                <span>MCQs Solved Progress</span>
-              </span>
-              <span className="font-mono text-slate-400">
-                <strong className="text-indigo-300">{solvedMCQs.length}/{totalMCQsCount}</strong> ({mcqSolvedPercentage}%)
-              </span>
-            </div>
-            <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-indigo-500 transition-all duration-500 rounded-full"
-                style={{ width: `${mcqSolvedPercentage}%` }}
-              />
-            </div>
-          </div>
-
-          {/* Tracker 3: Overall Mastered & Flagged */}
+          {/* Tracker 2: Overall Topics Mastered */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs font-semibold">
               <span className="flex items-center gap-1.5 text-slate-300">
@@ -217,13 +196,12 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
                 <span>Overall Topics Mastered</span>
               </span>
               <span className="font-mono text-slate-400">
-                <strong className="text-purple-300">{masteredCount}/{totalQuestions}</strong> ({overallMasteryPercentage}%)
-                {flaggedCount > 0 && <span className="ml-2 text-amber-400">({flaggedCount} flagged)</span>}
+                <strong className="text-purple-300">{masteredCount} / {totalQuestions} Topics</strong> ({overallMasteryPercentage}%)
               </span>
             </div>
-            <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+            <div className="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
               <div
-                className="h-full bg-purple-500 transition-all duration-500 rounded-full"
+                className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500 rounded-full"
                 style={{ width: `${overallMasteryPercentage}%` }}
               />
             </div>
@@ -233,15 +211,15 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
 
       </div>
 
-      {/* Tabs Toolbar & Live Search Filter */}
+      {/* Tabs Toolbar & Live Search Bar */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-800 pb-4 no-print">
         
-        {/* Section Tabs */}
+        {/* Navigation Tabs */}
         <div className="flex items-center gap-1.5 bg-slate-900 p-1.5 rounded-xl border border-slate-800 overflow-x-auto w-full sm:w-auto">
           {[
             { id: 'all', label: 'All Material', count: kit.questions.length + kit.diagrams.length },
-            { id: 'mcq', label: 'Deduplicated MCQs', count: kit.questions.filter(q => q.type === 'MCQ').length },
-            { id: 'accordions', label: 'Short & Essay Notes', count: kit.questions.filter(q => q.type !== 'MCQ').length },
+            { id: 'mcq', label: 'Interactive MCQs', count: kit.questions.filter(q => q.type === 'MCQ').length },
+            { id: 'accordions', label: 'Short & Long Answers', count: kit.questions.filter(q => q.type !== 'MCQ').length },
             { id: 'diagrams', label: 'Visual Diagrams', count: kit.diagrams.length },
             { id: 'flashcards', label: '3D Flashcards', count: kit.flashcards.length },
           ].map((tab) => (
@@ -250,7 +228,7 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
               onClick={() => setActiveTab(tab.id as any)}
               className={`px-3.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
                 activeTab === tab.id
-                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
+                  ? 'bg-indigo-600 text-white shadow-md'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -264,7 +242,7 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
           ))}
         </div>
 
-        {/* Live Search & Format Filter */}
+        {/* Live Search Bar & Format Filter */}
         <div className="flex items-center gap-2 w-full sm:w-auto">
           
           <div className="relative flex-1 sm:w-64">
@@ -284,9 +262,9 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
             className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs focus:outline-none"
           >
             <option value="all">All Formats</option>
-            <option value="MCQ">Deduplicated MCQs</option>
+            <option value="MCQ">Interactive MCQs</option>
             <option value="Short">Short Notes</option>
-            <option value="Essay">Long Essays</option>
+            <option value="Essay">Long Answers</option>
             <option value="Definition">Key Concepts</option>
             <option value="FillBlank">Fill-in-Blanks</option>
           </select>
@@ -298,14 +276,14 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
       {/* DASHBOARD DISPLAY CONTENT */}
       <div className="space-y-8">
         
-        {/* 1. FLASHCARDS DECK */}
+        {/* 1. REVISION FLASHCARDS */}
         {(activeTab === 'all' || activeTab === 'flashcards') && kit.flashcards.length > 0 && (
           <div className="no-print">
             <FlashcardDeck flashcards={kit.flashcards} />
           </div>
         )}
 
-        {/* 2. VISUAL AID DIAGRAM PLACEHOLDER CARDS */}
+        {/* 2. VISUAL DIAGRAM PLACEHOLDER CARDS */}
         {(activeTab === 'all' || activeTab === 'diagrams') && kit.diagrams.length > 0 && (
           <div className="space-y-6">
             {kit.diagrams.map((diag) => (
@@ -314,7 +292,7 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
           </div>
         )}
 
-        {/* 3. DEDUPLICATED QUESTIONS & ANSWERS LIST */}
+        {/* 3. DEDUPLICATED QUESTIONS & ANSWERS */}
         {(activeTab === 'all' || activeTab === 'mcq' || activeTab === 'accordions') && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">

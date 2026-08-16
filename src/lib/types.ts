@@ -1,4 +1,4 @@
-export type Difficulty = 'Beginner' | 'Intermediate' | 'Advanced / Exam Ready';
+export type Difficulty = 'Easy' | 'Medium' | 'Hard';
 
 export type QuestionType = 'MCQ' | 'Short' | 'Essay' | 'Definition' | 'FillBlank';
 
@@ -21,8 +21,8 @@ export interface QuestionItem {
   options?: MCQOption[]; // For MCQs
   blankAnswer?: string; // For FillBlank
   learned?: boolean;
-  markedForReview?: boolean; // For Mark for Review button
-  userSelectedOptionId?: string | null; // For MCQ practice choice
+  markedForReview?: boolean;
+  userSelectedOptionId?: string | null; // For interactive MCQ choice
   topicTag: string;
 }
 
@@ -39,9 +39,9 @@ export interface VisualAidDiagram {
   title: string;
   description: string;
   type: 'flowchart' | 'hierarchy' | 'cycle' | 'comparison' | 'matrix';
-  svgType: 'photosynthesis' | 'heart' | 'mitosis' | 'tcpip' | 'generic';
+  svgType: 'heart' | 'photosynthesis' | 'mitosis' | 'tcpip' | 'generic';
   tags: string[];
-  searchQueryTag: string; // e.g. "Diagram: Photosynthesis Process Labeled"
+  searchQueryTag: string; // e.g. "Diagram: Human Heart Blood Flow Labeled"
   keyComponents: { label: string; detail: string }[];
 }
 
