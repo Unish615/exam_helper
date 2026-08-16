@@ -8,17 +8,34 @@ export interface SamplePreset {
 
 export const SAMPLE_PRESETS: SamplePreset[] = [
   {
+    id: 'plant-photosynthesis',
+    title: 'Plant Physiology: Photosynthesis Process & Calvin Cycle',
+    category: 'Botany',
+    badge: 'Popular',
+    text: `Photosynthesis is the fundamental biochemical process by which photoautotrophic plants, algae, and cyanobacteria convert light energy into chemical energy stored in glucose. The general chemical equation is 6 CO2 + 6 H2O + light energy -> C6H12O6 + 6 O2.
+
+Photosynthesis takes place inside plant Chloroplasts across two distinct stages:
+
+1. Light-Dependent Reactions (Occur in Thylakoid Membranes):
+Chlorophyll pigments absorb photons, exciting electrons in Photosystem II (P680) and Photosystem I (P700). Water molecules undergo photolysis (H2O -> 2 H+ + 2 e- + 1/2 O2), releasing oxygen gas as a byproduct. High-energy electrons flow down the Electron Transport Chain (ETC), generating a proton gradient across the thylakoid membrane to drive ATP Synthase (Photophosphorylation) producing ATP and NADPH.
+
+2. Light-Independent Reactions / Calvin Cycle (Occur in the Stroma):
+The enzyme RuBisCO (Ribulose-1,5-bisphosphate carboxylase-oxygenase) fixes atmospheric CO2 onto 5-carbon RuBP, creating unstable 6-carbon intermediates that split into 3-PGA (3-Phosphoglycerate). ATP and NADPH reduce 3-PGA into G3P (Glyceraldehyde-3-phosphate). For every 6 turns of the Calvin cycle, 2 G3P molecules exit to synthesize 1 glucose molecule, while remaining G3P molecules regenerate RuBP.
+
+Key concepts include C3 vs C4 vs CAM pathways, Stomatal regulation, Light Intensity Saturation, and Chloroplast Granum stacks.`
+  },
+  {
     id: 'biology-heart',
     title: 'Anatomy: Human Heart Blood Flow & Circulation',
     category: 'Human Biology',
-    badge: 'Popular',
-    text: `The human heart is a four-chambered muscular organ that pumps blood continuously through the circulatory system. The four chambers consist of the Right Atrium, Right Ventricle, Left Atrium, and Left Ventricle.
+    badge: 'Core',
+    text: `The human heart is a four-chambered muscular organ that pumps blood continuously through systemic and pulmonary circulation circuits. The four chambers consist of the Right Atrium, Right Ventricle, Left Atrium, and Left Ventricle.
 
-Deoxygenated blood returning from the upper and lower body enters the Right Atrium via the Superior and Inferior Vena Cava. The Right Atrium contracts, pushing blood through the Tricuspid Valve into the Right Ventricle. When the Right Ventricle pumps, deoxygenated blood is driven through the Pulmonary Semilunar Valve into the Pulmonary Arteries to reach the lungs for gas exchange (releasing CO2 and picking up O2).
+Deoxygenated blood returning from systemic body tissues enters the Right Atrium via the Superior and Inferior Vena Cava. Contraction pushes blood through the Tricuspid Valve into the Right Ventricle. The Right Ventricle pumps deoxygenated blood through the Pulmonary Semilunar Valve into the Pulmonary Arteries leading to the lungs for gas exchange.
 
-Freshly oxygenated blood returns from the lungs through the Pulmonary Veins into the Left Atrium. Blood passes through the Bicuspid (Mitral) Valve into the Left Ventricle. The Left Ventricle—having the thickest muscular myocardium wall—contracts forcefully to pump oxygenated blood through the Aortic Valve into the Aorta, distributing oxygen and nutrients to systemic body tissues.
+Freshly oxygenated blood returns from the lungs through the Pulmonary Veins into the Left Atrium. Blood flows past the Bicuspid (Mitral) Valve into the Left Ventricle. The Left Ventricle—having the thickest muscular myocardium wall—contracts forcefully to drive oxygenated blood through the Aortic Valve into the Aorta for distribution to body organs.
 
-Key concepts include Systemic vs Pulmonary Circulation, Cardiac Pacemaker (Sinoatrial Node), Coronary Arteries, and Systolic vs Diastolic Blood Pressure.`
+Key concepts include Systemic vs Pulmonary Circuits, SA Node Pacemaker, Coronary Arteries, and Systolic vs Diastolic Blood Pressure.`
   },
   {
     id: 'biology-mitosis',
@@ -48,17 +65,5 @@ Cytokinesis splits the cytoplasm. In animal cells, a microfilament ring forms a 
 4. Network Access / Link Layer (Layer 1): Hardware framing, MAC addressing, Ethernet, and Wi-Fi 802.11.
 
 Key concepts include Subnet Masking, CIDR notation, NAT (Network Address Translation), and TCP Windowing flow control.`
-  },
-  {
-    id: 'physics-thermo',
-    title: 'Physics: Laws of Thermodynamics',
-    category: 'Physics',
-    badge: 'Core',
-    text: `Thermodynamics governs heat, work, and energy transformation across four fundamental laws:
-
-1. Zeroth Law: If two systems are in thermal equilibrium with a third system, they are in thermal equilibrium with each other (defines temperature).
-2. First Law (Conservation of Energy): Energy cannot be created or destroyed: ΔU = Q - W.
-3. Second Law: Total entropy (disorder) of an isolated system always increases in spontaneous processes (ΔS_total > 0). Heat spontaneously flows from hot to cold objects.
-4. Third Law: As system temperature approaches Absolute Zero (0 Kelvin / -273.15°C), pure crystalline entropy approaches zero.`
   }
 ];

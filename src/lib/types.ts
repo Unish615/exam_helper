@@ -1,9 +1,10 @@
-export type Difficulty = 'Easy' | 'Medium' | 'Hard';
+export type Difficulty = 'Beginner' | 'Intermediate' | 'Advanced / Exam Ready';
 
 export type QuestionType = 'MCQ' | 'Short' | 'Essay' | 'Definition' | 'FillBlank';
 
 export interface MCQOption {
   id: string;
+  label: 'A' | 'B' | 'C' | 'D';
   text: string;
   isCorrect: boolean;
 }
@@ -20,7 +21,8 @@ export interface QuestionItem {
   options?: MCQOption[]; // For MCQs
   blankAnswer?: string; // For FillBlank
   learned?: boolean;
-  userSelectedOptionId?: string | null; // For interactive MCQ practice state
+  markedForReview?: boolean; // For Mark for Review button
+  userSelectedOptionId?: string | null; // For MCQ practice choice
   topicTag: string;
 }
 
@@ -37,8 +39,9 @@ export interface VisualAidDiagram {
   title: string;
   description: string;
   type: 'flowchart' | 'hierarchy' | 'cycle' | 'comparison' | 'matrix';
-  svgType: 'heart' | 'mitosis' | 'tcpip' | 'thermodynamics' | 'generic';
+  svgType: 'photosynthesis' | 'heart' | 'mitosis' | 'tcpip' | 'generic';
   tags: string[];
+  searchQueryTag: string; // e.g. "Diagram: Photosynthesis Process Labeled"
   keyComponents: { label: string; detail: string }[];
 }
 

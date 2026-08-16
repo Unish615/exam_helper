@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldAlert, CheckCircle2, ShieldCheck, BookOpen } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, ShieldCheck, BookOpen } from 'lucide-react';
 
 interface DisclaimerModalProps {
   isOpen: boolean;
@@ -18,96 +18,96 @@ export const DisclaimerModal: React.FC<DisclaimerModalProps> = ({ isOpen, onClos
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
         
-        {/* Gray-tinted Frosted Backdrop Blur */}
+        {/* Frosted-glass overlay backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25 }}
-          className="fixed inset-0 bg-zinc-950/80 backdrop-blur-md"
+          className="fixed inset-0 bg-slate-950/80 backdrop-blur-md"
           onClick={() => {
             if (hasChecked) onClose();
           }}
         />
 
-        {/* Modal Container */}
+        {/* Animated Modal Container */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.93, y: 15 }}
+          initial={{ opacity: 0, scale: 0.92, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.93, y: 15 }}
+          exit={{ opacity: 0, scale: 0.92, y: 15 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative w-full max-w-lg bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden z-10"
+          className="relative w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden z-10"
         >
-          {/* Top Decorative Monochrome Accent Line */}
-          <div className="h-1.5 w-full bg-gradient-to-r from-zinc-600 via-zinc-400 to-zinc-200" />
+          {/* Top Decorative Gradient Accent Line */}
+          <div className="h-1.5 w-full bg-gradient-to-r from-amber-500 via-indigo-500 to-emerald-500" />
 
           <div className="p-6 sm:p-7 space-y-6">
             
             {/* Header Icon & Title */}
             <div className="flex items-start gap-4">
-              <div className="p-3 rounded-xl bg-zinc-800 border border-zinc-700 text-zinc-300 shrink-0">
-                <ShieldAlert className="w-6 h-6 text-zinc-200" />
+              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 shrink-0">
+                <AlertTriangle className="w-6 h-6 animate-pulse" />
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700 uppercase tracking-wider">
+                  <span className="text-xs font-bold px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 uppercase tracking-wider">
                     Important Notice
                   </span>
-                  <span className="text-xs text-zinc-400">Academic Guidelines</span>
+                  <span className="text-xs text-slate-400">Academic Guidelines</span>
                 </div>
-                <h3 className="text-xl font-extrabold text-zinc-100 tracking-tight">
-                  Accuracy & Study Safety Policy
+                <h3 className="text-xl font-bold text-white tracking-tight">
+                  Study Prep Safety & Accuracy Notice
                 </h3>
               </div>
             </div>
 
-            {/* Disclaimer Exact Text Box */}
-            <div className="p-4 rounded-xl bg-zinc-950/90 border border-zinc-800 text-zinc-300 text-sm leading-relaxed space-y-3">
-              <p className="font-medium text-zinc-200">
-                &ldquo;Important Notice: Nyoria processes your materials to generate exam questions, simple answers, and visual aids. AI-generated content may not be 100% accurate. Please cross-verify critical facts with your official study sources.&rdquo;
+            {/* Exact Warning Text Box */}
+            <div className="p-4 rounded-xl bg-slate-950/90 border border-slate-800 text-slate-300 text-sm leading-relaxed space-y-3">
+              <p className="font-medium text-slate-200">
+                &ldquo;Important Notice: Nyoria processes study materials to generate exam prep resources. While highly accurate, AI-generated questions and answers may occasionally contain discrepancies. Always cross-verify critical dates and facts with your official textbooks.&rdquo;
               </p>
-              <div className="pt-2 border-t border-zinc-800/80 flex items-center gap-2 text-xs text-zinc-400">
-                <BookOpen className="w-4 h-4 text-zinc-400 shrink-0" />
-                <span>Nyoria is designed for active recall, self-testing, and exam revision.</span>
+              <div className="pt-2 border-t border-slate-800/80 flex items-center gap-2 text-xs text-slate-400">
+                <BookOpen className="w-4 h-4 text-indigo-400 shrink-0" />
+                <span>Designed for active recall, concept visualization, and exam practice.</span>
               </div>
             </div>
 
             {/* Checkbox Acknowledgment */}
-            <label className="flex items-start gap-3 p-3 rounded-xl bg-zinc-950/50 hover:bg-zinc-950/80 border border-zinc-800 cursor-pointer transition-colors select-none">
+            <label className="flex items-start gap-3 p-3 rounded-xl bg-slate-950/50 hover:bg-slate-950/80 border border-slate-800 cursor-pointer transition-colors select-none">
               <input
                 type="checkbox"
                 checked={hasChecked}
                 onChange={(e) => setHasChecked(e.target.checked)}
-                className="mt-0.5 w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-zinc-100 focus:ring-zinc-500 focus:ring-offset-zinc-900"
+                className="mt-0.5 w-4 h-4 rounded border-slate-700 bg-slate-900 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-slate-900"
               />
-              <span className="text-xs text-zinc-300">
-                I understand that generated questions are study aids and I agree to cross-verify critical textbook facts.
+              <span className="text-xs text-slate-300">
+                I acknowledge that generated study sets supplement official textbook reading and instructor guidance.
               </span>
             </label>
 
-            {/* Action Buttons */}
+            {/* Action Button: "I Understand & Continue" */}
             <div className="flex items-center justify-end gap-3 pt-2">
               <button
                 disabled={!hasChecked}
                 onClick={onClose}
                 className={`w-full sm:w-auto px-6 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-300 ${
                   hasChecked
-                    ? 'bg-zinc-100 hover:bg-white text-zinc-950 shadow-lg shadow-zinc-500/10 scale-[1.02] cursor-pointer'
-                    : 'bg-zinc-800 text-zinc-500 cursor-not-allowed border border-zinc-700/40'
+                    ? 'bg-gradient-to-r from-indigo-600 via-purple-600 to-emerald-600 hover:from-indigo-500 hover:to-emerald-500 text-white shadow-lg shadow-indigo-600/30 scale-[1.02] cursor-pointer glow-indigo'
+                    : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/40'
                 }`}
               >
-                <CheckCircle2 className={`w-4 h-4 ${hasChecked ? 'text-emerald-600 animate-bounce' : 'text-zinc-500'}`} />
-                <span>I Understand & Agree</span>
+                <CheckCircle2 className={`w-4 h-4 ${hasChecked ? 'text-emerald-300 animate-bounce' : 'text-slate-500'}`} />
+                <span>I Understand & Continue</span>
               </button>
             </div>
 
           </div>
 
           {/* Footer Note */}
-          <div className="px-6 py-3 bg-zinc-950 border-t border-zinc-800 flex items-center justify-between text-xs text-zinc-500">
+          <div className="px-6 py-3 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-xs text-slate-500">
             <div className="flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-zinc-400" />
-              <span>Nyoria Privacy & Academic Integrity</span>
+              <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
+              <span>Nyoria Privacy & Study Integrity First</span>
             </div>
             <span className="text-[11px]">Re-open anytime via top navigation</span>
           </div>

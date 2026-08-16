@@ -39,8 +39,8 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Generator Options state
-  const [difficulty, setDifficulty] = useState<Difficulty>('Medium');
+  // Generator Controls state
+  const [difficulty, setDifficulty] = useState<Difficulty>('Intermediate');
   const [selectedTypes, setSelectedTypes] = useState<QuestionType[]>([
     'MCQ', 'Short', 'Essay', 'Definition', 'FillBlank'
   ]);
@@ -144,42 +144,42 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
   return (
     <section className="relative py-8 sm:py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       
-      {/* Background Subtle Gray Glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[300px] bg-zinc-700/10 blur-[130px] rounded-full pointer-events-none -z-10" />
+      {/* Background Multi-Color Gradient Glow */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[300px] bg-gradient-to-r from-indigo-600/15 via-purple-600/15 to-emerald-600/15 blur-[130px] rounded-full pointer-events-none -z-10" />
 
       {/* Hero Header */}
       <div className="text-center space-y-4 max-w-3xl mx-auto mb-8 sm:mb-10">
         
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-800/80 border border-zinc-700/80 text-zinc-300 text-xs font-semibold">
-          <Zap className="w-3.5 h-3.5 text-zinc-200" />
-          <span>Interactive Study & Exam Preparation Platform</span>
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-bold">
+          <Zap className="w-3.5 h-3.5 text-indigo-400" />
+          <span>Interactive AI Exam Preparation & Concept Visualizer</span>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl font-black text-zinc-100 tracking-tight leading-tight">
-          Transform Notes into <br className="hidden sm:inline" />
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-zinc-100 via-zinc-300 to-zinc-400">
-            Interactive Exam Guides
+        <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+          Supercharge Your Exams with <br className="hidden sm:inline" />
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-300 to-emerald-400">
+            Deduplicated AI Study Packs
           </span>
         </h1>
 
-        <p className="text-zinc-400 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-          Upload PDF/Text files or paste study notes. Nyoria generates interactive MCQs with instant feedback, clear answers, visual diagrams, and 3D flashcards.
+        <p className="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
+          Upload PDF/DOCX files or paste study notes. Nyoria generates 100% deduplicated MCQs with instant feedback, simple solutions, visual diagrams, and 3D flashcards.
         </p>
 
         {/* Quick Sample Presets */}
         <div className="pt-2 flex flex-wrap items-center justify-center gap-2">
-          <span className="text-xs font-medium text-zinc-400 flex items-center gap-1 mr-1">
-            <BookOpen className="w-3.5 h-3.5 text-zinc-300" />
-            <span>Try Sample Notes:</span>
+          <span className="text-xs font-medium text-slate-400 flex items-center gap-1 mr-1">
+            <BookOpen className="w-3.5 h-3.5 text-indigo-400" />
+            <span>Sample Topics:</span>
           </span>
           {SAMPLE_PRESETS.map((preset) => (
             <button
               key={preset.id}
               onClick={() => handleSelectPreset(preset)}
-              className="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 hover:border-zinc-600 text-zinc-300 text-xs font-medium border border-zinc-800 transition-all flex items-center gap-1.5"
+              className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-indigo-600/20 hover:border-indigo-500/40 text-slate-300 text-xs font-medium border border-slate-800 transition-all flex items-center gap-1.5"
             >
               <span>{preset.title.split(':')[0]}</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-300 font-semibold border border-zinc-700/60">
+              <span className="text-[10px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-semibold">
                 {preset.category}
               </span>
             </button>
@@ -188,31 +188,31 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
 
       </div>
 
-      {/* Main Dual-Input Box */}
-      <div className="bg-zinc-900/90 border border-zinc-800/90 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-6">
+      {/* Main Multi-Mode Input Dashboard Card */}
+      <div className="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-6">
         
-        {/* Dual Input Tabs Header */}
-        <div className="flex items-center justify-between border-b border-zinc-800 pb-3 flex-wrap gap-3">
+        {/* Input Hub Header */}
+        <div className="flex items-center justify-between border-b border-slate-800 pb-3 flex-wrap gap-3">
           
-          <div className="flex items-center gap-2 bg-zinc-950 p-1 rounded-xl border border-zinc-800">
+          <div className="flex items-center gap-2 bg-slate-950 p-1 rounded-xl border border-slate-800">
             <button
               onClick={() => setActiveTab('text')}
               className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
                 activeTab === 'text'
-                  ? 'bg-zinc-100 text-zinc-950 shadow-md shadow-zinc-500/10'
-                  : 'text-zinc-400 hover:text-zinc-200'
+                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-600/20'
+                  : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <FileText className="w-4 h-4" />
-              <span>Note Editor</span>
+              <span>Smart Text Editor</span>
             </button>
 
             <button
               onClick={() => setActiveTab('file')}
               className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
                 activeTab === 'file'
-                  ? 'bg-zinc-100 text-zinc-950 shadow-md shadow-zinc-500/10'
-                  : 'text-zinc-400 hover:text-zinc-200'
+                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-600/20'
+                  : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <FileUp className="w-4 h-4" />
@@ -223,15 +223,15 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
             </button>
           </div>
 
-          {/* Stats info */}
-          <div className="flex items-center gap-3 text-xs text-zinc-400 font-mono">
-            <span>Words: <strong className="text-zinc-200">{wordCount}</strong></span>
-            <span>Chars: <strong className="text-zinc-300">{charCount}</strong></span>
+          {/* Word Count Indicator */}
+          <div className="flex items-center gap-3 text-xs text-slate-400 font-mono">
+            <span>Words: <strong className="text-indigo-300">{wordCount}</strong></span>
+            <span>Chars: <strong className="text-slate-300">{charCount}</strong></span>
             {inputText.trim() && (
               <button
                 onClick={() => { setInputText(''); setUploadedFile(null); }}
-                className="text-zinc-500 hover:text-rose-400 p-1 transition-colors"
-                title="Clear input"
+                className="text-slate-500 hover:text-rose-400 p-1 transition-colors"
+                title="Clear text editor"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -246,25 +246,25 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
             <textarea
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder="Paste your lecture notes, textbook chapters, or exam topics here... (e.g. Human Heart Circulation, Mitosis stages, TCP/IP Layers, Laws of Thermodynamics)"
+              placeholder="Paste your lecture notes, textbook chapters, or exam study topics here... (e.g. Photosynthesis Light Reactions, Human Heart Circulation, Mitosis stages, TCP/IP Layers)"
               rows={8}
-              className="w-full p-4 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-100 placeholder-zinc-500 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-500/50 focus:border-zinc-500 transition-all font-sans leading-relaxed resize-y"
+              className="w-full p-4 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all font-sans leading-relaxed resize-y"
             />
             
             {!inputText && (
               <div className="absolute bottom-4 right-4 flex items-center gap-2">
                 <button
                   onClick={handlePasteClipboard}
-                  className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium flex items-center gap-1.5 border border-zinc-700 transition-colors shadow-sm"
+                  className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium flex items-center gap-1.5 border border-slate-700 transition-colors shadow-sm"
                 >
-                  <Clipboard className="w-3.5 h-3.5 text-zinc-300" />
+                  <Clipboard className="w-3.5 h-3.5 text-indigo-400" />
                   <span>Paste from Clipboard</span>
                 </button>
               </div>
             )}
           </div>
         ) : (
-          /* File Drag and Drop Zone */
+          /* Drag and Drop Zone */
           <div className="space-y-4">
             <div
               onDragEnter={handleDrag}
@@ -274,10 +274,10 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
               onClick={() => fileInputRef.current?.click()}
               className={`relative border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-300 ${
                 dragActive
-                  ? 'border-zinc-400 bg-zinc-800/40 scale-[1.01]'
+                  ? 'border-indigo-500 bg-indigo-500/10 scale-[1.01]'
                   : uploadedFile
                   ? 'border-emerald-500/50 bg-emerald-500/5'
-                  : 'border-zinc-800 hover:border-zinc-700 bg-zinc-950'
+                  : 'border-slate-800 hover:border-slate-700 bg-slate-950'
               }`}
             >
               <input
@@ -289,30 +289,30 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
               />
 
               <div className="flex flex-col items-center justify-center space-y-3">
-                <div className="p-4 rounded-2xl bg-zinc-800/80 text-zinc-200 border border-zinc-700">
+                <div className="p-4 rounded-2xl bg-indigo-600/10 text-indigo-400 border border-indigo-500/20">
                   <FileUp className="w-8 h-8 animate-bounce" />
                 </div>
 
                 <div className="space-y-1">
-                  <p className="text-sm font-semibold text-zinc-200">
-                    Drag & Drop your PDF or Text files here or click to browse
+                  <p className="text-sm font-semibold text-slate-200">
+                    Drag & Drop your PDF, DOCX, or Text files here or click to browse
                   </p>
-                  <p className="text-xs text-zinc-400">
-                    Supports PDF, TXT, Markdown, and Word Documents (.pdf, .txt, .md)
+                  <p className="text-xs text-slate-400">
+                    Supports PDF, Word Documents (.docx), Text (.txt), and Markdown (.md)
                   </p>
                 </div>
               </div>
 
-              {/* Upload Progress Bar */}
+              {/* Progress Indicator */}
               {isUploading && (
                 <div className="mt-4 max-w-xs mx-auto space-y-2">
-                  <div className="flex justify-between text-xs text-zinc-300">
-                    <span>Extracting file notes...</span>
+                  <div className="flex justify-between text-xs text-slate-300">
+                    <span>Parsing document content...</span>
                     <span>{uploadProgress}%</span>
                   </div>
-                  <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-zinc-500 to-zinc-200 transition-all duration-300"
+                      className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 transition-all duration-300"
                       style={{ width: `${uploadProgress}%` }}
                     />
                   </div>
@@ -321,7 +321,7 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
 
               {/* Uploaded File Info */}
               {uploadedFile && !isUploading && (
-                <div className="mt-4 inline-flex items-center gap-3 px-4 py-2 rounded-xl bg-zinc-900 border border-emerald-500/30 text-emerald-400 text-xs font-medium shadow-md">
+                <div className="mt-4 inline-flex items-center gap-3 px-4 py-2 rounded-xl bg-slate-900 border border-emerald-500/30 text-emerald-400 text-xs font-medium shadow-md">
                   <FileCheck className="w-4 h-4 text-emerald-400" />
                   <span>{uploadedFile.name} ({uploadedFile.size}) — {uploadedFile.count} words extracted</span>
                 </div>
@@ -329,58 +329,59 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
             </div>
 
             {inputText && uploadedFile && (
-              <div className="p-3 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-zinc-400 max-h-32 overflow-y-auto space-y-1">
-                <span className="font-semibold text-zinc-300">Extracted notes preview:</span>
-                <p className="line-clamp-3 italic text-zinc-400">&ldquo;{inputText}&rdquo;</p>
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-400 max-h-32 overflow-y-auto space-y-1">
+                <span className="font-semibold text-slate-300">Extracted preview:</span>
+                <p className="line-clamp-3 italic text-slate-400">&ldquo;{inputText}&rdquo;</p>
               </div>
             )}
           </div>
         )}
 
-        {/* Custom Controls Options Panel */}
-        <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800 space-y-4">
+        {/* Custom Generation Controls Options Panel */}
+        <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-4">
           
-          <div className="flex items-center gap-2 text-xs font-bold text-zinc-300 uppercase tracking-wider">
-            <Sliders className="w-4 h-4 text-zinc-300" />
-            <span>Customize Exam Options</span>
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-300 uppercase tracking-wider">
+            <Sliders className="w-4 h-4 text-indigo-400" />
+            <span>Custom Generation Controls</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
-            {/* Difficulty Selector */}
+            {/* 1. Difficulty Level Selector */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-zinc-400 block">
-                Difficulty Level:
+              <label className="text-xs font-semibold text-slate-400 block">
+                Difficulty Level Selector:
               </label>
-              <div className="grid grid-cols-3 gap-1.5 p-1 bg-zinc-900 rounded-xl border border-zinc-800">
-                {(['Easy', 'Medium', 'Hard'] as Difficulty[]).map((level) => (
+              <div className="grid grid-cols-3 gap-1 p-1 bg-slate-900 rounded-xl border border-slate-800">
+                {(['Beginner', 'Intermediate', 'Advanced / Exam Ready'] as Difficulty[]).map((level) => (
                   <button
                     key={level}
                     type="button"
                     onClick={() => setDifficulty(level)}
-                    className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all ${
+                    className={`py-1.5 px-1 rounded-lg text-[11px] font-extrabold transition-all truncate ${
                       difficulty === level
-                        ? 'bg-zinc-100 text-zinc-950 shadow-sm'
-                        : 'text-zinc-400 hover:text-zinc-200'
+                        ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-sm'
+                        : 'text-slate-400 hover:text-slate-200'
                     }`}
+                    title={level}
                   >
-                    {level}
+                    {level.split(' ')[0]}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Content Types */}
+            {/* 2. Question Quantity Slider & Type Checkboxes */}
             <div className="space-y-2 md:col-span-2">
-              <label className="text-xs font-semibold text-zinc-400 block">
-                Content Types:
+              <label className="text-xs font-semibold text-slate-400 block">
+                Target Question Types:
               </label>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { id: 'MCQ', label: 'Interactive MCQs' },
-                  { id: 'Short', label: 'Short Questions' },
-                  { id: 'Essay', label: 'Long Answers' },
-                  { id: 'Definition', label: 'Key Concepts' },
+                  { id: 'MCQ', label: 'Deduplicated MCQs' },
+                  { id: 'Short', label: 'Short Notes' },
+                  { id: 'Essay', label: 'Long Essays' },
+                  { id: 'Definition', label: 'Flashcards & Definitions' },
                   { id: 'FillBlank', label: 'Fill-in-Blanks' },
                 ].map((type) => {
                   const isSelected = selectedTypes.includes(type.id as QuestionType);
@@ -391,11 +392,11 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
                       onClick={() => toggleType(type.id as QuestionType)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all border ${
                         isSelected
-                          ? 'bg-zinc-800 text-zinc-100 border-zinc-600 shadow-sm'
-                          : 'bg-zinc-900 text-zinc-500 border-zinc-800 hover:text-zinc-300'
+                          ? 'bg-indigo-600/20 text-indigo-300 border-indigo-500/40 shadow-sm'
+                          : 'bg-slate-900 text-slate-500 border-slate-800 hover:text-slate-300'
                       }`}
                     >
-                      <Check className={`w-3.5 h-3.5 ${isSelected ? 'text-zinc-100 opacity-100' : 'opacity-0'}`} />
+                      <Check className={`w-3.5 h-3.5 ${isSelected ? 'text-indigo-400 opacity-100' : 'opacity-0'}`} />
                       <span>{type.label}</span>
                     </button>
                   );
@@ -405,8 +406,8 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
 
           </div>
 
-          {/* Question Count Selector & Badges */}
-          <div className="pt-2 border-t border-zinc-800 flex items-center justify-between flex-wrap gap-4 text-xs text-zinc-400">
+          {/* Question Quantity Slider */}
+          <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between flex-wrap gap-4 text-xs text-slate-400">
             <div className="flex items-center gap-3">
               <span>Question Quantity:</span>
               <div className="flex gap-1.5">
@@ -416,8 +417,8 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
                     onClick={() => setQuestionCount(num)}
                     className={`px-2.5 py-1 rounded-md font-mono font-bold text-xs transition-all ${
                       questionCount === num
-                        ? 'bg-zinc-100 text-zinc-950'
-                        : 'bg-zinc-900 text-zinc-400 hover:text-zinc-200'
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-slate-900 text-slate-400 hover:text-slate-200'
                     }`}
                   >
                     {num}
@@ -426,38 +427,38 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
               </div>
             </div>
 
-            <div className="flex items-center gap-4 text-zinc-300">
-              <span className="flex items-center gap-1 text-zinc-300">
-                <CheckCircle2 className="w-3.5 h-3.5 text-zinc-400" /> 3D Flashcards
+            <div className="flex items-center gap-4 text-slate-300">
+              <span className="flex items-center gap-1 text-emerald-400 font-medium">
+                <CheckCircle2 className="w-3.5 h-3.5" /> 100% Zero-Duplication
               </span>
-              <span className="flex items-center gap-1 text-zinc-300">
-                <CheckCircle2 className="w-3.5 h-3.5 text-zinc-400" /> Visual Diagram Cards
+              <span className="flex items-center gap-1 text-cyan-400 font-medium">
+                <CheckCircle2 className="w-3.5 h-3.5" /> Visual Diagram Cards
               </span>
             </div>
           </div>
 
         </div>
 
-        {/* CTA Button: "Generate Exam Guide" with glowing gray border effect */}
+        {/* CTA Button: "Generate Nyoria Study Pack" */}
         <div className="pt-2">
           <button
             disabled={!inputText.trim() || isGenerating}
             onClick={handleSubmit}
             className={`w-full py-4 rounded-xl font-extrabold text-base tracking-wide flex items-center justify-center gap-3 transition-all duration-300 shadow-xl ${
               inputText.trim() && !isGenerating
-                ? 'bg-zinc-100 hover:bg-white text-zinc-950 border border-zinc-300 shadow-zinc-500/10 hover:scale-[1.005] glow-gray cursor-pointer'
-                : 'bg-zinc-800 text-zinc-500 cursor-not-allowed border border-zinc-700/40'
+                ? 'bg-gradient-to-r from-indigo-600 via-purple-600 to-emerald-600 hover:from-indigo-500 hover:to-emerald-500 text-white shadow-indigo-600/30 hover:scale-[1.005] glow-indigo cursor-pointer'
+                : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'
             }`}
           >
             {isGenerating ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin text-zinc-950" />
-                <span>{generationStep || "Building Exam Guide..."}</span>
+                <Loader2 className="w-5 h-5 animate-spin text-indigo-300" />
+                <span>{generationStep || "Generating Deduplicated Study Pack..."}</span>
               </>
             ) : (
               <>
-                <Sparkles className="w-5 h-5 text-zinc-950 animate-pulse" />
-                <span>Generate Exam Guide</span>
+                <Sparkles className="w-5 h-5 text-indigo-300 animate-pulse" />
+                <span>Generate Nyoria Study Pack</span>
               </>
             )}
           </button>

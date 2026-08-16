@@ -17,7 +17,7 @@ export default function Home() {
   const [savedKits, setSavedKits] = useState<GeneratedStudyKit[]>([]);
   const [currentKit, setCurrentKit] = useState<GeneratedStudyKit | null>(null);
   
-  // Generation state
+  // Generation loading states
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationStep, setGenerationStep] = useState('');
 
@@ -28,7 +28,7 @@ export default function Home() {
       setIsDisclaimerOpen(true);
     }
 
-    // Load saved sets
+    // Load saved sets from localStorage
     try {
       const stored = localStorage.getItem('nyoria_saved_kits');
       if (stored) {
@@ -38,9 +38,9 @@ export default function Home() {
       // Fallback
     }
 
-    // Pre-populate sample Human Heart circulation kit for instant preview
+    // Pre-populate sample Photosynthesis study kit for instant preview
     const sampleKit = generateStudyKit(SAMPLE_PRESETS[0].text, {
-      difficulty: 'Medium',
+      difficulty: 'Intermediate',
       questionTypes: ['MCQ', 'Short', 'Essay', 'Definition', 'FillBlank'],
       questionCount: 8,
       includeFlashcards: true,
@@ -56,18 +56,18 @@ export default function Home() {
 
   const handleGenerate = (text: string, options: GeneratorOptions) => {
     setIsGenerating(true);
-    setGenerationStep('Parsing input notes & anatomical terms...');
+    setGenerationStep('Reading study material & analyzing key concepts...');
 
     setTimeout(() => {
-      setGenerationStep('Extracting key concepts & definitions...');
+      setGenerationStep('Applying Zero-Duplication filtering rule...');
     }, 600);
 
     setTimeout(() => {
-      setGenerationStep('Building interactive MCQs & explanations...');
+      setGenerationStep('Synthesizing deduplicated MCQs & simple solutions...');
     }, 1200);
 
     setTimeout(() => {
-      setGenerationStep('Synthesizing visual diagrams & 3D flashcards...');
+      setGenerationStep('Building visual diagram cards & 3D flashcards...');
     }, 1800);
 
     setTimeout(() => {
@@ -115,7 +115,7 @@ export default function Home() {
 
   return (
     <div className={`min-h-screen font-sans transition-colors duration-300 ${
-      darkMode ? 'bg-zinc-950 text-zinc-100' : 'bg-zinc-100 text-zinc-900'
+      darkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
     }`}>
       
       {/* Navigation Header */}
@@ -123,6 +123,7 @@ export default function Home() {
         darkMode={darkMode}
         setDarkMode={setDarkMode}
         onOpenSavedKits={() => setIsSavedKitsOpen(true)}
+        onOpenHistory={() => setIsSavedKitsOpen(true)}
         onOpenDisclaimer={() => setIsDisclaimerOpen(true)}
         savedKitsCount={savedKits.length}
         onReset={handleReset}
@@ -147,24 +148,24 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="w-full border-t border-zinc-800/80 bg-zinc-950 py-8 text-center text-xs text-zinc-500 space-y-2 no-print">
+      <footer className="w-full border-t border-slate-800/80 bg-slate-950 py-8 text-center text-xs text-slate-500 space-y-2 no-print">
         <div className="flex items-center justify-center gap-2">
-          <span className="font-extrabold text-zinc-300 tracking-tight">Nyoria</span>
+          <span className="font-extrabold text-slate-300 tracking-tight">Nyoria</span>
           <span>•</span>
-          <span>Interactive Study & Exam Preparation Platform</span>
+          <span>Interactive AI Exam Preparation & Concept Visualizer</span>
         </div>
-        <p className="text-zinc-600 max-w-md mx-auto">
-          Built for students and educators. AI content is designed for active revision; please cross-verify critical textbook facts.
+        <p className="text-slate-600 max-w-md mx-auto">
+          Crafted for students, educators, and exam candidates. Always cross-verify critical facts with official textbooks.
         </p>
       </footer>
 
-      {/* Disclaimer Modal */}
+      {/* First-Load Disclaimer Animated Modal */}
       <DisclaimerModal
         isOpen={isDisclaimerOpen}
         onClose={handleCloseDisclaimer}
       />
 
-      {/* Saved Sets Drawer */}
+      {/* Saved Study Sets Drawer */}
       <SavedKitsDrawer
         isOpen={isSavedKitsOpen}
         onClose={() => setIsSavedKitsOpen(false)}

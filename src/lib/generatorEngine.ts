@@ -1,21 +1,38 @@
-import { GeneratedStudyKit, GeneratorOptions, QuestionItem, Flashcard, VisualAidDiagram, Difficulty } from './types';
+import { GeneratedStudyKit, GeneratorOptions, QuestionItem, Flashcard, VisualAidDiagram, Difficulty, MCQOption } from './types';
 
 const genId = (prefix: string) => `${prefix}_${Math.random().toString(36).substring(2, 9)}`;
+
+// Algorithmic string similarity helper for deduplication
+function isDuplicateQuestion(newQ: string, existingQs: string[]): boolean {
+  const normalize = (str: string) => str.toLowerCase().replace(/[^a-z0-9]/g, ' ').split(/\s+/).filter(w => w.length > 3);
+  const newTokens = new Set(normalize(newQ));
+  
+  for (const existing of existingQs) {
+    const existingTokens = normalize(existing);
+    let matchCount = 0;
+    for (const token of existingTokens) {
+      if (newTokens.has(token)) matchCount++;
+    }
+    const overlapRatio = matchCount / Math.max(newTokens.size, existingTokens.length);
+    if (overlapRatio > 0.55) return true; // Duplicate detected
+  }
+  return false;
+}
 
 export function generateStudyKit(text: string, options: GeneratorOptions): GeneratedStudyKit {
   const cleanText = text.trim();
   const lowerText = cleanText.toLowerCase();
 
   // Detect subject theme
-  let theme: 'heart' | 'biology' | 'cs' | 'physics' | 'general' = 'general';
-  if (lowerText.includes('heart') || lowerText.includes('atrium') || lowerText.includes('ventricle') || lowerText.includes('aorta') || lowerText.includes('valve')) {
+  let theme: 'photosynthesis' | 'heart' | 'biology' | 'cs' | 'general' = 'general';
+  if (lowerText.includes('photosynthesis') || lowerText.includes('calvin') || lowerText.includes('thylakoid') || lowerText.includes('rubisco') || lowerText.includes('chloroplast')) {
+    theme = 'photosynthesis';
+  } else if (lowerText.includes('heart') || lowerText.includes('atrium') || lowerText.includes('ventricle') || lowerText.includes('aorta') || lowerText.includes('valve')) {
     theme = 'heart';
   } else if (lowerText.includes('cell') || lowerText.includes('mitosis') || lowerText.includes('chromosome') || lowerText.includes('prophase')) {
     theme = 'biology';
   } else if (lowerText.includes('tcp') || lowerText.includes('network') || lowerText.includes('protocol') || lowerText.includes('layer') || lowerText.includes('port')) {
     theme = 'cs';
-  } else if (lowerText.includes('entropy') || lowerText.includes('thermodynamics') || lowerText.includes('energy') || lowerText.includes('heat')) {
-    theme = 'physics';
   }
 
   const sentences = cleanText
@@ -33,20 +50,31 @@ export function generateStudyKit(text: string, options: GeneratorOptions): Gener
     ? options.questionTypes 
     : ['MCQ', 'Short', 'Essay', 'Definition', 'FillBlank'];
 
-  for (let i = 0; i < targetCount; i++) {
-    const qType = requestedTypes[i % requestedTypes.length];
-    const sentence = sentences[i % sentences.length] || `Core concept #${i + 1} from your provided study material.`;
+  // Algorithmic Deduplication Tracker
+  const generatedQuestionTexts: string[] = [];
+
+  for (let i = 0; i < targetCount * 2; i++) {
+    if (questions.length >= targetCount) break;
+
+    const qType = requestedTypes[questions.length % requestedTypes.length];
+    const sentence = sentences[i % sentences.length] || `Core concept #${i + 1} from study material.`;
     
+    let candidateQ: QuestionItem | null = null;
     if (qType === 'MCQ') {
-      questions.push(buildMCQ(i, sentence, theme, options.difficulty));
+      candidateQ = buildMCQ(questions.length, sentence, theme, options.difficulty);
     } else if (qType === 'Short') {
-      questions.push(buildShortAnswer(i, sentence, theme, options.difficulty));
+      candidateQ = buildShortAnswer(questions.length, sentence, theme, options.difficulty);
     } else if (qType === 'Essay') {
-      questions.push(buildEssay(i, sentence, theme, options.difficulty));
+      candidateQ = buildEssay(questions.length, sentence, theme, options.difficulty);
     } else if (qType === 'Definition') {
-      questions.push(buildDefinition(i, sentence, theme, options.difficulty));
+      candidateQ = buildDefinition(questions.length, sentence, theme, options.difficulty);
     } else if (qType === 'FillBlank') {
-      questions.push(buildFillBlank(i, sentence, theme, options.difficulty));
+      candidateQ = buildFillBlank(questions.length, sentence, theme, options.difficulty);
+    }
+
+    if (candidateQ && !isDuplicateQuestion(candidateQ.question, generatedQuestionTexts)) {
+      generatedQuestionTexts.push(candidateQ.question);
+      questions.push(candidateQ);
     }
   }
 
@@ -61,7 +89,7 @@ export function generateStudyKit(text: string, options: GeneratorOptions): Gener
   return {
     id: genId('kit'),
     title: title,
-    summary: `Extracted ${questions.length} exam items (${questions.filter(q => q.type === 'MCQ').length} interactive MCQs), ${flashcards.length} revision flashcards, and ${diagrams.length} visual diagrams.`,
+    summary: `Extracted ${questions.length} deduplicated exam items (${questions.filter(q => q.type === 'MCQ').length} interactive MCQs), ${flashcards.length} flashcards, and ${diagrams.length} visual diagrams.`,
     createdAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
     difficulty: options.difficulty,
     questions,
@@ -75,25 +103,80 @@ function extractTitle(text: string, theme: string): string {
   const firstLine = text.split('\n')[0].replace(/^#+\s*/, '').trim();
   if (firstLine && firstLine.length < 60) return firstLine;
   switch (theme) {
+    case 'photosynthesis': return 'Photosynthesis & Calvin Cycle Plant Physiology';
     case 'heart': return 'Human Heart Anatomy & Blood Flow Circulation';
     case 'biology': return 'Cell Division & Mitotic Cycle Study Kit';
     case 'cs': return 'TCP/IP Network Stack & Protocol Architecture';
-    case 'physics': return 'Laws of Thermodynamics & Energy Transfer';
-    default: return 'Custom Study Guide & Exam Prep Kit';
+    default: return 'Custom Nyoria Study Pack & Exam Kit';
   }
 }
 
 function buildMCQ(index: number, sentence: string, theme: string, difficulty: Difficulty): QuestionItem {
-  if (theme === 'heart') {
+  if (theme === 'photosynthesis') {
+    const questionsPool = [
+      {
+        q: "In which specific chloroplast structure do the Light-Dependent reactions of photosynthesis take place?",
+        ans: "Thylakoid Membranes",
+        opts: [
+          { id: 'a', label: 'A' as const, text: "Chloroplast Stroma", isCorrect: false },
+          { id: 'b', label: 'B' as const, text: "Thylakoid Membranes", isCorrect: true },
+          { id: 'c', label: 'C' as const, text: "Mitochondrial Matrix", isCorrect: false },
+          { id: 'd', label: 'D' as const, text: "Outer Envelope Membrane", isCorrect: false },
+        ],
+        expl: "Light-dependent reactions occur in the thylakoid membranes where chlorophyll photosystems II and I absorb photons, split water molecules, and generate ATP and NADPH.",
+        mnemonic: "Thylakoid = Traps light! Stroma = Sugar synthesis.",
+        takeaways: ["Thylakoids house chlorophyll pigments and photosystems.", "Photolysis of water releases oxygen gas in thylakoids."]
+      },
+      {
+        q: "Which enzyme is responsible for catalyzing the initial fixation of atmospheric carbon dioxide onto RuBP during the Calvin cycle?",
+        ans: "RuBisCO",
+        opts: [
+          { id: 'a', label: 'A' as const, text: "ATP Synthase", isCorrect: false },
+          { id: 'b', label: 'B' as const, text: "NADPH Reductase", isCorrect: false },
+          { id: 'c', label: 'C' as const, text: "RuBisCO", isCorrect: true },
+          { id: 'd', label: 'D' as const, text: "DNA Polymerase III", isCorrect: false },
+        ],
+        expl: "RuBisCO (Ribulose-1,5-bisphosphate carboxylase-oxygenase) is the primary enzyme in the stroma that fixes CO2 onto 5-carbon RuBP to initiate the Calvin cycle.",
+        mnemonic: "RuBisCO = Carbon Fixing Champion in the Stroma!",
+        takeaways: ["RuBisCO is the most abundant enzyme on Earth.", "Operates during the light-independent Calvin cycle."]
+      },
+      {
+        q: "What molecule is produced as a direct byproduct of water photolysis in Photosystem II?",
+        ans: "Oxygen Gas (O2)",
+        opts: [
+          { id: 'a', label: 'A' as const, text: "Carbon Dioxide (CO2)", isCorrect: false },
+          { id: 'b', label: 'B' as const, text: "Oxygen Gas (O2)", isCorrect: true },
+          { id: 'c', label: 'C' as const, text: "Methane (CH4)", isCorrect: false },
+          { id: 'd', label: 'D' as const, text: "Glucose (C6H12O6)", isCorrect: false },
+        ],
+        expl: "Photolysis splits water (H2O -> 2 H+ + 2 e- + 1/2 O2), providing electrons to replace those lost by Chlorophyll P680 and releasing O2 into the atmosphere.",
+        mnemonic: "H2O split = Oxygen release!",
+        takeaways: ["Oxygen released during photosynthesis comes from water splitting.", "Occurs at Photosystem II."]
+      }
+    ];
+    const picked = questionsPool[index % questionsPool.length];
+    return {
+      id: genId('mcq'),
+      type: 'MCQ',
+      difficulty,
+      question: picked.q,
+      answer: picked.ans,
+      explanation: picked.expl,
+      mnemonic: picked.mnemonic,
+      keyTakeaways: picked.takeaways,
+      options: picked.opts,
+      topicTag: 'Photosynthesis'
+    };
+  } else if (theme === 'heart') {
     const questionsPool = [
       {
         q: "Which chamber of the human heart receives oxygenated blood directly from the lungs via the pulmonary veins?",
         ans: "Left Atrium",
         opts: [
-          { id: 'a', text: "Right Atrium", isCorrect: false },
-          { id: 'b', text: "Right Ventricle", isCorrect: false },
-          { id: 'c', text: "Left Atrium", isCorrect: true },
-          { id: 'd', text: "Left Ventricle", isCorrect: false },
+          { id: 'a', label: 'A' as const, text: "Right Atrium", isCorrect: false },
+          { id: 'b', label: 'B' as const, text: "Right Ventricle", isCorrect: false },
+          { id: 'c', label: 'C' as const, text: "Left Atrium", isCorrect: true },
+          { id: 'd', label: 'D' as const, text: "Left Ventricle", isCorrect: false },
         ],
         expl: "Freshly oxygenated blood returns from pulmonary capillaries into the Left Atrium. It then passes through the Bicuspid (Mitral) valve into the Left Ventricle to be pumped systemically.",
         mnemonic: "Left side = Lungs & Oxygenated blood! Right side = Returning deoxygenated blood.",
@@ -103,27 +186,14 @@ function buildMCQ(index: number, sentence: string, theme: string, difficulty: Di
         q: "Why does the Left Ventricle have a significantly thicker muscular wall (myocardium) than the Right Ventricle?",
         ans: "It must generate high pressure to pump blood throughout the entire systemic body circulation.",
         opts: [
-          { id: 'a', text: "It stores deoxygenated blood under high carbon dioxide pressure.", isCorrect: false },
-          { id: 'b', text: "It must generate high pressure to pump blood throughout the entire systemic body circulation.", isCorrect: true },
-          { id: 'c', text: "It prevents pulmonary valve prolapse during cardiac resting phase.", isCorrect: false },
-          { id: 'd', text: "It filters blood before passing it to the Sinoatrial Node.", isCorrect: false },
+          { id: 'a', label: 'A' as const, text: "It stores deoxygenated blood under high carbon dioxide pressure.", isCorrect: false },
+          { id: 'b', label: 'B' as const, text: "It must generate high pressure to pump blood throughout the entire systemic body circulation.", isCorrect: true },
+          { id: 'c', label: 'C' as const, text: "It prevents pulmonary valve prolapse during cardiac resting phase.", isCorrect: false },
+          { id: 'd', label: 'D' as const, text: "It filters blood before passing it to the Sinoatrial Node.", isCorrect: false },
         ],
         expl: "The Right Ventricle only pumps blood a short distance to the lungs (pulmonary circuit), whereas the Left Ventricle must pump blood against high systemic resistance to the entire body via the Aorta.",
         mnemonic: "Left Ventricle = Heavy Lifter for systemic body pressure!",
         takeaways: ["Systemic circuit requires higher pressure than pulmonary circuit.", "Left Ventricle myocardium is 3x thicker than Right Ventricle."]
-      },
-      {
-        q: "Which heart valve prevents backflow of blood from the Right Ventricle back into the Right Atrium?",
-        ans: "Tricuspid Valve",
-        opts: [
-          { id: 'a', text: "Bicuspid (Mitral) Valve", isCorrect: false },
-          { id: 'b', text: "Aortic Valve", isCorrect: false },
-          { id: 'c', text: "Tricuspid Valve", isCorrect: true },
-          { id: 'd', text: "Pulmonary Valve", isCorrect: false },
-        ],
-        expl: "The Tricuspid Valve located between the Right Atrium and Right Ventricle closes during ventricular contraction (systole) to prevent regurgitation.",
-        mnemonic: "TRI before you BI! Tricuspid is on the Right, Bicuspid is on the Left.",
-        takeaways: ["Atrioventricular (AV) valves prevent backflow into atria.", "Tricuspid valve has 3 cusps."]
       }
     ];
     const picked = questionsPool[index % questionsPool.length];
@@ -139,77 +209,6 @@ function buildMCQ(index: number, sentence: string, theme: string, difficulty: Di
       options: picked.opts,
       topicTag: 'Heart Anatomy'
     };
-  } else if (theme === 'biology') {
-    const questionsPool = [
-      {
-        q: "During which phase of Mitosis do sister chromatids align along the equator of the cell?",
-        ans: "Metaphase",
-        opts: [
-          { id: 'a', text: "Prophase", isCorrect: false },
-          { id: 'b', text: "Metaphase", isCorrect: true },
-          { id: 'c', text: "Anaphase", isCorrect: false },
-          { id: 'd', text: "Telophase", isCorrect: false },
-        ],
-        expl: "In Metaphase, chromosomes line up along the metaphase plate in the middle of the cell. Spindle fibers attach to kinetochores to prepare for division.",
-        mnemonic: "M = Middle! Metaphase means Chromosomes in the Middle.",
-        takeaways: ["Metaphase alignment ensures equal distribution of genetic material.", "Spindle fibers lock onto kinetochores."]
-      },
-      {
-        q: "What structure forms in plant cells during cytokinesis to separate the daughter cells?",
-        ans: "Cell Plate",
-        opts: [
-          { id: 'a', text: "Cleavage Furrow", isCorrect: false },
-          { id: 'b', text: "Cell Plate", isCorrect: true },
-          { id: 'c', text: "Nuclear Envelope", isCorrect: false },
-          { id: 'd', text: "Centrosome Ring", isCorrect: false },
-        ],
-        expl: "Because plant cells have rigid cell walls, they cannot form a cleavage furrow. Instead, membrane-bound vesicles assemble a Cell Plate along the equator.",
-        mnemonic: "Plant = Plate! Animal = Cleavage Furrow.",
-        takeaways: ["Cell plate fuses with plasma membrane to construct a rigid cell wall.", "Cleavage furrow is unique to animal cells."]
-      }
-    ];
-    const picked = questionsPool[index % questionsPool.length];
-    return {
-      id: genId('mcq'),
-      type: 'MCQ',
-      difficulty,
-      question: picked.q,
-      answer: picked.ans,
-      explanation: picked.expl,
-      mnemonic: picked.mnemonic,
-      keyTakeaways: picked.takeaways,
-      options: picked.opts,
-      topicTag: 'Cell Biology'
-    };
-  } else if (theme === 'cs') {
-    const questionsPool = [
-      {
-        q: "Which TCP/IP layer handles logical addressing and routing of packets across disparate networks?",
-        ans: "Internet Layer (Layer 2)",
-        opts: [
-          { id: 'a', text: "Application Layer", isCorrect: false },
-          { id: 'b', text: "Transport Layer", isCorrect: false },
-          { id: 'c', text: "Internet Layer", isCorrect: true },
-          { id: 'd', text: "Network Access Layer", isCorrect: false },
-        ],
-        expl: "The Internet Layer uses IP (IPv4/IPv6) addressing and ICMP diagnostics to route packets between source and destination IP addresses across subnets.",
-        mnemonic: "Internet Layer = IP Routing & Packet Addressing!",
-        takeaways: ["IP addresses operate at the Internet Layer.", "Transport Layer manages ports and connections."]
-      }
-    ];
-    const picked = questionsPool[index % questionsPool.length];
-    return {
-      id: genId('mcq'),
-      type: 'MCQ',
-      difficulty,
-      question: picked.q,
-      answer: picked.ans,
-      explanation: picked.expl,
-      mnemonic: picked.mnemonic,
-      keyTakeaways: picked.takeaways,
-      options: picked.opts,
-      topicTag: 'Networking'
-    };
   }
 
   // Fallback MCQ
@@ -217,36 +216,36 @@ function buildMCQ(index: number, sentence: string, theme: string, difficulty: Di
     id: genId('mcq'),
     type: 'MCQ',
     difficulty,
-    question: `Based on your material: "${sentence.substring(0, 70)}...", which statement is accurate?`,
-    answer: "Statement correctly highlights the core mechanism described in the text.",
-    explanation: `Detailed analysis of: ${sentence}. Cross-verify with key terminology in your chapter notes.`,
-    mnemonic: "Focus on subject-predicate relationships in test questions.",
+    question: `Based on your study notes: "${sentence.substring(0, 70)}...", which statement is accurate?`,
+    answer: "Statement correctly highlights the core mechanism described in your text.",
+    explanation: `Detailed analysis of: ${sentence}. Cross-verify with key terminology in your notes.`,
+    mnemonic: "Focus on key noun-verb relationships in exam options.",
     keyTakeaways: ["Key insight directly matches provided study text.", "Pay attention to context clues in test questions."],
     options: [
-      { id: 'a', text: sentence.length > 50 ? sentence.substring(0, 50) + "..." : sentence, isCorrect: true },
-      { id: 'b', text: "Process operates in reverse without requiring energy or regulation.", isCorrect: false },
-      { id: 'c', text: "Phenomenon only applies to isolated laboratory conditions.", isCorrect: false },
-      { id: 'd', text: "Component is permanently disabled during initial phase.", isCorrect: false },
+      { id: 'a', label: 'A', text: sentence.length > 50 ? sentence.substring(0, 50) + "..." : sentence, isCorrect: true },
+      { id: 'b', label: 'B', text: "Process operates in reverse without requiring energy or regulation.", isCorrect: false },
+      { id: 'c', label: 'C', text: "Phenomenon only applies to isolated laboratory conditions.", isCorrect: false },
+      { id: 'd', label: 'D', text: "Component is permanently disabled during initial phase.", isCorrect: false },
     ],
     topicTag: 'Key Concepts'
   };
 }
 
 function buildShortAnswer(index: number, sentence: string, theme: string, difficulty: Difficulty): QuestionItem {
-  if (theme === 'heart') {
+  if (theme === 'photosynthesis') {
     return {
       id: genId('short'),
       type: 'Short',
       difficulty,
-      question: "Trace the path of oxygenated blood from the lungs back to the systemic body tissues.",
-      answer: "Lungs -> Pulmonary Veins -> Left Atrium -> Bicuspid (Mitral) Valve -> Left Ventricle -> Aortic Valve -> Aorta -> Systemic Body Tissues.",
-      explanation: "Oxygenated blood returns from pulmonary capillaries into the Left Atrium, enters the Left Ventricle, and is pumped under high pressure through the Aorta to nourish systemic body tissues.",
-      mnemonic: "PV -> LA -> LV -> Aorta -> Body!",
+      question: "Differentiate between the Light-Dependent Reactions and the Calvin Cycle in photosynthesis.",
+      answer: "Light-Dependent Reactions occur in thylakoid membranes, require sunlight to split water, release O2, and produce ATP & NADPH. The Calvin Cycle occurs in the stroma, does not directly require light, and uses ATP & NADPH to fix CO2 into G3P/glucose.",
+      explanation: "Light reactions convert solar energy to chemical energy (ATP/NADPH). Dark reactions (Calvin cycle) use that chemical energy to build sugar molecules.",
+      mnemonic: "Light = Thylakoids & Energy. Calvin = Stroma & Sugar!",
       keyTakeaways: [
-        "Pulmonary veins are the only veins carrying oxygen-rich blood.",
-        "Left Ventricle contracts forcefully to distribute blood via Aorta."
+        "Light reactions split H2O releasing O2.",
+        "Calvin cycle fixes CO2 using RuBisCO."
       ],
-      topicTag: 'Circulation Path'
+      topicTag: 'Photosynthesis Stages'
     };
   }
 
@@ -263,31 +262,16 @@ function buildShortAnswer(index: number, sentence: string, theme: string, diffic
 }
 
 function buildEssay(index: number, sentence: string, theme: string, difficulty: Difficulty): QuestionItem {
-  if (theme === 'heart') {
-    return {
-      id: genId('essay'),
-      type: 'Essay',
-      difficulty,
-      question: "Compare and contrast Systemic Circulation and Pulmonary Circulation in human cardiac physiology.",
-      answer: "A complete essay should address: 1) Circuit destinations (Pulmonary = Lungs for gas exchange; Systemic = Body tissues for O2/nutrient delivery), 2) Pressure requirements (Pulmonary = Low pressure; Systemic = High pressure), 3) Ventricular myocardium thickness (Left Ventricle 3x thicker than Right), and 4) Vessel oxygenation roles.",
-      explanation: "Evaluation criteria: Clear structural outline, accurate anatomical terminology (Vena Cava, Pulmonary Arteries/Veins, Aorta), and thorough explanation of pressure dynamics.",
-      mnemonic: "P-S-M-V: Purpose, Pressure, Myocardium thickness, Vessels.",
-      keyTakeaways: [
-        "Pulmonary circuit operates at low resistance to prevent lung fluid accumulation.",
-        "Systemic circuit supplies all body organs via arterial branching."
-      ],
-      topicTag: 'Cardiac Physiology'
-    };
-  }
-
   return {
     id: genId('essay'),
     type: 'Essay',
     difficulty,
-    question: `Synthesize and critically evaluate the primary mechanisms detailed in your study notes regarding: "${sentence.substring(0, 65)}..."`,
-    answer: "Structuring your response:\n1. Introduction: Define core terms and state main thesis.\n2. Body Paragraph 1: Analyze primary mechanisms and structural rules.\n3. Body Paragraph 2: Evaluate real-world applications and edge cases.\n4. Conclusion: Summarize findings and overall significance.",
+    question: theme === 'photosynthesis'
+      ? "Comprehensive Analysis: Trace the flow of energy and carbon fixation from photon absorption in Photosystem II to glucose synthesis in the Calvin Cycle."
+      : `Synthesize and critically evaluate the primary mechanisms detailed in your study notes regarding: "${sentence.substring(0, 65)}..."`,
+    answer: "Essay Response Outline:\n1. Light Absorption & Photolysis: P680 excitation and H2O splitting.\n2. Electron Transport & Photophosphorylation: Proton gradient driving ATP Synthase and NADPH production.\n3. Carbon Fixation: RuBisCO fixes CO2 onto RuBP creating 3-PGA.\n4. Reduction & Sugar Output: ATP/NADPH convert 3-PGA to G3P for glucose synthesis and RuBP regeneration.",
     explanation: "High-scoring essay responses demonstrate clear logical flow, accurate technical vocabulary, and thorough explanation of cause-and-effect relationships.",
-    keyTakeaways: ["Use thematic headings to structure your essay.", "Include specific examples from your notes to validate claims."],
+    keyTakeaways: ["Use thematic headings to structure your essay response.", "Include specific chemical equations and cellular locations."],
     topicTag: 'Comprehensive Essay'
   };
 }
@@ -297,10 +281,10 @@ function buildDefinition(index: number, sentence: string, theme: string, difficu
     id: genId('def'),
     type: 'Definition',
     difficulty,
-    question: theme === 'heart' ? "Define Sinoatrial (SA) Node in human heart physiology." : `Define the key technical term in: "${sentence.substring(0, 50)}..."`,
-    answer: theme === 'heart' ? "The Sinoatrial (SA) Node is the natural cardiac pacemaker located in the upper wall of the Right Atrium that generates spontaneous electrical impulses setting the heart rhythm." : sentence,
-    explanation: "Precise definitions require stating both the anatomical or technical term and its functional biological role.",
-    keyTakeaways: ["SA Node initiates electrical action potentials.", "Propagates signal to AV Node and Purkinje fibers."],
+    question: theme === 'photosynthesis' ? "Define Photolysis of Water in plant photosynthesis." : `Define the key technical term in: "${sentence.substring(0, 50)}..."`,
+    answer: theme === 'photosynthesis' ? "Photolysis is the light-driven splitting of water molecules (2 H2O -> 4 H+ + 4 e- + O2) in Photosystem II during light-dependent reactions." : sentence,
+    explanation: "Photolysis supplies replacement electrons to chlorophyll P680 while generating atmospheric oxygen and thylakoid protons.",
+    keyTakeaways: ["Essential for replacing lost chlorophyll electrons.", "Releases O2 gas as a byproduct."],
     topicTag: 'Definitions'
   };
 }
@@ -310,91 +294,68 @@ function buildFillBlank(index: number, sentence: string, theme: string, difficul
     id: genId('blank'),
     type: 'FillBlank',
     difficulty,
-    question: theme === 'heart'
-      ? "Oxygenated blood exits the Left Ventricle into the ________, the largest artery in the human body."
+    question: theme === 'photosynthesis'
+      ? "The primary carbon-fixing enzyme operating in the chloroplast stroma is ________."
       : "The principle of conservation of ________ states that energy cannot be created or destroyed.",
-    blankAnswer: theme === 'heart' ? "aorta" : "energy",
-    answer: theme === 'heart' ? "aorta" : "energy",
-    explanation: theme === 'heart'
-      ? "The Aorta branches into major systemic arteries distributing oxygenated blood throughout the body."
-      : "First Law of Thermodynamics.",
+    blankAnswer: theme === 'photosynthesis' ? "rubisco" : "energy",
+    answer: theme === 'photosynthesis' ? "RuBisCO" : "energy",
+    explanation: "RuBisCO fixes atmospheric CO2 onto RuBP.",
     keyTakeaways: ["Fill-in-the-blank questions test exact terminology recall."],
     topicTag: 'Active Recall'
   };
 }
 
 function buildFlashcards(text: string, theme: string, sentences: string[]): Flashcard[] {
-  if (theme === 'heart') {
+  if (theme === 'photosynthesis') {
     return [
-      { id: genId('fc'), front: "Right Atrium", back: "Receives deoxygenated blood from Superior and Inferior Vena Cava.", category: "Heart Anatomy" },
-      { id: genId('fc'), front: "Right Ventricle", back: "Pumps deoxygenated blood through pulmonary arteries to the lungs.", category: "Heart Anatomy" },
-      { id: genId('fc'), front: "Left Atrium", back: "Receives oxygenated blood returning from the lungs via pulmonary veins.", category: "Heart Anatomy" },
-      { id: genId('fc'), front: "Left Ventricle", back: "Pumps oxygenated blood through the Aorta to systemic body tissues; thickest myocardium.", category: "Heart Anatomy" },
-      { id: genId('fc'), front: "Tricuspid Valve", back: "AV valve between Right Atrium and Right Ventricle preventing backflow.", category: "Valves" },
-      { id: genId('fc'), front: "Bicuspid (Mitral) Valve", back: "AV valve between Left Atrium and Left Ventricle preventing backflow.", category: "Valves" },
-    ];
-  } else if (theme === 'biology') {
-    return [
-      { id: genId('fc'), front: "Prophase", back: "Chromatin condenses into distinct chromosomes; nuclear envelope breaks down.", category: "Cell Cycle" },
-      { id: genId('fc'), front: "Metaphase", back: "Chromosomes align along the metaphase plate in the center of the cell.", category: "Cell Cycle" },
-      { id: genId('fc'), front: "Anaphase", back: "Sister chromatids separate and move to opposite poles of the cell.", category: "Cell Cycle" },
-      { id: genId('fc'), front: "Telophase", back: "Nuclear envelopes reform around two daughter nuclei; chromosomes decondense.", category: "Cell Cycle" },
+      { id: genId('fc'), front: "Thylakoid Membrane", back: "Site of Light-Dependent Reactions containing chlorophyll, photosystems, and ATP Synthase.", category: "Photosynthesis" },
+      { id: genId('fc'), front: "Stroma", back: "Fluid-filled interior of chloroplast where the Calvin Cycle (light-independent reactions) occurs.", category: "Photosynthesis" },
+      { id: genId('fc'), front: "RuBisCO", back: "Enzyme that fixes CO2 onto RuBP in the Calvin cycle to produce 3-PGA.", category: "Enzymes" },
+      { id: genId('fc'), front: "Photolysis", back: "Light-driven splitting of water molecules releasing electrons, protons, and oxygen gas.", category: "Reactions" },
+      { id: genId('fc'), front: "G3P", back: "3-carbon sugar precursor produced in Calvin cycle used to assemble glucose.", category: "Molecules" },
     ];
   }
 
   return sentences.slice(0, 5).map((s, idx) => ({
     id: genId('fc'),
-    front: `Key Concept #${idx + 1}`,
+    front: `Key Term #${idx + 1}`,
     back: s,
     category: 'Study Notes'
   }));
 }
 
 function buildDiagrams(theme: string, title: string): VisualAidDiagram[] {
-  if (theme === 'heart') {
+  if (theme === 'photosynthesis') {
+    return [{
+      id: genId('diag'),
+      title: "Photosynthesis Two-Stage Biochemical Architecture",
+      description: "Visual roadmap illustrating photon absorption in Thylakoids, Water Photolysis, O2 release, and Stroma Calvin Cycle CO2 fixation.",
+      type: 'flowchart',
+      svgType: 'photosynthesis',
+      tags: ['Diagram: Photosynthesis Process Labeled', 'Thylakoid', 'Calvin Cycle', 'RuBisCO', 'Stroma'],
+      searchQueryTag: "Diagram: Photosynthesis Process Labeled",
+      keyComponents: [
+        { label: "1. Thylakoid Membrane", detail: "Absorbs photons; photolysis splits H2O releasing O2 gas." },
+        { label: "2. Electron Transport & ATP", detail: "Generates ATP and NADPH chemical energy carriers." },
+        { label: "3. Chloroplast Stroma", detail: "Calvin cycle uses ATP & NADPH to fix CO2 via RuBisCO." },
+        { label: "4. Glucose Output", detail: "Produces G3P precursors for glucose and plant biomass." },
+      ]
+    }];
+  } else if (theme === 'heart') {
     return [{
       id: genId('diag'),
       title: "Human Heart Blood Circulation & Valve Flow",
       description: "Visual roadmap showing step-by-step deoxygenated vs oxygenated blood flow through heart chambers, valves, and systemic vessels.",
       type: 'flowchart',
       svgType: 'heart',
-      tags: ['Diagram: Human Heart Blood Flow', 'Cardiology', 'Vena Cava', 'Pulmonary Circuit', 'Aorta'],
+      tags: ['Diagram: Human Heart Circulation', 'Cardiology', 'Vena Cava', 'Pulmonary Circuit', 'Aorta'],
+      searchQueryTag: "Diagram: Human Heart Circulation",
       keyComponents: [
         { label: "1. Vena Cava -> Right Atrium", detail: "Deoxygenated blood enters Right Atrium from systemic body." },
         { label: "2. Tricuspid Valve -> Right Ventricle", detail: "Passes through Tricuspid valve into Right Ventricle." },
-        { label: "3. Pulmonary Artery -> Lungs", detail: "Pumps through Pulmonary Valve to lungs for gas exchange (O2 up, CO2 out)." },
+        { label: "3. Pulmonary Artery -> Lungs", detail: "Pumps through Pulmonary Valve to lungs for gas exchange." },
         { label: "4. Pulmonary Veins -> Left Atrium", detail: "Oxygenated blood returns into Left Atrium." },
         { label: "5. Mitral Valve -> Left Ventricle -> Aorta", detail: "Enters Left Ventricle and pumps via Aorta to body tissues." },
-      ]
-    }];
-  } else if (theme === 'biology') {
-    return [{
-      id: genId('diag'),
-      title: "Mitosis & Cell Division Sequence",
-      description: "Visual roadmap showing step-by-step nuclear and cytoplasmic division from Prophase through Cytokinesis.",
-      type: 'cycle',
-      svgType: 'mitosis',
-      tags: ['Diagram: Cell Mitosis Stages', 'Prophase', 'Metaphase', 'Anaphase', 'Telophase', 'Cytokinesis'],
-      keyComponents: [
-        { label: "1. Prophase", detail: "Chromosomes condense & spindle forms" },
-        { label: "2. Metaphase", detail: "Chromosomes align along equatorial metaphase plate" },
-        { label: "3. Anaphase", detail: "Sister chromatids split to opposite poles" },
-        { label: "4. Telophase & Cytokinesis", detail: "Nuclear envelopes reform; cleavage furrow pinches cytoplasm" },
-      ]
-    }];
-  } else if (theme === 'cs') {
-    return [{
-      id: genId('diag'),
-      title: "TCP/IP 4-Layer Protocol Architecture",
-      description: "Layered diagram showing encapsulation and data flow from application protocols down to physical media.",
-      type: 'hierarchy',
-      svgType: 'tcpip',
-      tags: ['Diagram: TCP/IP Stack', 'Application', 'Transport', 'Internet', 'Network Access'],
-      keyComponents: [
-        { label: "Application Layer", detail: "HTTP, HTTPS, DNS, SSH, FTP" },
-        { label: "Transport Layer", detail: "TCP (Reliable) / UDP (Fast)" },
-        { label: "Internet Layer", detail: "IPv4, IPv6, ICMP, ARP" },
-        { label: "Network Access", detail: "Ethernet, Wi-Fi 802.11, MAC Frames" },
       ]
     }];
   }
@@ -406,6 +367,7 @@ function buildDiagrams(theme: string, title: string): VisualAidDiagram[] {
     type: 'flowchart',
     svgType: 'generic',
     tags: ['Diagram: System Overview', 'Key Concepts', 'Study Flow'],
+    searchQueryTag: "Diagram: System Overview",
     keyComponents: [
       { label: "Foundational Principles", detail: "Core definitions and baseline rules" },
       { label: "Intermediate Dynamics", detail: "Process interactions and transformations" },
