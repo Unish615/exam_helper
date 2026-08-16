@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   RotateCw, 
   ChevronLeft, 
@@ -9,8 +9,6 @@ import {
   Shuffle, 
   CheckCircle2, 
   Sparkles,
-  Layers,
-  HelpCircle,
   Award
 } from 'lucide-react';
 import { Flashcard } from '../lib/types';
@@ -55,35 +53,35 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards: initia
   const learnedCount = cards.filter(c => c.learned).length;
 
   return (
-    <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 sm:p-7 space-y-6 shadow-xl relative overflow-hidden">
+    <div className="bg-zinc-900/90 border border-zinc-800/90 rounded-2xl p-5 sm:p-7 space-y-6 shadow-xl relative overflow-hidden">
       
-      {/* Header & Mastered Badge */}
+      {/* Header & Controls */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs font-bold uppercase tracking-wider flex items-center gap-1">
+            <span className="px-2.5 py-0.5 rounded-full bg-zinc-800 text-zinc-200 border border-zinc-700 text-xs font-bold uppercase tracking-wider flex items-center gap-1">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>3D Interactive Flashcards</span>
+              <span>3D Flashcards Mode</span>
             </span>
-            <span className="text-xs text-slate-400 font-mono">
+            <span className="text-xs text-zinc-400 font-mono">
               Card {currentIndex + 1} of {cards.length}
             </span>
           </div>
-          <h3 className="text-xl font-bold text-white tracking-tight">
-            Rapid Term & Concept Memory Deck
+          
+          <h3 className="text-xl font-bold text-zinc-100 tracking-tight">
+            Rapid Term & Concept Revision Deck
           </h3>
         </div>
 
-        {/* Action Controls Header */}
         <div className="flex items-center gap-2">
-          <div className="px-3 py-1 rounded-lg bg-slate-950 border border-slate-800 text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+          <div className="px-3 py-1 rounded-xl bg-zinc-950 border border-zinc-800 text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
             <Award className="w-4 h-4 text-emerald-400" />
             <span>Mastered: {learnedCount}/{cards.length}</span>
           </div>
 
           <button
             onClick={handleShuffle}
-            className="p-2 rounded-lg bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-indigo-400 border border-slate-700/60 transition-colors"
+            className="p-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 transition-colors"
             title="Shuffle deck"
           >
             <Shuffle className="w-4 h-4" />
@@ -103,65 +101,65 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards: initia
           {/* FRONT OF CARD */}
           <div className={`absolute inset-0 w-full h-full rounded-2xl p-6 sm:p-8 border flex flex-col justify-between backface-hidden transition-all duration-300 ${
             currentCard.learned
-              ? 'bg-slate-950 border-emerald-500/40 glow-success'
-              : 'bg-gradient-to-br from-slate-900 via-slate-950 to-indigo-950/40 border-slate-700/80 hover:border-indigo-500/50 glow-primary'
+              ? 'bg-zinc-950 border-emerald-500/40 glow-success'
+              : 'bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-900 border-zinc-700/80 hover:border-zinc-500 glow-silver'
           }`}>
-            <div className="flex items-center justify-between text-xs text-slate-400">
-              <span className="font-semibold px-2 py-0.5 rounded bg-slate-800 text-indigo-300 border border-slate-700">
+            <div className="flex items-center justify-between text-xs text-zinc-400">
+              <span className="font-semibold px-2 py-0.5 rounded bg-zinc-800 text-zinc-200 border border-zinc-700">
                 {currentCard.category || 'Term'}
               </span>
-              <span className="flex items-center gap-1 text-slate-400">
-                <RotateCw className="w-3.5 h-3.5 text-indigo-400 animate-spin-slow" />
+              <span className="flex items-center gap-1 text-zinc-400">
+                <RotateCw className="w-3.5 h-3.5 text-zinc-300 animate-spin-slow" />
                 Click card to flip
               </span>
             </div>
 
             <div className="my-auto text-center space-y-2 px-4">
-              <span className="text-xs font-mono text-indigo-400 uppercase tracking-widest block">
-                [ Key Concept / Term ]
+              <span className="text-xs font-mono text-zinc-400 uppercase tracking-widest block">
+                [ Key Term / Concept ]
               </span>
-              <h4 className="text-xl sm:text-2xl font-extrabold text-white leading-tight">
+              <h4 className="text-xl sm:text-2xl font-extrabold text-zinc-100 leading-tight">
                 {currentCard.front}
               </h4>
             </div>
 
-            <div className="flex items-center justify-between pt-2 border-t border-slate-800/80">
+            <div className="flex items-center justify-between pt-2 border-t border-zinc-800">
               <button
                 onClick={toggleMastered}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+                className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors border ${
                   currentCard.learned
-                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                    : 'bg-slate-800 text-slate-400 hover:text-slate-200'
+                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                    : 'bg-zinc-800 text-zinc-400 hover:text-zinc-200 border-zinc-700'
                 }`}
               >
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 <span>{currentCard.learned ? 'Mastered' : 'Mark Mastered'}</span>
               </button>
 
-              <span className="text-xs text-slate-400">Front (1/2)</span>
+              <span className="text-xs text-zinc-400">Front (1/2)</span>
             </div>
           </div>
 
           {/* BACK OF CARD */}
-          <div className="absolute inset-0 w-full h-full rounded-2xl p-6 sm:p-8 border bg-slate-900 border-indigo-500/50 flex flex-col justify-between rotate-y-180 backface-hidden shadow-2xl">
-            <div className="flex items-center justify-between text-xs text-slate-400">
+          <div className="absolute inset-0 w-full h-full rounded-2xl p-6 sm:p-8 border bg-zinc-900 border-zinc-600 flex flex-col justify-between rotate-y-180 backface-hidden shadow-2xl">
+            <div className="flex items-center justify-between text-xs text-zinc-400">
               <span className="font-semibold text-emerald-400 flex items-center gap-1">
                 <CheckCircle2 className="w-3.5 h-3.5" /> Definition & Explanation
               </span>
-              <span className="text-slate-400">Click to flip back</span>
+              <span className="text-zinc-400">Click to flip back</span>
             </div>
 
             <div className="my-auto space-y-2 text-center px-4">
-              <p className="text-base sm:text-lg font-medium text-slate-100 leading-relaxed">
+              <p className="text-base sm:text-lg font-medium text-zinc-100 leading-relaxed">
                 {currentCard.back}
               </p>
             </div>
 
-            <div className="flex items-center justify-between pt-2 border-t border-slate-800">
-              <span className="text-xs text-indigo-300 font-mono">
+            <div className="flex items-center justify-between pt-2 border-t border-zinc-800">
+              <span className="text-xs text-zinc-300 font-mono">
                 {currentCard.front}
               </span>
-              <span className="text-xs text-slate-400">Back (2/2)</span>
+              <span className="text-xs text-zinc-400">Back (2/2)</span>
             </div>
           </div>
 
@@ -172,7 +170,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards: initia
       <div className="flex items-center justify-center gap-4 pt-2">
         <button
           onClick={handlePrev}
-          className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs sm:text-sm flex items-center gap-1.5 border border-slate-700 transition-all shadow-md"
+          className="px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold text-xs sm:text-sm flex items-center gap-1.5 border border-zinc-700 transition-all shadow-md"
         >
           <ChevronLeft className="w-4 h-4" />
           <span>Previous Card</span>
@@ -180,7 +178,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards: initia
 
         <button
           onClick={() => setIsFlipped(!isFlipped)}
-          className="px-6 py-2.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 font-bold text-xs sm:text-sm flex items-center gap-2 border border-indigo-500/40 transition-all shadow-md"
+          className="px-6 py-2.5 rounded-xl bg-zinc-100 hover:bg-white text-zinc-950 font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-md"
         >
           <RotateCw className="w-4 h-4" />
           <span>Flip Card</span>
@@ -188,7 +186,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards: initia
 
         <button
           onClick={handleNext}
-          className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs sm:text-sm flex items-center gap-1.5 border border-slate-700 transition-all shadow-md"
+          className="px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold text-xs sm:text-sm flex items-center gap-1.5 border border-zinc-700 transition-all shadow-md"
         >
           <span>Next Card</span>
           <ChevronRight className="w-4 h-4" />

@@ -10,10 +10,13 @@ import {
   Sparkles, 
   Copy, 
   Check, 
+  X,
   HelpCircle,
   BookOpen,
   Zap,
-  Tag
+  Tag,
+  CheckCircle2,
+  XCircle
 } from 'lucide-react';
 import { QuestionItem } from '../lib/types';
 
@@ -21,15 +24,32 @@ interface QuestionCardProps {
   question: QuestionItem;
   index: number;
   onToggleLearned: (id: string) => void;
+  onSelectMCQOption?: (questionId: string, optionId: string) => void;
 }
 
 export const QuestionCard: React.FC<QuestionCardProps> = ({
   question,
   index,
   onToggleLearned,
+  onSelectMCQOption
 }) => {
+  // Local state for interactive option choice selection
+  const [selectedOptionId, setSelectedOptionId] = useState<string | null>(
+    question.userSelectedOptionId || null
+  );
   const [isExpanded, setIsExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  const isMCQ = question.type === 'MCQ';
+  const hasSelected = selectedOptionId !== null;
+
+  const handleSelectOption = (optId: string) => {
+    if (selectedOptionId !== null) return; // Prevent changing choice once picked
+    setSelectedOptionId(optId);
+    if (onSelectMCQOption) {
+      onSelectMCQOption(question.id, optId);
+    }
+  };
 
   const handleCopy = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -39,22 +59,14 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const getDifficultyColor = (diff: string) => {
-    switch (diff) {
-      case 'Easy': return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
-      case 'Hard': return 'bg-rose-500/10 text-rose-400 border-rose-500/20';
-      default: return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
-    }
-  };
-
   const getTypeBadge = (type: string) => {
     switch (type) {
-      case 'MCQ': return { label: 'Multiple Choice', color: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' };
-      case 'Short': return { label: 'Short Answer', color: 'bg-violet-500/10 text-violet-400 border-violet-500/20' };
-      case 'Essay': return { label: 'Essay Question', color: 'bg-purple-500/10 text-purple-400 border-purple-500/20' };
-      case 'Definition': return { label: 'Definition', color: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20' };
-      case 'FillBlank': return { label: 'Fill-in-Blank', color: 'bg-blue-500/10 text-blue-400 border-blue-500/20' };
-      default: return { label: type, color: 'bg-slate-800 text-slate-300 border-slate-700' };
+      case 'MCQ': return { label: 'Interactive MCQ', color: 'bg-zinc-800 text-zinc-200 border-zinc-700' };
+      case 'Short': return { label: 'Short Question', color: 'bg-zinc-800 text-zinc-300 border-zinc-700' };
+      case 'Essay': return { label: 'Long Answer', color: 'bg-zinc-800 text-zinc-300 border-zinc-700' };
+      case 'Definition': return { label: 'Key Concept', color: 'bg-zinc-800 text-zinc-300 border-zinc-700' };
+      case 'FillBlank': return { label: 'Fill-in-Blank', color: 'bg-zinc-800 text-zinc-300 border-zinc-700' };
+      default: return { label: type, color: 'bg-zinc-800 text-zinc-300 border-zinc-700' };
     }
   };
 
@@ -64,176 +76,231 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
     <motion.div
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
+      transition={{ duration: 0.3, delay: index * 0.04 }}
       className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
         question.learned
-          ? 'bg-slate-900/60 border-emerald-500/30 shadow-sm'
-          : 'bg-slate-900/90 border-slate-800 hover:border-slate-700 shadow-xl'
+          ? 'bg-zinc-950/80 border-emerald-500/40 shadow-sm'
+          : 'bg-zinc-900/90 border-zinc-800/90 hover:border-zinc-700 shadow-xl'
       }`}
     >
-      {/* Header Bar */}
-      <div 
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="p-4 sm:p-5 flex items-start gap-3 sm:gap-4 cursor-pointer select-none group"
-      >
-        {/* Learned Checkbox */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleLearned(question.id);
-          }}
-          className="mt-0.5 text-slate-500 hover:text-emerald-400 transition-colors shrink-0"
-          title={question.learned ? "Mark as Needs Revision" : "Mark as Learned"}
-        >
-          {question.learned ? (
-            <CheckSquare className="w-5 h-5 text-emerald-400" />
-          ) : (
-            <Square className="w-5 h-5 text-slate-600 group-hover:text-slate-400" />
-          )}
-        </button>
-
-        {/* Main Content */}
-        <div className="flex-1 space-y-2">
-          
-          {/* Question Meta Badges */}
+      {/* Question Header Bar */}
+      <div className="p-4 sm:p-5 space-y-4">
+        
+        {/* Top Badges & Actions */}
+        <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2 flex-wrap text-xs">
-            <span className="font-mono font-bold text-slate-400">
+            <span className="font-mono font-bold text-zinc-400">
               Q{index + 1}
             </span>
             
-            <span className={`px-2 py-0.5 rounded-full border font-semibold text-[11px] ${badge.color}`}>
+            <span className={`px-2.5 py-0.5 rounded-full border font-semibold text-[11px] ${badge.color}`}>
               {badge.label}
             </span>
 
-            <span className={`px-2 py-0.5 rounded-full border font-semibold text-[11px] ${getDifficultyColor(question.difficulty)}`}>
+            <span className="px-2.5 py-0.5 rounded-full bg-zinc-800 text-zinc-300 border border-zinc-700 font-semibold text-[11px]">
               {question.difficulty}
             </span>
 
             {question.topicTag && (
-              <span className="px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 text-[11px] flex items-center gap-1 border border-slate-700/60">
-                <Tag className="w-3 h-3 text-indigo-400" />
+              <span className="px-2.5 py-0.5 rounded-full bg-zinc-950 text-zinc-400 text-[11px] flex items-center gap-1 border border-zinc-800">
+                <Tag className="w-3 h-3 text-zinc-400" />
                 <span>{question.topicTag}</span>
               </span>
             )}
           </div>
 
-          {/* Question Text */}
-          <h3 className={`text-sm sm:text-base font-semibold transition-colors ${
-            question.learned ? 'text-slate-400 line-through' : 'text-slate-100 group-hover:text-indigo-300'
-          }`}>
-            {question.question}
-          </h3>
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Mark as Learned Checkbox */}
+            <button
+              onClick={() => onToggleLearned(question.id)}
+              className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors border ${
+                question.learned
+                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                  : 'bg-zinc-800 text-zinc-400 hover:text-zinc-200 border-zinc-700'
+              }`}
+              title={question.learned ? "Mark as Needs Revision" : "Mark as Mastered"}
+            >
+              {question.learned ? (
+                <>
+                  <CheckSquare className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Mastered</span>
+                </>
+              ) : (
+                <>
+                  <Square className="w-3.5 h-3.5" />
+                  <span>Mark Mastered</span>
+                </>
+              )}
+            </button>
 
+            {/* Copy Button */}
+            <button
+              onClick={handleCopy}
+              className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-100 transition-colors border border-zinc-700"
+              title="Copy question & solution"
+            >
+              {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+            </button>
+          </div>
         </div>
 
-        {/* Action Controls */}
-        <div className="flex items-center gap-2 shrink-0">
-          <button
-            onClick={handleCopy}
-            className="p-1.5 rounded-lg bg-slate-800/60 hover:bg-slate-800 text-slate-400 hover:text-indigo-300 transition-colors"
-            title="Copy question & answer"
-          >
-            {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-          </button>
+        {/* Question Text */}
+        <h3 className={`text-base sm:text-lg font-bold leading-snug transition-colors ${
+          question.learned ? 'text-zinc-400 line-through' : 'text-zinc-100'
+        }`}>
+          {question.question}
+        </h3>
 
-          <button
-            className="p-1.5 rounded-lg bg-slate-800/60 text-slate-400 group-hover:text-indigo-300 transition-transform duration-300"
-            style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
-          >
-            <ChevronDown className="w-4 h-4" />
-          </button>
-        </div>
+        {/* ======================================================== */}
+        {/* INTERACTIVE MCQ PRACTICE SYSTEM (4 Selectable Options)     */}
+        {/* ======================================================== */}
+        {isMCQ && question.options && question.options.length > 0 && (
+          <div className="space-y-3 pt-2">
+            <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider block">
+              Select an Option to Practice:
+            </span>
 
-      </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {question.options.map((opt) => {
+                const isSelected = selectedOptionId === opt.id;
+                const isCorrectOption = opt.isCorrect;
 
-      {/* Accordion Expandable Answer Body */}
-      <AnimatePresence>
-        {isExpanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="border-t border-slate-800/80 bg-slate-950/70 p-4 sm:p-5 space-y-4 text-sm"
-          >
-            
-            {/* MCQ Options Display if available */}
-            {question.options && question.options.length > 0 && (
-              <div className="space-y-2">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
-                  Options:
-                </span>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {question.options.map((opt) => (
-                    <div
-                      key={opt.id}
-                      className={`p-3 rounded-xl border text-xs font-medium flex items-center justify-between transition-all ${
-                        opt.isCorrect
-                          ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-300 font-bold'
-                          : 'bg-slate-900/80 border-slate-800 text-slate-300'
-                      }`}
-                    >
-                      <span>{opt.text}</span>
-                      {opt.isCorrect && (
-                        <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-extrabold uppercase">
-                          Correct Answer
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+                // Dynamic option styling based on interaction state
+                let optionStyle = 'bg-zinc-950 border-zinc-800 text-zinc-200 hover:border-zinc-700 hover:bg-zinc-900/80 cursor-pointer';
 
-            {/* Direct Simplified Answer Box */}
-            <div className="p-4 rounded-xl bg-indigo-600/10 border border-indigo-500/20 space-y-1.5">
-              <div className="flex items-center gap-2 text-indigo-400 font-bold text-xs uppercase tracking-wider">
-                <Sparkles className="w-4 h-4" />
-                <span>Ultra-Simple Solution & Answer:</span>
-              </div>
-              <p className="text-slate-200 font-medium leading-relaxed">
-                {question.answer}
-              </p>
+                if (hasSelected) {
+                  if (isCorrectOption) {
+                    // Soft green for the true correct answer
+                    optionStyle = 'bg-emerald-950/50 border-emerald-500/80 text-emerald-200 font-bold glow-success';
+                  } else if (isSelected && !isCorrectOption) {
+                    // Soft red for incorrect selection
+                    optionStyle = 'bg-rose-950/50 border-rose-500/80 text-rose-200 font-bold glow-danger';
+                  } else {
+                    // Dimmed non-selected incorrect choices
+                    optionStyle = 'bg-zinc-950/40 border-zinc-900 text-zinc-600 opacity-50 cursor-default';
+                  }
+                }
+
+                return (
+                  <button
+                    key={opt.id}
+                    disabled={hasSelected}
+                    onClick={() => handleSelectOption(opt.id)}
+                    className={`p-3.5 rounded-xl border text-left text-xs sm:text-sm font-medium transition-all duration-200 flex items-center justify-between gap-3 ${optionStyle}`}
+                  >
+                    <span className="leading-snug">{opt.text}</span>
+
+                    {/* Status Icons on Interaction */}
+                    {hasSelected && (
+                      <span className="shrink-0">
+                        {isCorrectOption ? (
+                          <div className="flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-extrabold uppercase">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>Correct</span>
+                          </div>
+                        ) : isSelected ? (
+                          <div className="flex items-center gap-1 px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 text-[10px] font-extrabold uppercase">
+                            <XCircle className="w-3.5 h-3.5 text-rose-400" />
+                            <span>Incorrect</span>
+                          </div>
+                        ) : null}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
 
-            {/* Detailed Explanation */}
-            {question.explanation && (
-              <div className="space-y-1.5 text-slate-300">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
-                  Detailed Concept Breakdown:
-                </span>
-                <p className="text-slate-300 leading-relaxed text-xs sm:text-sm">
-                  {question.explanation}
-                </p>
-              </div>
-            )}
+            {/* Explanation Card revealed upon selecting an option */}
+            <AnimatePresence>
+              {hasSelected && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="p-4 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2 mt-3"
+                >
+                  <div className="flex items-center gap-2 font-bold text-xs uppercase tracking-wider text-zinc-300">
+                    <Sparkles className="w-4 h-4 text-zinc-200" />
+                    <span>Explanation & Core Concept Solution:</span>
+                  </div>
+                  
+                  <p className="text-xs sm:text-sm text-zinc-200 leading-relaxed font-medium">
+                    {question.explanation}
+                  </p>
 
-            {/* Key Takeaways Highlights */}
-            {question.keyTakeaways && question.keyTakeaways.length > 0 && (
-              <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
-                <span className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
-                  <Lightbulb className="w-4 h-4 text-amber-400" />
-                  <span>Key Exam Takeaways:</span>
-                </span>
-                <ul className="list-disc list-inside space-y-1 text-xs text-slate-300">
-                  {question.keyTakeaways.map((point, idx) => (
-                    <li key={idx}>{point}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Memory Mnemonic Hook if present */}
-            {question.mnemonic && (
-              <div className="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center gap-2 text-xs text-purple-300">
-                <Zap className="w-4 h-4 text-purple-400 shrink-0" />
-                <span><strong>Memory Hook (Mnemonic):</strong> {question.mnemonic}</span>
-              </div>
-            )}
-
-          </motion.div>
+                  {question.mnemonic && (
+                    <div className="pt-2 flex items-center gap-2 text-xs text-zinc-400 border-t border-zinc-800/80">
+                      <Zap className="w-3.5 h-3.5 text-zinc-300 shrink-0" />
+                      <span><strong>Memory Mnemonic:</strong> {question.mnemonic}</span>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         )}
-      </AnimatePresence>
+
+        {/* Collapsible Accordion for Non-MCQ Questions (Short, Essay, Definitions) */}
+        {!isMCQ && (
+          <div className="pt-2">
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="w-full py-2.5 px-4 rounded-xl bg-zinc-950 hover:bg-zinc-900 border border-zinc-800 text-xs font-bold text-zinc-300 flex items-center justify-between transition-colors"
+            >
+              <span>{isExpanded ? "Hide Answer & Explanation" : "Reveal Answer & Explanation"}</span>
+              <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
+            </button>
+
+            <AnimatePresence>
+              {isExpanded && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="mt-3 p-4 rounded-xl bg-zinc-950 border border-zinc-800 space-y-3 text-xs sm:text-sm"
+                >
+                  <div className="p-3 rounded-lg bg-zinc-900/80 border border-zinc-800 space-y-1">
+                    <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider block">
+                      Simple Answer Solution:
+                    </span>
+                    <p className="text-zinc-200 font-medium leading-relaxed">
+                      {question.answer}
+                    </p>
+                  </div>
+
+                  {question.explanation && (
+                    <div className="space-y-1">
+                      <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider block">
+                        Detailed Explanation:
+                      </span>
+                      <p className="text-zinc-300 leading-relaxed">
+                        {question.explanation}
+                      </p>
+                    </div>
+                  )}
+
+                  {question.keyTakeaways && question.keyTakeaways.length > 0 && (
+                    <div className="p-3 rounded-lg bg-zinc-900/60 border border-zinc-800 space-y-1.5">
+                      <span className="text-xs font-bold text-zinc-300 flex items-center gap-1.5">
+                        <Lightbulb className="w-3.5 h-3.5 text-zinc-200" />
+                        <span>Key Takeaways:</span>
+                      </span>
+                      <ul className="list-disc list-inside space-y-1 text-xs text-zinc-300">
+                        {question.keyTakeaways.map((point, idx) => (
+                          <li key={idx}>{point}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
+
+      </div>
 
     </motion.div>
   );

@@ -20,6 +20,7 @@ export interface QuestionItem {
   options?: MCQOption[]; // For MCQs
   blankAnswer?: string; // For FillBlank
   learned?: boolean;
+  userSelectedOptionId?: string | null; // For interactive MCQ practice state
   topicTag: string;
 }
 
@@ -36,7 +37,7 @@ export interface VisualAidDiagram {
   title: string;
   description: string;
   type: 'flowchart' | 'hierarchy' | 'cycle' | 'comparison' | 'matrix';
-  svgType: 'mitosis' | 'tcpip' | 'thermodynamics' | 'binarytree' | 'photosynthesis' | 'generic';
+  svgType: 'heart' | 'mitosis' | 'tcpip' | 'thermodynamics' | 'generic';
   tags: string[];
   keyComponents: { label: string; detail: string }[];
 }

@@ -17,11 +17,10 @@ export default function Home() {
   const [savedKits, setSavedKits] = useState<GeneratedStudyKit[]>([]);
   const [currentKit, setCurrentKit] = useState<GeneratedStudyKit | null>(null);
   
-  // Generation loading states
+  // Generation state
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationStep, setGenerationStep] = useState('');
 
-  // Load initial settings and saved kits on mount
   useEffect(() => {
     // Check disclaimer agreement
     const agreed = localStorage.getItem('nyoria_disclaimer_agreed');
@@ -29,7 +28,7 @@ export default function Home() {
       setIsDisclaimerOpen(true);
     }
 
-    // Load saved kits from localStorage
+    // Load saved sets
     try {
       const stored = localStorage.getItem('nyoria_saved_kits');
       if (stored) {
@@ -39,7 +38,7 @@ export default function Home() {
       // Fallback
     }
 
-    // Pre-populate demo kit on first view if user wants immediate preview
+    // Pre-populate sample Human Heart circulation kit for instant preview
     const sampleKit = generateStudyKit(SAMPLE_PRESETS[0].text, {
       difficulty: 'Medium',
       questionTypes: ['MCQ', 'Short', 'Essay', 'Definition', 'FillBlank'],
@@ -50,27 +49,25 @@ export default function Home() {
     setCurrentKit(sampleKit);
   }, []);
 
-  // Save Disclaimer agreement state
   const handleCloseDisclaimer = () => {
     localStorage.setItem('nyoria_disclaimer_agreed', 'true');
     setIsDisclaimerOpen(false);
   };
 
-  // Generate Study Material CTA handler
   const handleGenerate = (text: string, options: GeneratorOptions) => {
     setIsGenerating(true);
-    setGenerationStep('Reading study notes & analyzing syntax...');
+    setGenerationStep('Parsing input notes & anatomical terms...');
 
     setTimeout(() => {
       setGenerationStep('Extracting key concepts & definitions...');
     }, 600);
 
     setTimeout(() => {
-      setGenerationStep('Synthesizing exam questions & mnemonics...');
+      setGenerationStep('Building interactive MCQs & explanations...');
     }, 1200);
 
     setTimeout(() => {
-      setGenerationStep('Generating visual diagrams & 3D flashcards...');
+      setGenerationStep('Synthesizing visual diagrams & 3D flashcards...');
     }, 1800);
 
     setTimeout(() => {
@@ -78,15 +75,12 @@ export default function Home() {
       setCurrentKit(generated);
       setIsGenerating(false);
       
-      // Scroll smoothly to output
-      window.scrollTo({ top: 500, behavior: 'smooth' });
+      window.scrollTo({ top: 480, behavior: 'smooth' });
     }, 2400);
   };
 
-  // Update current kit (e.g. marking questions learned)
   const handleUpdateKit = (updated: GeneratedStudyKit) => {
     setCurrentKit(updated);
-    // Also update if saved in library
     const exists = savedKits.some(k => k.id === updated.id);
     if (exists) {
       const updatedList = savedKits.map(k => k.id === updated.id ? updated : k);
@@ -95,7 +89,6 @@ export default function Home() {
     }
   };
 
-  // Save to Library
   const handleSaveToLibrary = (kitToSave: GeneratedStudyKit) => {
     const exists = savedKits.some(k => k.id === kitToSave.id);
     let updatedList: GeneratedStudyKit[];
@@ -108,14 +101,12 @@ export default function Home() {
     localStorage.setItem('nyoria_saved_kits', JSON.stringify(updatedList));
   };
 
-  // Delete from Library
   const handleDeleteSavedKit = (id: string) => {
     const updatedList = savedKits.filter(k => k.id !== id);
     setSavedKits(updatedList);
     localStorage.setItem('nyoria_saved_kits', JSON.stringify(updatedList));
   };
 
-  // New Session / Reset
   const handleReset = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -124,7 +115,7 @@ export default function Home() {
 
   return (
     <div className={`min-h-screen font-sans transition-colors duration-300 ${
-      darkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
+      darkMode ? 'bg-zinc-950 text-zinc-100' : 'bg-zinc-100 text-zinc-900'
     }`}>
       
       {/* Navigation Header */}
@@ -137,7 +128,7 @@ export default function Home() {
         onReset={handleReset}
       />
 
-      {/* Hero Input & Options Section */}
+      {/* Main Content */}
       <main className="space-y-8 pb-16">
         <HeroInputSection
           onGenerate={handleGenerate}
@@ -145,7 +136,6 @@ export default function Home() {
           generationStep={generationStep}
         />
 
-        {/* Output Dashboard Container */}
         {currentKit && (
           <OutputDashboard
             kit={currentKit}
@@ -157,24 +147,24 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="w-full border-t border-slate-800/80 bg-slate-950/80 py-8 text-center text-xs text-slate-500 space-y-2 no-print">
+      <footer className="w-full border-t border-zinc-800/80 bg-zinc-950 py-8 text-center text-xs text-zinc-500 space-y-2 no-print">
         <div className="flex items-center justify-center gap-2">
-          <span className="font-extrabold text-slate-300 tracking-tight">Nyoria</span>
+          <span className="font-extrabold text-zinc-300 tracking-tight">Nyoria</span>
           <span>•</span>
-          <span>Smart Study Assistant & Exam Question Generator</span>
+          <span>Interactive Study & Exam Preparation Platform</span>
         </div>
-        <p className="text-slate-600">
-          Crafted for students, educators, and lifelong learners. Always verify critical facts with official course material.
+        <p className="text-zinc-600 max-w-md mx-auto">
+          Built for students and educators. AI content is designed for active revision; please cross-verify critical textbook facts.
         </p>
       </footer>
 
-      {/* Disclaimer Animated Modal */}
+      {/* Disclaimer Modal */}
       <DisclaimerModal
         isOpen={isDisclaimerOpen}
         onClose={handleCloseDisclaimer}
       />
 
-      {/* Saved Study Kits Drawer */}
+      {/* Saved Sets Drawer */}
       <SavedKitsDrawer
         isOpen={isSavedKitsOpen}
         onClose={() => setIsSavedKitsOpen(false)}
