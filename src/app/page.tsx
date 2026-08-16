@@ -11,24 +11,27 @@ import { generateStudyKit } from '../lib/generatorEngine';
 import { SAMPLE_PRESETS } from '../lib/sampleData';
 
 export default function Home() {
+  const [mounted, setMounted] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
   const [isDisclaimerOpen, setIsDisclaimerOpen] = useState(false);
   const [isSavedKitsOpen, setIsSavedKitsOpen] = useState(false);
   const [savedKits, setSavedKits] = useState<GeneratedStudyKit[]>([]);
   const [currentKit, setCurrentKit] = useState<GeneratedStudyKit | null>(null);
   
-  // Generation loading state
+  // Generation state
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationStep, setGenerationStep] = useState('');
 
   useEffect(() => {
-    // Check disclaimer agreement state
+    setMounted(true);
+
+    // Check disclaimer agreement
     const agreed = localStorage.getItem('nyoria_disclaimer_agreed');
     if (!agreed) {
       setIsDisclaimerOpen(true);
     }
 
-    // Load saved sets from localStorage
+    // Load saved kits from localStorage
     try {
       const stored = localStorage.getItem('nyoria_saved_kits');
       if (stored) {
@@ -38,7 +41,7 @@ export default function Home() {
       // Fallback
     }
 
-    // Pre-populate sample Human Heart circulation study kit for instant preview
+    // Pre-populate sample Human Heart circulation study kit
     const sampleKit = generateStudyKit(SAMPLE_PRESETS[0].text, {
       difficulty: 'Medium',
       questionTypes: ['MCQ', 'Short', 'Essay', 'Definition', 'FillBlank'],
@@ -56,7 +59,7 @@ export default function Home() {
 
   const handleGenerate = (text: string, options: GeneratorOptions) => {
     setIsGenerating(true);
-    setGenerationStep('Reading study notes & analyzing syntax...');
+    setGenerationStep('Reading study notes & analyzing key concepts...');
 
     setTimeout(() => {
       setGenerationStep('Applying strict Zero-Duplication rule...');
@@ -113,6 +116,14 @@ export default function Home() {
 
   const isSavedInLibrary = currentKit ? savedKits.some(k => k.id === currentKit.id) : false;
 
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-slate-900 text-slate-100 flex items-center justify-center">
+        <div className="animate-pulse font-bold text-lg text-indigo-400">Loading Nyoria...</div>
+      </div>
+    );
+  }
+
   return (
     <div className={`min-h-screen font-sans transition-colors duration-300 ${
       darkMode ? 'bg-slate-900 text-slate-100' : 'bg-slate-50 text-slate-900'
@@ -129,7 +140,7 @@ export default function Home() {
         onReset={handleReset}
       />
 
-      {/* Main Content */}
+      {/* Main Dashboard */}
       <main className="space-y-8 pb-16">
         <HeroInputSection
           onGenerate={handleGenerate}
