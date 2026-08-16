@@ -114,7 +114,7 @@ export default function Home() {
 
   return (
     <div className={`min-h-screen font-sans transition-colors duration-300 ${
-      darkMode ? 'bg-[#2F1A13] text-[#FBF2EB]' : 'bg-[#FBF2EB] text-[#2F1A13]'
+      darkMode ? 'bg-[#090D16] text-slate-100' : 'bg-slate-50 text-slate-900'
     }`}>
       
       {/* Navigation Header */}
@@ -147,13 +147,13 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="w-full border-t border-[#4A2C21] bg-[#123022] py-8 text-center text-xs text-[#F8D5C2]/70 space-y-2 no-print">
+      <footer className="w-full border-t border-[#1E293B] bg-[#090D16] py-8 text-center text-xs text-slate-500 space-y-2 no-print">
         <div className="flex items-center justify-center gap-2">
-          <span className="font-extrabold text-[#FBF2EB] tracking-tight">Nyoria</span>
+          <span className="font-extrabold text-[#00F2FE] tracking-tight">Nyoria</span>
           <span>•</span>
           <span>Interactive Study & Exam Preparation Platform</span>
         </div>
-        <p className="text-[#F8D5C2]/60 max-w-md mx-auto">
+        <p className="text-slate-500 max-w-md mx-auto">
           Crafted for students, educators, and exam candidates. Please cross-verify critical information with official textbooks.
         </p>
       </footer>

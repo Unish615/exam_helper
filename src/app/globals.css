@@ -2,43 +2,34 @@
 
 @layer base {
   :root {
-    --forest-green: #1C4632;
-    --forest-dark: #123022;
-    --warm-cream: #FBF2EB;
-    --soft-peach: #F8D5C2;
-    --deep-espresso: #4A2C21;
-    --espresso-dark: #2F1A13;
+    --bg-obsidian: #090d16;
+    --bg-card: #0d1322;
+    --cyan-glow: #00f2fe;
+    --cyber-blue: #4facfe;
+    --mint-emerald: #10b981;
+    --coral-rose: #f43f5e;
+    --border-slate: #1e293b;
   }
 }
 
-/* Custom Earthy Palette Utility Classes */
-.bg-forest-main { background-color: var(--forest-green); }
-.bg-forest-dark { background-color: var(--forest-dark); }
-.bg-warm-cream { background-color: var(--warm-cream); }
-.bg-soft-peach { background-color: var(--soft-peach); }
-.bg-deep-espresso { background-color: var(--deep-espresso); }
-.bg-espresso-dark { background-color: var(--espresso-dark); }
+/* Custom Midnight Emerald & Cyber Cyan Palette Classes */
+.bg-obsidian { background-color: var(--bg-obsidian); }
+.bg-card-dark { background-color: var(--bg-card); }
+.text-cyan-glow { color: var(--cyan-glow); }
+.text-cyber-blue { color: var(--cyber-blue); }
+.text-mint-emerald { color: var(--mint-emerald); }
 
-.text-forest { color: var(--forest-green); }
-.text-cream { color: var(--warm-cream); }
-.text-peach { color: var(--soft-peach); }
-.text-espresso { color: var(--deep-espresso); }
-
-.border-forest { border-color: var(--forest-green); }
-.border-peach { border-color: var(--soft-peach); }
-.border-espresso { border-color: var(--deep-espresso); }
-
-/* Glows tailored to Earthy Palette */
-.glow-peach {
-  box-shadow: 0 0 25px -5px rgba(248, 213, 194, 0.4);
+/* Glow Utilities */
+.glow-cyber {
+  box-shadow: 0 0 25px -5px rgba(0, 242, 254, 0.4);
 }
 
-.glow-forest {
-  box-shadow: 0 0 20px -5px rgba(28, 70, 50, 0.5);
+.glow-emerald {
+  box-shadow: 0 0 20px -5px rgba(16, 185, 129, 0.4);
 }
 
-.glow-espresso {
-  box-shadow: 0 0 20px -5px rgba(74, 44, 33, 0.5);
+.glow-rose {
+  box-shadow: 0 0 20px -5px rgba(244, 63, 94, 0.4);
 }
 
 /* 3D Flashcard Flip Utilities */
@@ -65,16 +56,16 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--espresso-dark);
+  background: #090d16;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--soft-peach);
+  background: rgba(0, 242, 254, 0.4);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--warm-cream);
+  background: rgba(0, 242, 254, 0.7);
 }
 
 /* Print Stylesheet Overrides */

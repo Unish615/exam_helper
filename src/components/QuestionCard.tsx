@@ -46,12 +46,12 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
   const getTypeBadge = (type: string) => {
     switch (type) {
-      case 'MCQ': return { label: 'Interactive MCQ', color: 'bg-[#1C4632] text-[#F8D5C2] border-[#F8D5C2]/30' };
-      case 'Short': return { label: 'Short Note', color: 'bg-[#4A2C21] text-[#FBF2EB] border-[#F8D5C2]/30' };
-      case 'Essay': return { label: 'Long Answer', color: 'bg-[#2F1A13] text-[#F8D5C2] border-[#F8D5C2]/30' };
-      case 'Definition': return { label: 'Key Concept', color: 'bg-[#123022] text-[#FBF2EB] border-[#1C4632]' };
-      case 'FillBlank': return { label: 'Fill-in-Blank', color: 'bg-[#1C4632] text-[#FBF2EB] border-[#F8D5C2]/30' };
-      default: return { label: type, color: 'bg-[#2F1A13] text-[#FBF2EB] border-[#4A2C21]' };
+      case 'MCQ': return { label: 'Interactive MCQ', color: 'bg-[#00F2FE]/10 text-[#00F2FE] border-[#00F2FE]/30' };
+      case 'Short': return { label: 'Short Note', color: 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30' };
+      case 'Essay': return { label: 'Long Answer', color: 'bg-purple-500/10 text-purple-300 border-purple-500/30' };
+      case 'Definition': return { label: 'Key Concept', color: 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/30' };
+      case 'FillBlank': return { label: 'Fill-in-Blank', color: 'bg-teal-500/10 text-teal-300 border-teal-500/30' };
+      default: return { label: type, color: 'bg-[#0D1322] text-slate-300 border-[#1E293B]' };
     }
   };
 
@@ -64,10 +64,10 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
       transition={{ duration: 0.3, delay: index * 0.04 }}
       className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
         question.learned
-          ? 'bg-[#123022]/80 border-[#1C4632] shadow-sm'
+          ? 'bg-[#0D1322]/80 border-[#10B981]/40 shadow-sm'
           : question.markedForReview
-          ? 'bg-[#2F1A13]/95 border-[#F8D5C2]/60 shadow-lg'
-          : 'bg-[#2F1A13]/90 border-[#4A2C21] hover:border-[#1C4632] shadow-xl'
+          ? 'bg-[#0D1322]/95 border-amber-500/50 shadow-lg'
+          : 'bg-[#0D1322]/90 border-[#1E293B] hover:border-slate-700 shadow-xl'
       }`}
     >
       {/* Header Bar */}
@@ -76,7 +76,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
         {/* Badges & Actions */}
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2 flex-wrap text-xs">
-            <span className="font-mono font-bold text-[#F8D5C2]/70">
+            <span className="font-mono font-bold text-slate-400">
               Q{index + 1}
             </span>
             
@@ -84,12 +84,12 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
               {badge.label}
             </span>
 
-            <span className="px-2.5 py-0.5 rounded-full bg-[#123022] text-[#FBF2EB] border border-[#1C4632] font-semibold text-[11px]">
+            <span className="px-2.5 py-0.5 rounded-full bg-[#090D16] text-slate-300 border border-[#1E293B] font-semibold text-[11px]">
               {question.difficulty}
             </span>
 
             {question.topicTag && (
-              <span className="px-2.5 py-0.5 rounded-full bg-[#123022] text-[#F8D5C2] text-[11px] border border-[#1C4632]">
+              <span className="px-2.5 py-0.5 rounded-full bg-[#090D16] text-slate-400 text-[11px] border border-[#1E293B]">
                 #{question.topicTag}
               </span>
             )}
@@ -102,8 +102,8 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
               onClick={() => onToggleMarkForReview && onToggleMarkForReview(question.id)}
               className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors border ${
                 question.markedForReview
-                  ? 'bg-[#F8D5C2] text-[#2F1A13] border-[#F8D5C2] font-bold'
-                  : 'bg-[#123022] text-[#F8D5C2]/80 hover:text-[#FBF2EB] border-[#1C4632]'
+                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                  : 'bg-[#090D16] text-slate-400 hover:text-slate-200 border-[#1E293B]'
               }`}
               title="Flag question for review"
             >
@@ -115,8 +115,8 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
               onClick={() => onToggleLearned(question.id)}
               className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors border ${
                 question.learned
-                  ? 'bg-[#1C4632] text-[#F8D5C2] border-[#F8D5C2]/40 font-bold'
-                  : 'bg-[#123022] text-[#FBF2EB]/80 hover:text-[#FBF2EB] border-[#1C4632]'
+                  ? 'bg-[#10B981]/20 text-[#10B981] border-[#10B981]/40'
+                  : 'bg-[#090D16] text-slate-400 hover:text-slate-200 border-[#1E293B]'
               }`}
               title={question.learned ? "Mark as Needs Revision" : "Mark as Mastered"}
             >
@@ -126,7 +126,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             {/* Copy Button */}
             <button
               onClick={handleCopy}
-              className="px-2.5 py-1 rounded-lg bg-[#123022] hover:bg-[#1C4632] text-[#F8D5C2] text-xs font-semibold transition-colors border border-[#1C4632]"
+              className="px-2.5 py-1 rounded-lg bg-[#090D16] hover:bg-[#1E293B] text-slate-300 text-xs font-semibold transition-colors border border-[#1E293B]"
               title="Copy question & solution"
             >
               {copied ? 'Copied!' : 'Copy'}
@@ -136,7 +136,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
         {/* Question Text */}
         <h3 className={`text-base sm:text-lg font-bold leading-snug transition-colors ${
-          question.learned ? 'text-[#F8D5C2]/50 line-through' : 'text-[#FBF2EB]'
+          question.learned ? 'text-slate-500 line-through' : 'text-slate-100'
         }`}>
           {question.question}
         </h3>
@@ -144,9 +144,9 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
         {/* INTERACTIVE MCQ QUIZ CARDS */}
         {isMCQ && question.options && question.options.length > 0 && (
           <div className="space-y-3 pt-2">
-            <div className="flex items-center justify-between text-xs text-[#F8D5C2]/80 font-bold uppercase tracking-wider">
+            <div className="flex items-center justify-between text-xs text-slate-400 font-bold uppercase tracking-wider">
               <span>Select Option (A, B, C, D):</span>
-              {hasSelected && <span className="text-[#F8D5C2] font-mono">Options Locked</span>}
+              {hasSelected && <span className="text-[#10B981] font-mono">Options Locked</span>}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -154,18 +154,18 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                 const isSelected = selectedOptionId === opt.id;
                 const isCorrectOption = opt.isCorrect;
 
-                let optionStyle = 'bg-[#123022] border-[#1C4632] text-[#FBF2EB] hover:border-[#F8D5C2]/50 cursor-pointer';
+                let optionStyle = 'bg-[#090D16] border-[#1E293B] text-slate-200 hover:border-[#00F2FE]/50 hover:bg-[#0D1322] cursor-pointer';
 
                 if (hasSelected) {
                   if (isCorrectOption) {
-                    // Forest Green (#1C4632) for Correct Answer
-                    optionStyle = 'bg-[#1C4632] border-[#F8D5C2] text-[#F8D5C2] font-bold glow-forest';
+                    // Mint Emerald (#10B981) for Correct Answer
+                    optionStyle = 'bg-[#10B981]/20 border-[#10B981] text-[#10B981] font-bold glow-emerald';
                   } else if (isSelected && !isCorrectOption) {
-                    // Deep Espresso (#4A2C21) for Incorrect Choice
-                    optionStyle = 'bg-[#4A2C21] border-[#F8D5C2]/40 text-[#FBF2EB] font-bold glow-espresso';
+                    // Rose Red (#F43F5E) for Incorrect Choice
+                    optionStyle = 'bg-[#F43F5E]/20 border-[#F43F5E] text-[#F43F5E] font-bold glow-rose';
                   } else {
                     // Dimmed options
-                    optionStyle = 'bg-[#123022]/40 border-[#123022] text-[#FBF2EB]/40 opacity-50 cursor-default';
+                    optionStyle = 'bg-[#090D16]/40 border-[#090D16] text-slate-600 opacity-50 cursor-default';
                   }
                 }
 
@@ -179,10 +179,10 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                     <div className="flex items-center gap-3">
                       <span className={`w-6 h-6 rounded-lg font-bold text-xs flex items-center justify-center shrink-0 border ${
                         hasSelected && isCorrectOption
-                          ? 'bg-[#F8D5C2] text-[#2F1A13] border-[#F8D5C2]'
+                          ? 'bg-[#10B981] text-[#090D16] border-[#10B981]'
                           : hasSelected && isSelected && !isCorrectOption
-                          ? 'bg-[#2F1A13] text-[#FBF2EB] border-[#4A2C21]'
-                          : 'bg-[#2F1A13] text-[#F8D5C2] border-[#4A2C21]'
+                          ? 'bg-[#F43F5E] text-white border-[#F43F5E]'
+                          : 'bg-[#1E293B] text-slate-300 border-slate-700'
                       }`}>
                         {opt.label}
                       </span>
@@ -193,11 +193,11 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                     {hasSelected && (
                       <span className="shrink-0">
                         {isCorrectOption ? (
-                          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="px-2 py-0.5 rounded bg-[#F8D5C2] text-[#2F1A13] text-[10px] font-extrabold uppercase">
+                          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="px-2 py-0.5 rounded bg-[#10B981]/20 text-[#10B981] text-[10px] font-extrabold uppercase">
                             ✓ Correct
                           </motion.div>
                         ) : isSelected ? (
-                          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="px-2 py-0.5 rounded bg-[#4A2C21] text-[#F8D5C2] text-[10px] font-extrabold uppercase border border-[#F8D5C2]/30">
+                          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="px-2 py-0.5 rounded bg-[#F43F5E]/20 text-[#F43F5E] text-[10px] font-extrabold uppercase">
                             ✗ Incorrect
                           </motion.div>
                         ) : null}
@@ -215,22 +215,22 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="p-4 rounded-xl bg-[#123022] border border-[#1C4632] space-y-3 mt-3"
+                  className="p-4 rounded-xl bg-[#090D16] border border-[#1E293B] space-y-3 mt-3"
                 >
-                  <div className="font-bold text-xs uppercase tracking-wider text-[#F8D5C2]">
+                  <div className="font-bold text-xs uppercase tracking-wider text-[#00F2FE]">
                     Explanation & Solution:
                   </div>
                   
-                  <p className="text-xs sm:text-sm text-[#FBF2EB] leading-relaxed font-medium">
+                  <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium">
                     {question.explanation}
                   </p>
 
                   {question.keyTakeaways && question.keyTakeaways.length > 0 && (
-                    <div className="p-3 rounded-lg bg-[#2F1A13] border border-[#4A2C21] space-y-1">
-                      <span className="text-xs font-bold text-[#F8D5C2]">
+                    <div className="p-3 rounded-lg bg-[#00F2FE]/10 border border-[#00F2FE]/20 space-y-1">
+                      <span className="text-xs font-bold text-[#00F2FE]">
                         Key Concept Takeaways:
                       </span>
-                      <ul className="list-disc list-inside space-y-1 text-xs text-[#FBF2EB]">
+                      <ul className="list-disc list-inside space-y-1 text-xs text-slate-300">
                         {question.keyTakeaways.map((pt, idx) => (
                           <li key={idx}>{pt}</li>
                         ))}
@@ -239,7 +239,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                   )}
 
                   {question.mnemonic && (
-                    <div className="pt-2 text-xs text-[#F8D5C2] border-t border-[#1C4632]">
+                    <div className="pt-2 text-xs text-purple-300 border-t border-[#1E293B]">
                       <strong>Memory Mnemonic:</strong> {question.mnemonic}
                     </div>
                   )}
@@ -254,7 +254,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           <div className="pt-2">
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="w-full py-2.5 px-4 rounded-xl bg-[#123022] hover:bg-[#1C4632] border border-[#1C4632] text-xs font-bold text-[#F8D5C2] flex items-center justify-between transition-colors"
+              className="w-full py-2.5 px-4 rounded-xl bg-[#090D16] hover:bg-[#0D1322] border border-[#1E293B] text-xs font-bold text-slate-300 flex items-center justify-between transition-colors"
             >
               <span>{isExpanded ? "Hide Answer & Explanation" : "Reveal Answer & Explanation"}</span>
               <span>{isExpanded ? "[-]" : "[+]"}</span>
@@ -267,34 +267,34 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.25 }}
-                  className="mt-3 p-4 rounded-xl bg-[#123022] border border-[#1C4632] space-y-3 text-xs sm:text-sm"
+                  className="mt-3 p-4 rounded-xl bg-[#090D16] border border-[#1E293B] space-y-3 text-xs sm:text-sm"
                 >
-                  <div className="p-3 rounded-lg bg-[#1C4632] border border-[#F8D5C2]/30 space-y-1">
-                    <span className="text-xs font-bold text-[#F8D5C2] uppercase tracking-wider block">
+                  <div className="p-3 rounded-lg bg-[#00F2FE]/10 border border-[#00F2FE]/20 space-y-1">
+                    <span className="text-xs font-bold text-[#00F2FE] uppercase tracking-wider block">
                       Simple Answer Solution:
                     </span>
-                    <p className="text-[#FBF2EB] font-medium leading-relaxed">
+                    <p className="text-slate-100 font-medium leading-relaxed">
                       {question.answer}
                     </p>
                   </div>
 
                   {question.explanation && (
                     <div className="space-y-1">
-                      <span className="text-xs font-bold text-[#F8D5C2]/80 uppercase tracking-wider block">
+                      <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
                         Detailed Concept Explanation:
                       </span>
-                      <p className="text-[#FBF2EB] leading-relaxed">
+                      <p className="text-slate-300 leading-relaxed">
                         {question.explanation}
                       </p>
                     </div>
                   )}
 
                   {question.keyTakeaways && question.keyTakeaways.length > 0 && (
-                    <div className="p-3 rounded-lg bg-[#2F1A13] border border-[#4A2C21] space-y-1.5">
-                      <span className="text-xs font-bold text-[#F8D5C2]">
+                    <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 space-y-1.5">
+                      <span className="text-xs font-bold text-amber-300">
                         Bold Key Takeaways:
                       </span>
-                      <ul className="list-disc list-inside space-y-1 text-xs text-[#FBF2EB]">
+                      <ul className="list-disc list-inside space-y-1 text-xs text-slate-300">
                         {question.keyTakeaways.map((point, idx) => (
                           <li key={idx}>{point}</li>
                         ))}
