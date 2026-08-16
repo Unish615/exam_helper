@@ -22,42 +22,42 @@ export const Navbar: React.FC<NavbarProps> = ({
   onReset,
 }) => {
   return (
-    <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-slate-900/85 border-b border-slate-800/80 transition-colors">
+    <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-[#2F1A13]/90 border-b border-[#4A2C21] transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         
-        {/* Sleek Minimalist Typography Logo (No Icons) */}
+        {/* Logo using Forest Green & Soft Peach */}
         <div 
           onClick={onReset}
           className="flex items-center gap-3 cursor-pointer group select-none"
         >
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 via-violet-500 to-purple-500 p-0.5 shadow-lg shadow-indigo-500/25 group-hover:scale-105 transition-transform duration-300">
-            <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center font-black text-indigo-300 text-sm tracking-wider">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#1C4632] via-[#4A2C21] to-[#F8D5C2] p-0.5 shadow-lg shadow-[#1C4632]/40 group-hover:scale-105 transition-transform duration-300">
+            <div className="w-full h-full bg-[#123022] rounded-[10px] flex items-center justify-center font-black text-[#F8D5C2] text-sm tracking-wider">
               NY
             </div>
           </div>
 
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
-              <span className="font-black text-xl tracking-tight text-white group-hover:text-indigo-300 transition-colors">
+              <span className="font-black text-xl tracking-tight text-[#FBF2EB] group-hover:text-[#F8D5C2] transition-colors">
                 Nyoria
               </span>
-              <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+              <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full bg-[#1C4632] text-[#F8D5C2] border border-[#F8D5C2]/30">
                 PRO 2.0
               </span>
             </div>
-            <span className="text-xs text-slate-400 font-medium hidden sm:inline-block">
+            <span className="text-xs text-[#F8D5C2]/70 font-medium hidden sm:inline-block">
               Interactive Study & Exam Preparation Platform
             </span>
           </div>
         </div>
 
-        {/* Action Controls Header (No Icons) */}
+        {/* Action Controls Header */}
         <div className="flex items-center gap-2 sm:gap-3">
           
           {/* Practice History Tab */}
           <button
             onClick={onOpenHistory}
-            className="px-3.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 text-xs font-bold hidden sm:flex items-center gap-1.5 transition-all"
+            className="px-3.5 py-1.5 rounded-xl bg-[#123022] hover:bg-[#1C4632] text-[#F8D5C2] border border-[#4A2C21] text-xs font-bold hidden sm:flex items-center gap-1.5 transition-all"
             title="View Practice History"
           >
             Practice History
@@ -66,12 +66,12 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Saved Sets Drawer */}
           <button
             onClick={onOpenSavedKits}
-            className="relative px-3.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 text-xs sm:text-sm font-bold flex items-center gap-2 transition-all shadow-sm"
+            className="relative px-3.5 py-1.5 rounded-xl bg-[#123022] hover:bg-[#1C4632] text-[#F8D5C2] border border-[#4A2C21] text-xs sm:text-sm font-bold flex items-center gap-2 transition-all shadow-sm"
             title="View Saved Study Sets"
           >
             <span>Saved Sets</span>
             {savedKitsCount > 0 && (
-              <span className="px-1.5 py-0.2 bg-indigo-600 text-white rounded-full text-[10px] font-bold">
+              <span className="px-1.5 py-0.2 bg-[#F8D5C2] text-[#2F1A13] rounded-full text-[10px] font-bold">
                 {savedKitsCount}
               </span>
             )}
@@ -80,7 +80,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Disclaimer Info */}
           <button
             onClick={onOpenDisclaimer}
-            className="px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-indigo-400 border border-slate-800 text-xs font-bold transition-all"
+            className="px-3 py-1.5 rounded-xl bg-[#123022] hover:bg-[#1C4632] text-[#FBF2EB] border border-[#4A2C21] text-xs font-bold transition-all"
             title="Disclaimer & Safety Notice"
           >
             Notice
@@ -89,16 +89,16 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Dark / Light Mode Toggle */}
           <button
             onClick={() => setDarkMode(!darkMode)}
-            className="px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-amber-400 border border-slate-800 text-xs font-bold transition-all"
+            className="px-3 py-1.5 rounded-xl bg-[#123022] hover:bg-[#1C4632] text-[#F8D5C2] border border-[#4A2C21] text-xs font-bold transition-all"
             title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
           >
-            {darkMode ? "Light" : "Dark"}
+            {darkMode ? "Light Mode" : "Dark Mode"}
           </button>
 
           {/* New Session */}
           <button
             onClick={onReset}
-            className="hidden md:flex px-3 py-1.5 rounded-xl bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 text-xs font-bold items-center gap-1.5 transition-all"
+            className="hidden md:flex px-3 py-1.5 rounded-xl bg-[#F8D5C2]/15 hover:bg-[#F8D5C2]/25 text-[#F8D5C2] border border-[#F8D5C2]/40 text-xs font-bold items-center gap-1.5 transition-all"
           >
             New Session
           </button>

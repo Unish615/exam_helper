@@ -17,63 +17,63 @@ export const DisclaimerModal: React.FC<DisclaimerModalProps> = ({ isOpen, onClos
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
         
-        {/* Frosted Glass Background Blur Backdrop */}
+        {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25 }}
-          className="fixed inset-0 bg-slate-950/80 backdrop-blur-md"
+          className="fixed inset-0 bg-[#123022]/85 backdrop-blur-md"
           onClick={() => {
             if (hasChecked) onClose();
           }}
         />
 
-        {/* Modal Container */}
+        {/* Modal Container using Deep Espresso & Forest Green */}
         <motion.div
           initial={{ opacity: 0, scale: 0.92, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.92, y: 15 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden z-10"
+          className="relative w-full max-w-lg bg-[#2F1A13] border border-[#4A2C21] rounded-2xl shadow-2xl overflow-hidden z-10"
         >
-          {/* Top Amber Gold Accent Bar */}
-          <div className="h-1.5 w-full bg-gradient-to-r from-amber-500 via-indigo-500 to-purple-500" />
+          {/* Accent Bar */}
+          <div className="h-2 w-full bg-gradient-to-r from-[#1C4632] via-[#F8D5C2] to-[#4A2C21]" />
 
           <div className="p-6 sm:p-7 space-y-6">
             
-            {/* Header (No Lucide Icons) */}
+            {/* Header */}
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold px-2.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 uppercase tracking-wider">
+                <span className="text-xs font-bold px-2.5 py-0.5 rounded bg-[#F8D5C2]/15 text-[#F8D5C2] border border-[#F8D5C2]/30 uppercase tracking-wider">
                   Important Notice
                 </span>
-                <span className="text-xs text-slate-400">Academic Guidelines</span>
+                <span className="text-xs text-[#FBF2EB]/70">Academic Guidelines</span>
               </div>
-              <h3 className="text-xl font-bold text-white tracking-tight">
+              <h3 className="text-xl font-bold text-[#FBF2EB] tracking-tight">
                 Accuracy & Verification Notice
               </h3>
             </div>
 
-            {/* Exact Disclaimer Message */}
-            <div className="p-4 rounded-xl bg-slate-950/90 border border-slate-800 text-slate-300 text-sm leading-relaxed space-y-3">
-              <p className="font-medium text-slate-200">
+            {/* Disclaimer Text Box */}
+            <div className="p-4 rounded-xl bg-[#123022] border border-[#1C4632] text-[#FBF2EB] text-sm leading-relaxed space-y-3">
+              <p className="font-medium text-[#FBF2EB]">
                 &ldquo;Notice: Nyoria converts your notes into practice questions and simplified summaries. AI-generated responses can occasionally contain errors. Please cross-verify critical information with official textbooks.&rdquo;
               </p>
-              <div className="pt-2 border-t border-slate-800/80 text-xs text-slate-400">
+              <div className="pt-2 border-t border-[#1C4632] text-xs text-[#F8D5C2]/80">
                 Nyoria is built to empower active recall, concept revision, and self-testing.
               </div>
             </div>
 
             {/* Checkbox Acknowledgment */}
-            <label className="flex items-start gap-3 p-3 rounded-xl bg-slate-950/50 hover:bg-slate-950/80 border border-slate-800 cursor-pointer transition-colors select-none">
+            <label className="flex items-start gap-3 p-3 rounded-xl bg-[#123022]/60 hover:bg-[#123022] border border-[#4A2C21] cursor-pointer transition-colors select-none">
               <input
                 type="checkbox"
                 checked={hasChecked}
                 onChange={(e) => setHasChecked(e.target.checked)}
-                className="mt-0.5 w-4 h-4 rounded border-slate-700 bg-slate-900 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-slate-900"
+                className="mt-0.5 w-4 h-4 rounded border-[#4A2C21] bg-[#2F1A13] text-[#1C4632] focus:ring-[#1C4632]"
               />
-              <span className="text-xs text-slate-300">
+              <span className="text-xs text-[#FBF2EB]/90">
                 I understand that generated study materials supplement official textbook reading and instructor guidance.
               </span>
             </label>
@@ -83,10 +83,10 @@ export const DisclaimerModal: React.FC<DisclaimerModalProps> = ({ isOpen, onClos
               <button
                 disabled={!hasChecked}
                 onClick={onClose}
-                className={`w-full sm:w-auto px-6 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-300 ${
+                className={`w-full sm:w-auto px-6 py-3 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all duration-300 ${
                   hasChecked
-                    ? 'bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-600/30 scale-[1.02] cursor-pointer glow-primary'
-                    : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/40'
+                    ? 'bg-gradient-to-r from-[#1C4632] to-[#2F1A13] hover:from-[#1C4632] hover:to-[#4A2C21] text-[#F8D5C2] border border-[#F8D5C2]/50 shadow-lg scale-[1.02] cursor-pointer glow-forest'
+                    : 'bg-[#123022] text-[#FBF2EB]/40 cursor-not-allowed border border-[#4A2C21]/50'
                 }`}
               >
                 <span>I Understand & Continue</span>
@@ -96,7 +96,7 @@ export const DisclaimerModal: React.FC<DisclaimerModalProps> = ({ isOpen, onClos
           </div>
 
           {/* Footer Note */}
-          <div className="px-6 py-3 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-xs text-slate-500">
+          <div className="px-6 py-3 bg-[#123022] border-t border-[#4A2C21] flex items-center justify-between text-xs text-[#F8D5C2]/70">
             <span>Nyoria Privacy & Study Safety</span>
             <span className="text-[11px]">Re-open anytime via top navigation</span>
           </div>

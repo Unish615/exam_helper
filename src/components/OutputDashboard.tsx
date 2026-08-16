@@ -91,26 +91,26 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
   return (
     <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
       
-      {/* Kit Summary & Progress Counter Banner (No Lucide Icons) */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-6 relative overflow-hidden">
+      {/* Kit Summary & Progress Counter Banner */}
+      <div className="bg-[#2F1A13]/95 border border-[#4A2C21] rounded-2xl p-6 shadow-2xl space-y-6 relative overflow-hidden">
         
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div className="space-y-2 max-w-3xl">
             <div className="flex items-center gap-2 flex-wrap text-xs">
-              <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 font-bold uppercase tracking-wider">
+              <span className="px-2.5 py-0.5 rounded-full bg-[#1C4632] text-[#F8D5C2] border border-[#F8D5C2]/30 font-bold uppercase tracking-wider">
                 Nyoria Study Pack
               </span>
-              <span className="px-2.5 py-0.5 rounded-full bg-slate-950 text-slate-400 border border-slate-800 font-semibold">
+              <span className="px-2.5 py-0.5 rounded-full bg-[#123022] text-[#FBF2EB] border border-[#1C4632] font-semibold">
                 Difficulty: {kit.difficulty}
               </span>
-              <span className="text-slate-400">Created: {kit.createdAt}</span>
+              <span className="text-[#F8D5C2]/70">Created: {kit.createdAt}</span>
             </div>
 
-            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-black text-[#FBF2EB] tracking-tight">
               {kit.title}
             </h2>
 
-            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#F8D5C2]/80 leading-relaxed">
               {kit.summary}
             </p>
           </div>
@@ -122,8 +122,8 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
               onClick={() => onSaveToLibrary(kit)}
               className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
                 isSavedInLibrary
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                  : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-600/20'
+                  ? 'bg-[#1C4632] text-[#F8D5C2] border border-[#F8D5C2]/40'
+                  : 'bg-[#F8D5C2] text-[#2F1A13] shadow-md shadow-[#1C4632]/20 font-black'
               }`}
             >
               <span>{isSavedInLibrary ? '✓ Saved in Library' : 'Save Set to Library'}</span>
@@ -131,7 +131,7 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
 
             <button
               onClick={handleCopyAllText}
-              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-semibold border border-slate-700 transition-colors shadow-sm"
+              className="px-3.5 py-2 rounded-xl bg-[#123022] hover:bg-[#1C4632] text-[#FBF2EB] text-xs sm:text-sm font-semibold border border-[#1C4632] transition-colors shadow-sm"
               title="Copy all text to clipboard"
             >
               <span>{copiedAll ? 'Copied Text!' : 'Copy All Text'}</span>
@@ -139,7 +139,7 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
 
             <button
               onClick={handlePrintPDF}
-              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-semibold border border-slate-700 transition-colors shadow-sm"
+              className="px-3.5 py-2 rounded-xl bg-[#123022] hover:bg-[#1C4632] text-[#FBF2EB] text-xs sm:text-sm font-semibold border border-[#1C4632] transition-colors shadow-sm"
               title="Download PDF Summary"
             >
               <span>Download PDF Summary</span>
@@ -148,22 +148,22 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
           </div>
         </div>
 
-        {/* Real-time Progress Bar & Score Counter (No Icons) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-slate-950 border border-slate-800">
+        {/* Real-time Progress Bar & Score Counter */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-[#123022] border border-[#1C4632]">
           
           {/* Tracker 1: Solved MCQs & Correct Answer Counter */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs font-semibold">
-              <span className="text-slate-300">
+              <span className="text-[#FBF2EB]">
                 MCQs Answered Correctly
               </span>
-              <span className="font-mono text-slate-400">
-                <strong className="text-emerald-400">{correctMCQsCount} / {solvedMCQs.length} Correct</strong> ({accuracyPercentage}%)
+              <span className="font-mono text-[#F8D5C2]">
+                <strong className="text-[#F8D5C2]">{correctMCQsCount} / {solvedMCQs.length} Correct</strong> ({accuracyPercentage}%)
               </span>
             </div>
-            <div className="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
+            <div className="w-full h-2.5 bg-[#2F1A13] rounded-full overflow-hidden">
               <div
-                className="h-full bg-emerald-500 transition-all duration-500 rounded-full"
+                className="h-full bg-[#1C4632] transition-all duration-500 rounded-full"
                 style={{ width: `${accuracyPercentage}%` }}
               />
             </div>
@@ -172,16 +172,16 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
           {/* Tracker 2: Overall Topics Mastered */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs font-semibold">
-              <span className="text-slate-300">
+              <span className="text-[#FBF2EB]">
                 Overall Topics Mastered
               </span>
-              <span className="font-mono text-slate-400">
-                <strong className="text-purple-300">{masteredCount} / {totalQuestions} Topics</strong> ({overallMasteryPercentage}%)
+              <span className="font-mono text-[#F8D5C2]">
+                <strong className="text-[#F8D5C2]">{masteredCount} / {totalQuestions} Topics</strong> ({overallMasteryPercentage}%)
               </span>
             </div>
-            <div className="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
+            <div className="w-full h-2.5 bg-[#2F1A13] rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500 rounded-full"
+                className="h-full bg-gradient-to-r from-[#1C4632] to-[#F8D5C2] transition-all duration-500 rounded-full"
                 style={{ width: `${overallMasteryPercentage}%` }}
               />
             </div>
@@ -192,10 +192,10 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
       </div>
 
       {/* Tabs Toolbar & Live Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-800 pb-4 no-print">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-[#4A2C21] pb-4 no-print">
         
         {/* Navigation Tabs */}
-        <div className="flex items-center gap-1.5 bg-slate-900 p-1.5 rounded-xl border border-slate-800 overflow-x-auto w-full sm:w-auto">
+        <div className="flex items-center gap-1.5 bg-[#2F1A13] p-1.5 rounded-xl border border-[#4A2C21] overflow-x-auto w-full sm:w-auto">
           {[
             { id: 'all', label: 'All Material', count: kit.questions.length + kit.diagrams.length },
             { id: 'mcq', label: 'Interactive MCQs', count: kit.questions.filter(q => q.type === 'MCQ').length },
@@ -208,13 +208,13 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
               onClick={() => setActiveTab(tab.id as any)}
               className={`px-3.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
                 activeTab === tab.id
-                  ? 'bg-indigo-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-[#1C4632] text-[#F8D5C2] shadow-md border border-[#F8D5C2]/30'
+                  : 'text-[#F8D5C2]/60 hover:text-[#FBF2EB]'
               }`}
             >
               <span>{tab.label}</span>
               <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${
-                activeTab === tab.id ? 'bg-indigo-700 text-white' : 'bg-slate-950 text-slate-400'
+                activeTab === tab.id ? 'bg-[#F8D5C2] text-[#2F1A13]' : 'bg-[#123022] text-[#F8D5C2]'
               }`}>
                 {tab.count}
               </span>
@@ -231,14 +231,14 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search questions or topics..."
-              className="w-full px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 placeholder-slate-500 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+              className="w-full px-3 py-1.5 rounded-xl bg-[#123022] border border-[#1C4632] text-[#FBF2EB] placeholder-[#F8D5C2]/40 text-xs focus:outline-none focus:ring-2 focus:ring-[#F8D5C2]/50"
             />
           </div>
 
           <select
             value={selectedTypeFilter}
             onChange={(e) => setSelectedTypeFilter(e.target.value)}
-            className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs focus:outline-none"
+            className="px-3 py-1.5 rounded-xl bg-[#123022] border border-[#1C4632] text-[#F8D5C2] text-xs focus:outline-none"
           >
             <option value="all">All Formats</option>
             <option value="MCQ">Interactive MCQs</option>
@@ -275,16 +275,16 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
         {(activeTab === 'all' || activeTab === 'mcq' || activeTab === 'accordions') && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+              <h3 className="text-xl font-bold text-[#FBF2EB] flex items-center gap-2">
                 <span>Exam Practice Questions & Simple Explanations</span>
-                <span className="text-xs text-slate-400 font-mono font-normal">
+                <span className="text-xs text-[#F8D5C2]/70 font-mono font-normal">
                   ({filteredQuestions.length} items)
                 </span>
               </h3>
             </div>
 
             {filteredQuestions.length === 0 ? (
-              <div className="p-8 text-center bg-slate-900 border border-slate-800 rounded-2xl text-slate-400 text-xs">
+              <div className="p-8 text-center bg-[#2F1A13] border border-[#4A2C21] rounded-2xl text-[#F8D5C2]/70 text-xs">
                 No questions match your current search query or filter.
               </div>
             ) : (
