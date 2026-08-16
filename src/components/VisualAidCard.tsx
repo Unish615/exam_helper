@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Layers, CheckCircle2, Tag, Search } from 'lucide-react';
 import { VisualAidDiagram } from '../lib/types';
 
 interface VisualAidCardProps {
@@ -14,13 +13,12 @@ export const VisualAidCard: React.FC<VisualAidCardProps> = ({ diagram }) => {
   return (
     <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 sm:p-6 space-y-6 shadow-xl overflow-hidden relative">
       
-      {/* Header & Teal Search Tag */}
+      {/* Header & Teal Search Tag (No Lucide Icons) */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div className="space-y-1.5">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="px-2.5 py-0.5 rounded-full bg-teal-500/10 text-teal-300 border border-teal-500/20 text-xs font-bold uppercase tracking-wider flex items-center gap-1">
-              <Layers className="w-3.5 h-3.5 text-teal-400" />
-              <span>Visual Concept Card</span>
+            <span className="px-2.5 py-0.5 rounded-full bg-teal-500/10 text-teal-300 border border-teal-500/20 text-xs font-bold uppercase tracking-wider">
+              Visual Concept Card
             </span>
             <span className="text-xs text-slate-400 capitalize">{diagram.type} Concept</span>
           </div>
@@ -36,9 +34,8 @@ export const VisualAidCard: React.FC<VisualAidCardProps> = ({ diagram }) => {
 
         {/* Recommended Image Search Tag Badge */}
         <div className="flex flex-col items-end gap-1.5">
-          <div className="px-3 py-1 rounded-xl bg-teal-500/10 border border-teal-500/30 text-teal-300 text-xs font-mono font-bold flex items-center gap-1.5 shadow-sm">
-            <Search className="w-3.5 h-3.5 text-teal-400" />
-            <span>{diagram.searchQueryTag || "Diagram: Concept Visualizer"}</span>
+          <div className="px-3 py-1 rounded-xl bg-teal-500/10 border border-teal-500/30 text-teal-300 text-xs font-mono font-bold shadow-sm">
+            Search: &ldquo;{diagram.searchQueryTag || "Diagram: Concept Visualizer"}&rdquo;
           </div>
 
           <div className="flex flex-wrap gap-1">
@@ -131,9 +128,8 @@ export const VisualAidCard: React.FC<VisualAidCardProps> = ({ diagram }) => {
                   : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
               }`}
             >
-              <div className="flex items-center gap-2 font-bold text-xs">
-                <CheckCircle2 className={`w-3.5 h-3.5 ${isSelected ? 'text-teal-400' : 'text-slate-600'}`} />
-                <span>{comp.label}</span>
+              <div className="font-bold text-xs">
+                {isSelected ? '✓ ' : ''}{comp.label}
               </div>
               <p className="text-[11px] text-slate-300 mt-1 leading-snug">
                 {comp.detail}

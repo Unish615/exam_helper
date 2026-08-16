@@ -1,20 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Search, 
-  Download, 
-  Copy, 
-  Check, 
-  BookmarkCheck, 
-  Layers, 
-  Sparkles, 
-  Award, 
-  FileText,
-  BarChart3,
-  CheckCircle2
-} from 'lucide-react';
 import { GeneratedStudyKit, QuestionItem } from '../lib/types';
 import { QuestionCard } from './QuestionCard';
 import { VisualAidCard } from './VisualAidCard';
@@ -80,7 +66,6 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
   
   const totalMCQsCount = mcqQuestions.length;
   const accuracyPercentage = solvedMCQs.length > 0 ? Math.round((correctMCQsCount / solvedMCQs.length) * 100) : 0;
-  const mcqProgressPercentage = totalMCQsCount > 0 ? Math.round((solvedMCQs.length / totalMCQsCount) * 100) : 0;
 
   const masteredCount = kit.questions.filter(q => q.learned).length;
   const totalQuestions = kit.questions.length;
@@ -106,7 +91,7 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
   return (
     <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
       
-      {/* Kit Summary & Progress Counter Banner */}
+      {/* Kit Summary & Progress Counter Banner (No Lucide Icons) */}
       <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-6 relative overflow-hidden">
         
         <div className="flex items-start justify-between gap-4 flex-wrap">
@@ -135,46 +120,42 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
             
             <button
               onClick={() => onSaveToLibrary(kit)}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
+              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
                 isSavedInLibrary
                   ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
                   : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-600/20'
               }`}
             >
-              <BookmarkCheck className="w-4 h-4" />
-              <span>{isSavedInLibrary ? 'Saved in Library' : 'Save Set to Library'}</span>
+              <span>{isSavedInLibrary ? '✓ Saved in Library' : 'Save Set to Library'}</span>
             </button>
 
             <button
               onClick={handleCopyAllText}
-              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-semibold flex items-center gap-1.5 border border-slate-700 transition-colors shadow-sm"
+              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-semibold border border-slate-700 transition-colors shadow-sm"
               title="Copy all text to clipboard"
             >
-              {copiedAll ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-indigo-400" />}
               <span>{copiedAll ? 'Copied Text!' : 'Copy All Text'}</span>
             </button>
 
             <button
               onClick={handlePrintPDF}
-              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-semibold flex items-center gap-1.5 border border-slate-700 transition-colors shadow-sm"
+              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-semibold border border-slate-700 transition-colors shadow-sm"
               title="Download PDF Summary"
             >
-              <Download className="w-4 h-4 text-indigo-400" />
               <span>Download PDF Summary</span>
             </button>
 
           </div>
         </div>
 
-        {/* Real-time Progress Bar & Score Counter */}
+        {/* Real-time Progress Bar & Score Counter (No Icons) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-slate-950 border border-slate-800">
           
           {/* Tracker 1: Solved MCQs & Correct Answer Counter */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs font-semibold">
-              <span className="flex items-center gap-1.5 text-slate-300">
-                <BarChart3 className="w-4 h-4 text-emerald-400" />
-                <span>MCQs Answered Correctly</span>
+              <span className="text-slate-300">
+                MCQs Answered Correctly
               </span>
               <span className="font-mono text-slate-400">
                 <strong className="text-emerald-400">{correctMCQsCount} / {solvedMCQs.length} Correct</strong> ({accuracyPercentage}%)
@@ -191,9 +172,8 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
           {/* Tracker 2: Overall Topics Mastered */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs font-semibold">
-              <span className="flex items-center gap-1.5 text-slate-300">
-                <Award className="w-4 h-4 text-purple-400" />
-                <span>Overall Topics Mastered</span>
+              <span className="text-slate-300">
+                Overall Topics Mastered
               </span>
               <span className="font-mono text-slate-400">
                 <strong className="text-purple-300">{masteredCount} / {totalQuestions} Topics</strong> ({overallMasteryPercentage}%)
@@ -246,13 +226,12 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
         <div className="flex items-center gap-2 w-full sm:w-auto">
           
           <div className="relative flex-1 sm:w-64">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Live search questions or topics..."
-              className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 placeholder-slate-500 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+              placeholder="Search questions or topics..."
+              className="w-full px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 placeholder-slate-500 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
             />
           </div>
 
@@ -297,7 +276,6 @@ export const OutputDashboard: React.FC<OutputDashboardProps> = ({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                <FileText className="w-5 h-5 text-indigo-400" />
                 <span>Exam Practice Questions & Simple Explanations</span>
                 <span className="text-xs text-slate-400 font-mono font-normal">
                   ({filteredQuestions.length} items)

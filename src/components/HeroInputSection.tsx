@@ -1,20 +1,6 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { 
-  FileUp, 
-  FileText, 
-  Sparkles, 
-  Sliders, 
-  Check, 
-  Trash2, 
-  Clipboard, 
-  Zap, 
-  BookOpen, 
-  CheckCircle2, 
-  Loader2,
-  FileCheck
-} from 'lucide-react';
 import { Difficulty, QuestionType, GeneratorOptions } from '../lib/types';
 import { SAMPLE_PRESETS, SamplePreset } from '../lib/sampleData';
 
@@ -147,11 +133,10 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
       {/* Background Glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[300px] bg-indigo-600/15 blur-[130px] rounded-full pointer-events-none -z-10" />
 
-      {/* Hero Header */}
+      {/* Hero Header (No Lucide Icons) */}
       <div className="text-center space-y-4 max-w-3xl mx-auto mb-8 sm:mb-10">
         
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-bold">
-          <Zap className="w-3.5 h-3.5 text-indigo-400" />
           <span>Interactive Study & Exam Preparation Platform</span>
         </div>
 
@@ -168,9 +153,8 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
 
         {/* Sample Topics */}
         <div className="pt-2 flex flex-wrap items-center justify-center gap-2">
-          <span className="text-xs font-medium text-slate-400 flex items-center gap-1 mr-1">
-            <BookOpen className="w-3.5 h-3.5 text-indigo-400" />
-            <span>Sample Topics:</span>
+          <span className="text-xs font-medium text-slate-400 mr-1">
+            Sample Topics:
           </span>
           {SAMPLE_PRESETS.map((preset) => (
             <button
@@ -188,7 +172,7 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
 
       </div>
 
-      {/* Main Dual-Input Box */}
+      {/* Main Dual-Input Box (No Lucide Icons) */}
       <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-6">
         
         {/* Dual Input Tabs Header */}
@@ -197,25 +181,23 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
           <div className="flex items-center gap-2 bg-slate-950 p-1 rounded-xl border border-slate-800">
             <button
               onClick={() => setActiveTab('text')}
-              className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
+              className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${
                 activeTab === 'text'
-                  ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-600/20'
+                  ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <FileText className="w-4 h-4" />
-              <span>Note Textarea</span>
+              Note Textarea
             </button>
 
             <button
               onClick={() => setActiveTab('file')}
-              className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
+              className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-2 ${
                 activeTab === 'file'
-                  ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-600/20'
+                  ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <FileUp className="w-4 h-4" />
               <span>Drag-and-Drop PDF/File Upload</span>
               {uploadedFile && (
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
@@ -230,10 +212,10 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
             {inputText.trim() && (
               <button
                 onClick={() => { setInputText(''); setUploadedFile(null); }}
-                className="text-slate-500 hover:text-rose-400 p-1 transition-colors"
+                className="text-slate-500 hover:text-rose-400 px-2 py-0.5 rounded bg-slate-800 text-[11px] transition-colors"
                 title="Clear input"
               >
-                <Trash2 className="w-4 h-4" />
+                Clear
               </button>
             )}
           </div>
@@ -255,10 +237,9 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
               <div className="absolute bottom-4 right-4 flex items-center gap-2">
                 <button
                   onClick={handlePasteClipboard}
-                  className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium flex items-center gap-1.5 border border-slate-700 transition-colors shadow-sm"
+                  className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 transition-colors shadow-sm"
                 >
-                  <Clipboard className="w-3.5 h-3.5 text-indigo-400" />
-                  <span>Paste from Clipboard</span>
+                  Paste from Clipboard
                 </button>
               </div>
             )}
@@ -289,8 +270,8 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
               />
 
               <div className="flex flex-col items-center justify-center space-y-3">
-                <div className="p-4 rounded-2xl bg-indigo-600/10 text-indigo-400 border border-indigo-500/20">
-                  <FileUp className="w-8 h-8 animate-bounce" />
+                <div className="px-4 py-2 rounded-xl bg-indigo-600/10 text-indigo-300 font-bold border border-indigo-500/20 text-xs uppercase tracking-wider">
+                  File Dropper Zone
                 </div>
 
                 <div className="space-y-1">
@@ -321,9 +302,8 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
 
               {/* Uploaded File Info */}
               {uploadedFile && !isUploading && (
-                <div className="mt-4 inline-flex items-center gap-3 px-4 py-2 rounded-xl bg-slate-900 border border-emerald-500/30 text-emerald-400 text-xs font-medium shadow-md">
-                  <FileCheck className="w-4 h-4 text-emerald-400" />
-                  <span>{uploadedFile.name} ({uploadedFile.size}) — {uploadedFile.count} words extracted</span>
+                <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 border border-emerald-500/30 text-emerald-400 text-xs font-medium shadow-md">
+                  <span>✓ {uploadedFile.name} ({uploadedFile.size}) — {uploadedFile.count} words extracted</span>
                 </div>
               )}
             </div>
@@ -340,9 +320,8 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
         {/* Control Bar: Select Difficulty Level & Content Options */}
         <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-4">
           
-          <div className="flex items-center gap-2 text-xs font-bold text-slate-300 uppercase tracking-wider">
-            <Sliders className="w-4 h-4 text-indigo-400" />
-            <span>Control Bar Options</span>
+          <div className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+            Control Bar Options
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -389,14 +368,13 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
                       key={type.id}
                       type="button"
                       onClick={() => toggleType(type.id as QuestionType)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all border ${
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
                         isSelected
                           ? 'bg-indigo-600/20 text-indigo-300 border-indigo-500/40 shadow-sm'
                           : 'bg-slate-900 text-slate-500 border-slate-800 hover:text-slate-300'
                       }`}
                     >
-                      <Check className={`w-3.5 h-3.5 ${isSelected ? 'text-indigo-400 opacity-100' : 'opacity-0'}`} />
-                      <span>{type.label}</span>
+                      <span>{isSelected ? '✓ ' : ''}{type.label}</span>
                     </button>
                   );
                 })}
@@ -427,11 +405,11 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
             </div>
 
             <div className="flex items-center gap-4 text-slate-300">
-              <span className="flex items-center gap-1 text-emerald-400 font-medium">
-                <CheckCircle2 className="w-3.5 h-3.5" /> 100% Unique MCQs
+              <span className="text-emerald-400 font-medium">
+                ✓ 100% Unique MCQs
               </span>
-              <span className="flex items-center gap-1 text-teal-400 font-medium">
-                <CheckCircle2 className="w-3.5 h-3.5" /> Visual Diagram Cards
+              <span className="text-teal-400 font-medium">
+                ✓ Visual Diagram Cards
               </span>
             </div>
           </div>
@@ -450,15 +428,9 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
             }`}
           >
             {isGenerating ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin text-indigo-300" />
-                <span>{generationStep || "Generating Nyoria Study Pack..."}</span>
-              </>
+              <span>{generationStep || "Generating Nyoria Study Pack..."}</span>
             ) : (
-              <>
-                <Sparkles className="w-5 h-5 text-indigo-300 animate-pulse" />
-                <span>Generate Nyoria Study Pack</span>
-              </>
+              <span>Generate Nyoria Study Pack</span>
             )}
           </button>
         </div>

@@ -78,7 +78,7 @@ export function generateStudyKit(text: string, options: GeneratorOptions): Gener
   }
 
   if (options.includeFlashcards) {
-    flashcards.push(...buildFlashcards(cleanText, theme, sentences));
+    flashcards.push(...buildDynamicFlashcards(cleanText, theme, sentences));
   }
 
   if (options.includeDiagrams) {
@@ -108,6 +108,67 @@ function extractTitle(text: string, theme: string): string {
     case 'cs': return 'TCP/IP Network Stack & Protocol Architecture';
     default: return 'Custom Nyoria Study Pack & Exam Kit';
   }
+}
+
+// Dynamically extracts term/definition flashcards according to the user's actual content
+function buildDynamicFlashcards(text: string, theme: string, sentences: string[]): Flashcard[] {
+  const cards: Flashcard[] = [];
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 5);
+
+  // 1. Look for explicit Colon patterns (Term: Definition or Term - Definition)
+  for (const line of lines) {
+    const colonMatch = line.match(/^([^:\-\(\)]{3,40})\s*[:\-\u2013]\s*(.+)$/);
+    if (colonMatch && colonMatch[1] && colonMatch[2]) {
+      const term = colonMatch[1].replace(/^[0-9.#*\-\s]+/, '').trim();
+      const def = colonMatch[2].trim();
+      if (term.length > 2 && def.length > 10 && cards.length < 8) {
+        cards.push({
+          id: genId('fc'),
+          front: term,
+          back: def,
+          category: 'Key Term'
+        });
+      }
+    }
+  }
+
+  // 2. If sentence-based, extract subject terms from key sentences in the user's content
+  if (cards.length < 4) {
+    sentences.forEach((sent, idx) => {
+      if (cards.length >= 6) return;
+      const parts = sent.split(/\s+(?:is|are|refers to|consists of|produces|occurs in|functions as)\s+/i);
+      if (parts.length >= 2 && parts[0].length < 45 && parts[1].length > 15) {
+        cards.push({
+          id: genId('fc'),
+          front: parts[0].replace(/^[A-Z0-9.#*\-\s]+/, '').trim(),
+          back: parts[1].trim(),
+          category: 'Concept'
+        });
+      } else if (sent.length > 20) {
+        // Fallback: term is first 4 words, definition is the full sentence
+        const words = sent.split(/\s+/);
+        const term = words.slice(0, 4).join(' ');
+        cards.push({
+          id: genId('fc'),
+          front: term,
+          back: sent,
+          category: 'Study Note'
+        });
+      }
+    });
+  }
+
+  // 3. Known Theme Fallback if text is short
+  if (cards.length === 0 && theme === 'heart') {
+    return [
+      { id: genId('fc'), front: "Right Atrium", back: "Receives deoxygenated blood returning from systemic body tissues via the Superior and Inferior Vena Cava.", category: "Heart Anatomy" },
+      { id: genId('fc'), front: "Right Ventricle", back: "Pumps deoxygenated blood through the pulmonary semilunar valve into pulmonary arteries leading to the lungs.", category: "Heart Anatomy" },
+      { id: genId('fc'), front: "Left Atrium", back: "Receives freshly oxygenated blood returning from pulmonary veins.", category: "Heart Anatomy" },
+      { id: genId('fc'), front: "Left Ventricle", back: "Pumps oxygenated blood through the Aorta to systemic body tissues under high pressure.", category: "Heart Anatomy" },
+    ];
+  }
+
+  return cards.slice(0, 8);
 }
 
 function buildMCQ(index: number, sentence: string, theme: string, difficulty: Difficulty): QuestionItem {
@@ -165,35 +226,6 @@ function buildMCQ(index: number, sentence: string, theme: string, difficulty: Di
       keyTakeaways: picked.takeaways,
       options: picked.opts,
       topicTag: 'Heart Anatomy'
-    };
-  } else if (theme === 'photosynthesis') {
-    const questionsPool = [
-      {
-        q: "In which specific chloroplast structure do the Light-Dependent reactions of photosynthesis take place?",
-        ans: "Thylakoid Membranes",
-        opts: [
-          { id: 'a', label: 'A' as const, text: "Chloroplast Stroma", isCorrect: false },
-          { id: 'b', label: 'B' as const, text: "Thylakoid Membranes", isCorrect: true },
-          { id: 'c', label: 'C' as const, text: "Mitochondrial Matrix", isCorrect: false },
-          { id: 'd', label: 'D' as const, text: "Outer Envelope Membrane", isCorrect: false },
-        ],
-        expl: "Light-dependent reactions occur in the thylakoid membranes where chlorophyll photosystems II and I absorb photons, split water molecules, and generate ATP and NADPH.",
-        mnemonic: "Thylakoid = Traps light! Stroma = Sugar synthesis.",
-        takeaways: ["Thylakoids house chlorophyll pigments and photosystems.", "Photolysis of water releases oxygen gas in thylakoids."]
-      }
-    ];
-    const picked = questionsPool[index % questionsPool.length];
-    return {
-      id: genId('mcq'),
-      type: 'MCQ',
-      difficulty,
-      question: picked.q,
-      answer: picked.ans,
-      explanation: picked.expl,
-      mnemonic: picked.mnemonic,
-      keyTakeaways: picked.takeaways,
-      options: picked.opts,
-      topicTag: 'Photosynthesis'
     };
   }
 
@@ -291,24 +323,6 @@ function buildFillBlank(index: number, sentence: string, theme: string, difficul
     keyTakeaways: ["Fill-in-the-blank questions test exact terminology recall."],
     topicTag: 'Active Recall'
   };
-}
-
-function buildFlashcards(text: string, theme: string, sentences: string[]): Flashcard[] {
-  if (theme === 'heart') {
-    return [
-      { id: genId('fc'), front: "Right Atrium", back: "Receives deoxygenated blood from Superior and Inferior Vena Cava.", category: "Heart Anatomy" },
-      { id: genId('fc'), front: "Right Ventricle", back: "Pumps deoxygenated blood through pulmonary arteries to the lungs.", category: "Heart Anatomy" },
-      { id: genId('fc'), front: "Left Atrium", back: "Receives oxygenated blood returning from the lungs via pulmonary veins.", category: "Heart Anatomy" },
-      { id: genId('fc'), front: "Left Ventricle", back: "Pumps oxygenated blood through the Aorta to systemic body tissues; thickest myocardium.", category: "Heart Anatomy" },
-    ];
-  }
-
-  return sentences.slice(0, 5).map((s, idx) => ({
-    id: genId('fc'),
-    front: `Key Term #${idx + 1}`,
-    back: s,
-    category: 'Study Notes'
-  }));
 }
 
 function buildDiagrams(theme: string, title: string): VisualAidDiagram[] {

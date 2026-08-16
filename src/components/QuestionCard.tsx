@@ -2,20 +2,6 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ChevronDown, 
-  CheckSquare, 
-  Square, 
-  Lightbulb, 
-  Sparkles, 
-  Copy, 
-  Check, 
-  Zap, 
-  Tag,
-  CheckCircle2,
-  XCircle,
-  Flag
-} from 'lucide-react';
 import { QuestionItem } from '../lib/types';
 
 interface QuestionCardProps {
@@ -87,7 +73,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
       {/* Header Bar */}
       <div className="p-4 sm:p-5 space-y-4">
         
-        {/* Badges & Actions */}
+        {/* Badges & Actions (No Icons) */}
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2 flex-wrap text-xs">
             <span className="font-mono font-bold text-slate-400">
@@ -103,9 +89,8 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             </span>
 
             {question.topicTag && (
-              <span className="px-2.5 py-0.5 rounded-full bg-slate-950 text-slate-400 text-[11px] flex items-center gap-1 border border-slate-800">
-                <Tag className="w-3 h-3 text-indigo-400" />
-                <span>{question.topicTag}</span>
+              <span className="px-2.5 py-0.5 rounded-full bg-slate-950 text-slate-400 text-[11px] border border-slate-800">
+                #{question.topicTag}
               </span>
             )}
           </div>
@@ -115,47 +100,36 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             {/* Mark for Review Button */}
             <button
               onClick={() => onToggleMarkForReview && onToggleMarkForReview(question.id)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors border ${
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors border ${
                 question.markedForReview
                   ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
                   : 'bg-slate-800 text-slate-400 hover:text-slate-200 border-slate-700'
               }`}
               title="Flag question for review"
             >
-              <Flag className={`w-3.5 h-3.5 ${question.markedForReview ? 'text-amber-400 fill-amber-400' : ''}`} />
-              <span className="hidden sm:inline">Review</span>
+              {question.markedForReview ? 'Flagged' : 'Flag Review'}
             </button>
 
             {/* Mark as Mastered Checkbox */}
             <button
               onClick={() => onToggleLearned(question.id)}
-              className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors border ${
+              className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors border ${
                 question.learned
                   ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
                   : 'bg-slate-800 text-slate-400 hover:text-slate-200 border-slate-700'
               }`}
               title={question.learned ? "Mark as Needs Revision" : "Mark as Mastered"}
             >
-              {question.learned ? (
-                <>
-                  <CheckSquare className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Mastered</span>
-                </>
-              ) : (
-                <>
-                  <Square className="w-3.5 h-3.5" />
-                  <span>Mastered</span>
-                </>
-              )}
+              {question.learned ? '✓ Mastered' : 'Mark Mastered'}
             </button>
 
             {/* Copy Button */}
             <button
               onClick={handleCopy}
-              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-100 transition-colors border border-slate-700"
+              className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors border border-slate-700"
               title="Copy question & solution"
             >
-              {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+              {copied ? 'Copied!' : 'Copy'}
             </button>
           </div>
         </div>
@@ -217,18 +191,16 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                       <span className="leading-snug">{opt.text}</span>
                     </div>
 
-                    {/* Status Icons */}
+                    {/* Status Feedback (No Lucide Icons) */}
                     {hasSelected && (
                       <span className="shrink-0">
                         {isCorrectOption ? (
-                          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-extrabold uppercase">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                            <span>Correct</span>
+                          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-extrabold uppercase">
+                            ✓ Correct
                           </motion.div>
                         ) : isSelected ? (
-                          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="flex items-center gap-1 px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 text-[10px] font-extrabold uppercase">
-                            <XCircle className="w-4 h-4 text-rose-400" />
-                            <span>Incorrect</span>
+                          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 text-[10px] font-extrabold uppercase">
+                            ✗ Incorrect
                           </motion.div>
                         ) : null}
                       </span>
@@ -247,9 +219,8 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                   transition={{ duration: 0.3 }}
                   className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3 mt-3"
                 >
-                  <div className="flex items-center gap-2 font-bold text-xs uppercase tracking-wider text-indigo-400">
-                    <Sparkles className="w-4 h-4 text-indigo-300" />
-                    <span>Explanation & Solution:</span>
+                  <div className="font-bold text-xs uppercase tracking-wider text-indigo-400">
+                    Explanation & Solution:
                   </div>
                   
                   <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium">
@@ -258,9 +229,8 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
                   {question.keyTakeaways && question.keyTakeaways.length > 0 && (
                     <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 space-y-1">
-                      <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-                        <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
-                        <span>Key Concept Takeaways:</span>
+                      <span className="text-xs font-bold text-amber-300">
+                        Key Concept Takeaways:
                       </span>
                       <ul className="list-disc list-inside space-y-1 text-xs text-slate-300">
                         {question.keyTakeaways.map((pt, idx) => (
@@ -271,9 +241,8 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                   )}
 
                   {question.mnemonic && (
-                    <div className="pt-2 flex items-center gap-2 text-xs text-purple-300 border-t border-slate-800">
-                      <Zap className="w-3.5 h-3.5 text-purple-400 shrink-0" />
-                      <span><strong>Memory Mnemonic:</strong> {question.mnemonic}</span>
+                    <div className="pt-2 text-xs text-purple-300 border-t border-slate-800">
+                      <strong>Memory Mnemonic:</strong> {question.mnemonic}
                     </div>
                   )}
                 </motion.div>
@@ -290,7 +259,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
               className="w-full py-2.5 px-4 rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 text-xs font-bold text-slate-300 flex items-center justify-between transition-colors"
             >
               <span>{isExpanded ? "Hide Answer & Explanation" : "Reveal Answer & Explanation"}</span>
-              <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
+              <span>{isExpanded ? "[-]" : "[+]"}</span>
             </button>
 
             <AnimatePresence>
@@ -324,9 +293,8 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
                   {question.keyTakeaways && question.keyTakeaways.length > 0 && (
                     <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 space-y-1.5">
-                      <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-                        <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
-                        <span>Bold Key Takeaways:</span>
+                      <span className="text-xs font-bold text-amber-300">
+                        Bold Key Takeaways:
                       </span>
                       <ul className="list-disc list-inside space-y-1 text-xs text-slate-300">
                         {question.keyTakeaways.map((point, idx) => (

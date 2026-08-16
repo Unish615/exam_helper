@@ -3,16 +3,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { 
-  CheckCircle2, 
-  XCircle, 
-  Award, 
-  RotateCcw, 
-  Sparkles, 
-  ChevronRight, 
-  HelpCircle,
-  Trophy
-} from 'lucide-react';
 import { QuestionItem } from '../lib/types';
 
 interface InteractiveQuizProps {
@@ -20,7 +10,6 @@ interface InteractiveQuizProps {
 }
 
 export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ questions }) => {
-  // Filter for questions that have options or convert short questions
   const quizQuestions = questions.filter(q => q.options && q.options.length > 0);
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -33,10 +22,9 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ questions }) =
   if (quizQuestions.length === 0) {
     return (
       <div className="p-8 text-center bg-slate-900 border border-slate-800 rounded-2xl space-y-3">
-        <HelpCircle className="w-10 h-10 text-indigo-400 mx-auto" />
         <h4 className="text-lg font-bold text-white">No Multiple Choice Questions Available</h4>
         <p className="text-xs text-slate-400">
-          Re-generate study material with "MCQs" selected in generator options to use Mock Quiz Mode.
+          Re-generate study material with &ldquo;MCQs&rdquo; selected in generator options to use Mock Quiz Mode.
         </p>
       </div>
     );
@@ -63,7 +51,6 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ questions }) =
       setIsAnswered(false);
     } else {
       setQuizFinished(true);
-      // Trigger confetti celebration
       try {
         confetti({
           particleCount: 100,
@@ -93,9 +80,8 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ questions }) =
       {/* Header & Score counter */}
       <div className="flex items-center justify-between border-b border-slate-800 pb-4 flex-wrap gap-3">
         <div className="space-y-1">
-          <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold uppercase tracking-wider flex items-center gap-1 w-fit">
-            <Trophy className="w-3.5 h-3.5" />
-            <span>Interactive Exam Mode</span>
+          <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold uppercase tracking-wider block w-fit">
+            Interactive Exam Mode
           </span>
           <h3 className="text-xl font-bold text-white">
             Practice Quiz Assessment
@@ -152,12 +138,8 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ questions }) =
                 >
                   <span className="leading-snug">{opt.text}</span>
                   {isAnswered && (
-                    <span className="shrink-0">
-                      {opt.isCorrect ? (
-                        <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                      ) : isSelected ? (
-                        <XCircle className="w-5 h-5 text-rose-400" />
-                      ) : null}
+                    <span className="shrink-0 font-bold text-xs">
+                      {opt.isCorrect ? '✓' : isSelected ? '✗' : ''}
                     </span>
                   )}
                 </button>
@@ -172,9 +154,8 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ questions }) =
               animate={{ opacity: 1, y: 0 }}
               className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2"
             >
-              <div className="flex items-center gap-2 font-bold text-xs uppercase tracking-wider text-indigo-400">
-                <Sparkles className="w-4 h-4" />
-                <span>Explanation & Solution:</span>
+              <div className="font-bold text-xs uppercase tracking-wider text-indigo-400">
+                Explanation & Solution:
               </div>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
                 {currentQ.explanation}
@@ -187,10 +168,9 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ questions }) =
             <div className="flex justify-end pt-2">
               <button
                 onClick={handleNext}
-                className="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-sm flex items-center gap-2 shadow-lg hover:scale-[1.02] transition-transform"
+                className="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-sm shadow-lg hover:scale-[1.02] transition-transform"
               >
-                <span>{currentIndex + 1 < quizQuestions.length ? 'Next Question' : 'Complete Quiz'}</span>
-                <ChevronRight className="w-4 h-4" />
+                <span>{currentIndex + 1 < quizQuestions.length ? 'Next Question →' : 'Complete Quiz'}</span>
               </button>
             </div>
           )}
@@ -203,12 +183,6 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ questions }) =
           animate={{ opacity: 1, scale: 1 }}
           className="text-center py-8 space-y-6 max-w-md mx-auto"
         >
-          <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 p-1 shadow-xl glow-primary flex items-center justify-center">
-            <div className="w-full h-full bg-slate-950 rounded-full flex items-center justify-center">
-              <Trophy className="w-10 h-10 text-amber-400 animate-bounce" />
-            </div>
-          </div>
-
           <div className="space-y-2">
             <h4 className="text-2xl font-black text-white">Quiz Completed!</h4>
             <p className="text-sm text-slate-400">
@@ -218,16 +192,15 @@ export const InteractiveQuiz: React.FC<InteractiveQuizProps> = ({ questions }) =
 
           {/* Score rating badge */}
           <div className="inline-flex px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs font-semibold text-slate-300">
-            {percentage >= 80 ? '🌟 Outstanding Mastery! Ready for Exam.' : percentage >= 60 ? '👍 Solid Knowledge! Review flagged items.' : '📚 Needs Revision! Re-read chapter notes.'}
+            {percentage >= 80 ? 'Outstanding Mastery! Ready for Exam.' : percentage >= 60 ? 'Solid Knowledge! Review flagged items.' : 'Needs Revision! Re-read chapter notes.'}
           </div>
 
           <div className="pt-4 flex items-center justify-center gap-3">
             <button
               onClick={handleRestart}
-              className="px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm flex items-center gap-2 border border-slate-700 transition-colors shadow-md"
+              className="px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm border border-slate-700 transition-colors shadow-md"
             >
-              <RotateCcw className="w-4 h-4 text-indigo-400" />
-              <span>Retake Quiz</span>
+              Retake Quiz
             </button>
           </div>
         </motion.div>
