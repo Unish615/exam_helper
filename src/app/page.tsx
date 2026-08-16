@@ -10,22 +10,28 @@ import { GeneratedStudyKit, GeneratorOptions } from '../lib/types';
 import { generateStudyKit } from '../lib/generatorEngine';
 import { SAMPLE_PRESETS } from '../lib/sampleData';
 
+// Initial fallback kit created synchronously
+const initialDefaultKit = generateStudyKit(SAMPLE_PRESETS[0].text, {
+  difficulty: 'Medium',
+  questionTypes: ['MCQ', 'Short', 'Essay', 'Definition', 'FillBlank'],
+  questionCount: 8,
+  includeFlashcards: true,
+  includeDiagrams: true
+});
+
 export default function Home() {
-  const [mounted, setMounted] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
   const [isDisclaimerOpen, setIsDisclaimerOpen] = useState(false);
   const [isSavedKitsOpen, setIsSavedKitsOpen] = useState(false);
   const [savedKits, setSavedKits] = useState<GeneratedStudyKit[]>([]);
-  const [currentKit, setCurrentKit] = useState<GeneratedStudyKit | null>(null);
+  const [currentKit, setCurrentKit] = useState<GeneratedStudyKit>(initialDefaultKit);
   
-  // Generation state
+  // Generation loading states
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationStep, setGenerationStep] = useState('');
 
   useEffect(() => {
-    setMounted(true);
-
-    // Check disclaimer agreement
+    // Check disclaimer agreement in localStorage on client mount
     const agreed = localStorage.getItem('nyoria_disclaimer_agreed');
     if (!agreed) {
       setIsDisclaimerOpen(true);
@@ -40,16 +46,6 @@ export default function Home() {
     } catch {
       // Fallback
     }
-
-    // Pre-populate sample Human Heart circulation study kit
-    const sampleKit = generateStudyKit(SAMPLE_PRESETS[0].text, {
-      difficulty: 'Medium',
-      questionTypes: ['MCQ', 'Short', 'Essay', 'Definition', 'FillBlank'],
-      questionCount: 8,
-      includeFlashcards: true,
-      includeDiagrams: true
-    });
-    setCurrentKit(sampleKit);
   }, []);
 
   const handleCloseDisclaimer = () => {
@@ -115,14 +111,6 @@ export default function Home() {
   };
 
   const isSavedInLibrary = currentKit ? savedKits.some(k => k.id === currentKit.id) : false;
-
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-slate-900 text-slate-100 flex items-center justify-center">
-        <div className="animate-pulse font-bold text-lg text-indigo-400">Loading Nyoria...</div>
-      </div>
-    );
-  }
 
   return (
     <div className={`min-h-screen font-sans transition-colors duration-300 ${
