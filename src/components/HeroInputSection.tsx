@@ -17,7 +17,7 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'text' | 'file'>('text');
   
-  // Pre-load with Photosynthesis sample text as requested
+  // Pre-load with Photosynthesis sample text
   const photosynthesisPreset = SAMPLE_PRESETS.find(p => p.id === 'plant-photosynthesis') || SAMPLE_PRESETS[0];
   const [inputText, setInputText] = useState(photosynthesisPreset.text);
   
@@ -35,7 +35,7 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
   const [selectedTypes, setSelectedTypes] = useState<QuestionType[]>([
     'MCQ', 'Short', 'Essay', 'Definition', 'FillBlank'
   ]);
-  const [questionCount, setQuestionCount] = useState<number>(8);
+  const [questionCount, setQuestionCount] = useState<number>(20);
 
   const handleSelectPreset = (preset: SamplePreset) => {
     setActiveTab('text');
@@ -155,7 +155,7 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
         </h1>
 
         <p className="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-          Upload PDF/Text files or paste study notes. Pre-loaded with Photosynthesis sample text below. Nyoria generates deduplicated MCQs, 3D flashcards, and visual process flowcharts.
+          Upload PDF/Text files or paste study notes. Select up to 20 questions. Nyoria generates deduplicated MCQs, 3D flashcards, and visual process flowcharts.
         </p>
 
         {/* Sample Topics */}
@@ -338,13 +338,13 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             
-            {/* 1. Question Quantity Picker (3, 5, 8, 10) */}
+            {/* 1. Question Quantity Picker (5, 10, 15, 20) */}
             <div className="space-y-2">
               <label className="text-xs font-semibold text-slate-300 block">
                 Question Quantity:
               </label>
               <div className="grid grid-cols-4 gap-1.5 p-1 bg-[#111827] rounded-xl border border-[#1E293B]">
-                {[3, 5, 8, 10].map((num) => (
+                {[5, 10, 15, 20].map((num) => (
                   <button
                     key={num}
                     type="button"

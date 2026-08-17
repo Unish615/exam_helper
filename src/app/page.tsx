@@ -10,12 +10,12 @@ import { GeneratedStudyKit, GeneratorOptions } from '../lib/types';
 import { generateStudyKit } from '../lib/generatorEngine';
 import { SAMPLE_PRESETS } from '../lib/sampleData';
 
-// Initial default kit pre-loaded with Photosynthesis sample
+// Initial default kit pre-loaded with Photosynthesis sample and 20 questions
 const photosynthesisSample = SAMPLE_PRESETS.find(p => p.id === 'plant-photosynthesis') || SAMPLE_PRESETS[0];
 const initialDefaultKit = generateStudyKit(photosynthesisSample.text, {
   difficulty: 'Medium',
   questionTypes: ['MCQ', 'Short', 'Essay', 'Definition', 'FillBlank'],
-  questionCount: 8,
+  questionCount: 20,
   teacherStyle: 'Conceptual',
   includeFlashcards: true,
   includeDiagrams: true

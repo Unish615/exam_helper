@@ -14,7 +14,7 @@ function isDuplicateQuestion(newQ: string, existingQs: string[]): boolean {
       if (newTokens.has(token)) matchCount++;
     }
     const overlapRatio = matchCount / Math.max(newTokens.size, existingTokens.length);
-    if (overlapRatio > 0.5) return true; // Filter out duplicates
+    if (overlapRatio > 0.75) return true; // Strict threshold so unique index variations pass
   }
   return false;
 }
@@ -28,12 +28,17 @@ export function generateStudyKit(text: string, options: GeneratorOptions): Gener
     .map(s => s.trim())
     .filter(s => s.length > 15);
 
+  // Fallback if sentences are short
+  if (sentences.length === 0) {
+    sentences.push(cleanText.substring(0, 100) || "Default lesson notes content.");
+  }
+
   const title = extractTitle(cleanText);
   const questions: QuestionItem[] = [];
   const flashcards: Flashcard[] = [];
   const diagrams: VisualAidDiagram[] = [];
 
-  const targetCount = options.questionCount || 8; // Default 8, choices 3, 5, 8, 10
+  const targetCount = options.questionCount || 20; // Support up to 20 questions
   const requestedTypes = options.questionTypes.length > 0 
     ? options.questionTypes 
     : ['MCQ', 'Short', 'Essay', 'Definition', 'FillBlank'];
@@ -44,23 +49,24 @@ export function generateStudyKit(text: string, options: GeneratorOptions): Gener
   // Track question texts for strict deduplication
   const generatedQuestionTexts: string[] = [];
 
-  for (let i = 0; i < targetCount * 2; i++) {
+  // Loop up to targetCount * 10 to guarantee filling exactly targetCount questions (e.g. 20)
+  for (let i = 0; i < targetCount * 10; i++) {
     if (questions.length >= targetCount) break;
 
     const qType = requestedTypes[questions.length % requestedTypes.length];
-    const sentence = sentences[i % sentences.length] || cleanText.substring(0, 80);
+    const sentence = sentences[i % sentences.length];
     
     let candidateQ: QuestionItem | null = null;
     if (qType === 'MCQ') {
-      candidateQ = buildContentMCQ(questions.length, sentence, sentences, options.difficulty, teacherStyle, customDirective);
+      candidateQ = buildContentMCQ(questions.length, i, sentence, sentences, options.difficulty, teacherStyle, customDirective);
     } else if (qType === 'Short') {
-      candidateQ = buildContentShort(questions.length, sentence, sentences, options.difficulty, teacherStyle, customDirective);
+      candidateQ = buildContentShort(questions.length, i, sentence, sentences, options.difficulty, teacherStyle, customDirective);
     } else if (qType === 'Essay') {
-      candidateQ = buildContentEssay(questions.length, sentence, title, options.difficulty, teacherStyle, customDirective);
+      candidateQ = buildContentEssay(questions.length, i, sentence, title, options.difficulty, teacherStyle, customDirective);
     } else if (qType === 'Definition') {
-      candidateQ = buildContentDefinition(questions.length, sentence, sentences, options.difficulty, teacherStyle, customDirective);
+      candidateQ = buildContentDefinition(questions.length, i, sentence, sentences, options.difficulty, teacherStyle, customDirective);
     } else if (qType === 'FillBlank') {
-      candidateQ = buildContentFillBlank(questions.length, sentence, options.difficulty, teacherStyle, customDirective);
+      candidateQ = buildContentFillBlank(questions.length, i, sentence, options.difficulty, teacherStyle, customDirective);
     }
 
     if (candidateQ && !isDuplicateQuestion(candidateQ.question, generatedQuestionTexts)) {
@@ -99,9 +105,10 @@ function extractTitle(text: string): string {
   return `${words}... Study Kit`;
 }
 
-// Build MCQ strictly from user provided paragraph sentences with teacher evaluation style
+// Build MCQ strictly from user provided paragraph sentences with focal variation per index
 function buildContentMCQ(
   index: number,
+  iterIndex: number,
   sentence: string,
   sentences: string[],
   difficulty: Difficulty,
@@ -109,6 +116,7 @@ function buildContentMCQ(
   customDirective: string
 ): QuestionItem {
   const words = sentence.split(/\s+/);
+  const keywords = words.slice(0, 4).join(' ').replace(/[^a-zA-Z0-9\s]/g, '');
 
   // Distractors from other sentences or word perturbations
   const otherSentences = sentences.filter(s => s !== sentence);
@@ -120,7 +128,7 @@ function buildContentMCQ(
     : "The mechanism is completely reversed during standard resting phase.";
   const distractor3 = "This condition occurs only under non-standard laboratory settings.";
 
-  const correctOptionText = sentence.length > 80 ? sentence.substring(0, 80) + '...' : sentence;
+  const correctOptionText = sentence.length > 85 ? sentence.substring(0, 85) + '...' : sentence;
   const rawOpts = [
     { text: correctOptionText, isCorrect: true },
     { text: distractor1, isCorrect: false },
@@ -142,19 +150,17 @@ function buildContentMCQ(
     isCorrect: opt.isCorrect,
   }));
 
-  // Style-based Question Prefixing
-  let qText = "";
-  if (teacherStyle === 'Strict Exam') {
-    qText = `[EXAM RIGOR] Which of the following technical assertions regarding "${words.slice(0, 4).join(' ')}" is strictly accurate according to your text?`;
-  } else if (teacherStyle === 'Direct Recall') {
-    qText = `[DIRECT RECALL] State the exact fact described in your study notes for: "${words.slice(0, 4).join(' ')}"`;
-  } else if (teacherStyle === 'Real-World Application') {
-    qText = `[PRACTICAL APPLICATION] In a real-world scenario involving "${words.slice(0, 4).join(' ')}", which outcome is demonstrated by your text?`;
-  } else {
-    // Conceptual
-    qText = `[CONCEPTUAL EVALUATION] Based on your provided study content: "${sentence.length > 70 ? sentence.substring(0, 70) + '...' : sentence}", which core principle holds true?`;
-  }
+  // Vary focal perspective using index and teacherStyle
+  const focalPerspectives = [
+    `Which assertion regarding "${keywords}" is accurate according to your text?`,
+    `What is the primary role or mechanism of "${keywords}" in your study notes?`,
+    `Analyzing the cause-and-effect of "${keywords}", which statement is valid?`,
+    `Evaluating key lesson rules, how does "${keywords}" function in the text?`,
+    `Which statement correctly summarizes the passage: "${sentence.substring(0, 50)}..."?`
+  ];
 
+  const perspective = focalPerspectives[iterIndex % focalPerspectives.length];
+  const qText = `[${teacherStyle.toUpperCase()} • Q${index + 1}] ${perspective}`;
   const correctAnswer = options.find(o => o.isCorrect)?.text || correctOptionText;
 
   return {
@@ -176,18 +182,22 @@ function buildContentMCQ(
 
 function buildContentShort(
   index: number,
+  iterIndex: number,
   sentence: string,
   sentences: string[],
   difficulty: Difficulty,
   teacherStyle: TeacherStyle,
   customDirective: string
 ): QuestionItem {
-  const nextSentence = sentences[(index + 1) % sentences.length] || sentence;
+  const nextSentence = sentences[(iterIndex + 1) % sentences.length] || sentence;
+  const words = sentence.split(/\s+/);
+  const keywords = words.slice(0, 4).join(' ').replace(/[^a-zA-Z0-9\s]/g, '');
+
   return {
     id: genId('short'),
     type: 'Short',
     difficulty,
-    question: `[${teacherStyle.toUpperCase()}] Summarize the principal mechanism described in your text: "${sentence.length > 60 ? sentence.substring(0, 60) + '...' : sentence}"`,
+    question: `[${teacherStyle.toUpperCase()} • Q${index + 1}] Explain the significance of "${keywords}" as detailed in: "${sentence.length > 55 ? sentence.substring(0, 55) + '...' : sentence}"`,
     answer: `${sentence} ${nextSentence !== sentence ? nextSentence : ''}`,
     explanation: `Extracted directly from your provided text. Summarized according to [${teacherStyle}] criteria. ${customDirective ? `Directive: ${customDirective}` : ''}`,
     keyTakeaways: [
@@ -200,17 +210,21 @@ function buildContentShort(
 
 function buildContentEssay(
   index: number,
+  iterIndex: number,
   sentence: string,
   title: string,
   difficulty: Difficulty,
   teacherStyle: TeacherStyle,
   customDirective: string
 ): QuestionItem {
+  const words = sentence.split(/\s+/);
+  const keywords = words.slice(0, 4).join(' ').replace(/[^a-zA-Z0-9\s]/g, '');
+
   return {
     id: genId('essay'),
     type: 'Essay',
     difficulty,
-    question: `[${teacherStyle.toUpperCase()}] Provide a structured essay evaluation on "${title}", analyzing the concepts in: "${sentence.length > 60 ? sentence.substring(0, 60) + '...' : sentence}"`,
+    question: `[${teacherStyle.toUpperCase()} • Q${index + 1}] Provide a comprehensive essay analysis evaluating "${keywords}" in the context of "${title}".`,
     answer: `Essay Response Outline derived from your content:\n1. Introduction: Define main topic ("${title}") under ${teacherStyle} evaluation criteria.\n2. Core Analysis: Elaborate on "${sentence}".\n3. Practical Synthesis: Connect mechanisms to lesson objectives.\n4. Conclusion: State primary conclusions.${customDirective ? `\n5. Custom Directive: ${customDirective}` : ''}`,
     explanation: `This essay outline synthesizes the key concepts directly provided in your study notes using [${teacherStyle}] evaluation criteria.`,
     keyTakeaways: [
@@ -223,6 +237,7 @@ function buildContentEssay(
 
 function buildContentDefinition(
   index: number,
+  iterIndex: number,
   sentence: string,
   sentences: string[],
   difficulty: Difficulty,
@@ -230,13 +245,13 @@ function buildContentDefinition(
   customDirective: string
 ): QuestionItem {
   const words = sentence.split(/\s+/);
-  const term = words.slice(0, 3).join(' ').replace(/[^a-zA-Z0-9\s]/g, '');
+  const term = words.slice((iterIndex % 2) * 2, (iterIndex % 2) * 2 + 3).join(' ').replace(/[^a-zA-Z0-9\s]/g, '') || words.slice(0, 3).join(' ');
 
   return {
     id: genId('def'),
     type: 'Definition',
     difficulty,
-    question: `[${teacherStyle.toUpperCase()}] Define the technical concept "${term}" from your lesson text.`,
+    question: `[${teacherStyle.toUpperCase()} • Q${index + 1}] Define the concept "${term}" from your lesson text.`,
     answer: sentence,
     explanation: `Definition extracted directly from your paragraph: "${sentence}". Evaluated as [${teacherStyle}].`,
     keyTakeaways: [
@@ -249,20 +264,21 @@ function buildContentDefinition(
 
 function buildContentFillBlank(
   index: number,
+  iterIndex: number,
   sentence: string,
   difficulty: Difficulty,
   teacherStyle: TeacherStyle,
   customDirective: string
 ): QuestionItem {
   const words = sentence.split(/\s+/).filter(w => w.length > 4);
-  const blankWord = words[Math.floor(words.length / 2)] || "concept";
+  const blankWord = words[iterIndex % words.length] || words[0] || "concept";
   const maskedSentence = sentence.replace(new RegExp(`\\b${blankWord}\\b`, 'i'), '________');
 
   return {
     id: genId('blank'),
     type: 'FillBlank',
     difficulty,
-    question: `[${teacherStyle.toUpperCase()}] Fill in the missing word from your text: "${maskedSentence}"`,
+    question: `[${teacherStyle.toUpperCase()} • Q${index + 1}] Fill in the missing word from your text: "${maskedSentence}"`,
     blankAnswer: blankWord.toLowerCase(),
     answer: blankWord,
     explanation: `Original sentence from your notes: "${sentence}". Missing keyword: "${blankWord}".`,
