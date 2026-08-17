@@ -1,4 +1,4 @@
-import { GeneratedStudyKit, GeneratorOptions, QuestionItem, Flashcard, VisualAidDiagram, Difficulty, MCQOption } from './types';
+import { GeneratedStudyKit, GeneratorOptions, QuestionItem, Flashcard, VisualAidDiagram, Difficulty, MCQOption, TeacherStyle } from './types';
 
 const genId = (prefix: string) => `${prefix}_${Math.random().toString(36).substring(2, 9)}`;
 
@@ -33,10 +33,13 @@ export function generateStudyKit(text: string, options: GeneratorOptions): Gener
   const flashcards: Flashcard[] = [];
   const diagrams: VisualAidDiagram[] = [];
 
-  const targetCount = options.questionCount || 10;
+  const targetCount = options.questionCount || 8; // Default 8, choices 3, 5, 8, 10
   const requestedTypes = options.questionTypes.length > 0 
     ? options.questionTypes 
     : ['MCQ', 'Short', 'Essay', 'Definition', 'FillBlank'];
+
+  const teacherStyle = options.teacherStyle || 'Conceptual';
+  const customDirective = options.customDirective || '';
 
   // Track question texts for strict deduplication
   const generatedQuestionTexts: string[] = [];
@@ -49,15 +52,15 @@ export function generateStudyKit(text: string, options: GeneratorOptions): Gener
     
     let candidateQ: QuestionItem | null = null;
     if (qType === 'MCQ') {
-      candidateQ = buildContentMCQ(questions.length, sentence, sentences, options.difficulty);
+      candidateQ = buildContentMCQ(questions.length, sentence, sentences, options.difficulty, teacherStyle, customDirective);
     } else if (qType === 'Short') {
-      candidateQ = buildContentShort(questions.length, sentence, sentences, options.difficulty);
+      candidateQ = buildContentShort(questions.length, sentence, sentences, options.difficulty, teacherStyle, customDirective);
     } else if (qType === 'Essay') {
-      candidateQ = buildContentEssay(questions.length, sentence, title, options.difficulty);
+      candidateQ = buildContentEssay(questions.length, sentence, title, options.difficulty, teacherStyle, customDirective);
     } else if (qType === 'Definition') {
-      candidateQ = buildContentDefinition(questions.length, sentence, sentences, options.difficulty);
+      candidateQ = buildContentDefinition(questions.length, sentence, sentences, options.difficulty, teacherStyle, customDirective);
     } else if (qType === 'FillBlank') {
-      candidateQ = buildContentFillBlank(questions.length, sentence, options.difficulty);
+      candidateQ = buildContentFillBlank(questions.length, sentence, options.difficulty, teacherStyle, customDirective);
     }
 
     if (candidateQ && !isDuplicateQuestion(candidateQ.question, generatedQuestionTexts)) {
@@ -77,7 +80,7 @@ export function generateStudyKit(text: string, options: GeneratorOptions): Gener
   return {
     id: genId('kit'),
     title: title,
-    summary: `Extracted ${questions.length} deduplicated exam items strictly from your provided content (${questions.filter(q => q.type === 'MCQ').length} interactive MCQs), ${flashcards.length} flashcards, and ${diagrams.length} visual diagrams.`,
+    summary: `Extracted ${questions.length} deduplicated exam items strictly from your provided content (${questions.filter(q => q.type === 'MCQ').length} interactive MCQs) evaluated in [${teacherStyle}] style, ${flashcards.length} flashcards, and ${diagrams.length} visual diagrams.`,
     createdAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
     difficulty: options.difficulty,
     questions,
@@ -96,23 +99,27 @@ function extractTitle(text: string): string {
   return `${words}... Study Kit`;
 }
 
-// Build MCQ strictly from user provided paragraph sentences
-function buildContentMCQ(index: number, sentence: string, sentences: string[], difficulty: Difficulty): QuestionItem {
-  // Extract key concept words or clause
+// Build MCQ strictly from user provided paragraph sentences with teacher evaluation style
+function buildContentMCQ(
+  index: number,
+  sentence: string,
+  sentences: string[],
+  difficulty: Difficulty,
+  teacherStyle: TeacherStyle,
+  customDirective: string
+): QuestionItem {
   const words = sentence.split(/\s+/);
-  const coreFact = sentence;
 
   // Distractors from other sentences or word perturbations
   const otherSentences = sentences.filter(s => s !== sentence);
   const distractor1 = otherSentences[0] 
-    ? (otherSentences[0].length > 60 ? otherSentences[0].substring(0, 60) + '...' : otherSentences[0]) 
-    : "This process operates independently without regulation.";
+    ? (otherSentences[0].length > 65 ? otherSentences[0].substring(0, 65) + '...' : otherSentences[0]) 
+    : "This process operates independently without requiring regulation.";
   const distractor2 = otherSentences[1] 
-    ? (otherSentences[1].length > 60 ? otherSentences[1].substring(0, 60) + '...' : otherSentences[1]) 
-    : "The mechanism is completely reversed during standard phase.";
+    ? (otherSentences[1].length > 65 ? otherSentences[1].substring(0, 65) + '...' : otherSentences[1]) 
+    : "The mechanism is completely reversed during standard resting phase.";
   const distractor3 = "This condition occurs only under non-standard laboratory settings.";
 
-  // Shuffle options
   const correctOptionText = sentence.length > 80 ? sentence.substring(0, 80) + '...' : sentence;
   const rawOpts = [
     { text: correctOptionText, isCorrect: true },
@@ -122,7 +129,6 @@ function buildContentMCQ(index: number, sentence: string, sentences: string[], d
   ];
 
   const labels: ('A' | 'B' | 'C' | 'D')[] = ['A', 'B', 'C', 'D'];
-  // Deterministic shift based on index
   const shifted = [...rawOpts];
   const shiftAmt = index % 4;
   for (let s = 0; s < shiftAmt; s++) {
@@ -136,17 +142,17 @@ function buildContentMCQ(index: number, sentence: string, sentences: string[], d
     isCorrect: opt.isCorrect,
   }));
 
-  // Create question text
+  // Style-based Question Prefixing
   let qText = "";
-  if (sentence.toLowerCase().includes("is") || sentence.toLowerCase().includes("are")) {
-    const parts = sentence.split(/\s+(?:is|are|refers to|consists of|functions as)\s+/i);
-    if (parts[0] && parts[0].length < 50) {
-      qText = `According to your provided notes, what is the primary role or definition of "${parts[0].replace(/^[A-Z0-9.#*\-\s]+/, '').trim()}"?`;
-    }
-  }
-  
-  if (!qText) {
-    qText = `Based on your provided study content: "${sentence.length > 70 ? sentence.substring(0, 70) + '...' : sentence}", which of the following statements is accurate?`;
+  if (teacherStyle === 'Strict Exam') {
+    qText = `[EXAM RIGOR] Which of the following technical assertions regarding "${words.slice(0, 4).join(' ')}" is strictly accurate according to your text?`;
+  } else if (teacherStyle === 'Direct Recall') {
+    qText = `[DIRECT RECALL] State the exact fact described in your study notes for: "${words.slice(0, 4).join(' ')}"`;
+  } else if (teacherStyle === 'Real-World Application') {
+    qText = `[PRACTICAL APPLICATION] In a real-world scenario involving "${words.slice(0, 4).join(' ')}", which outcome is demonstrated by your text?`;
+  } else {
+    // Conceptual
+    qText = `[CONCEPTUAL EVALUATION] Based on your provided study content: "${sentence.length > 70 ? sentence.substring(0, 70) + '...' : sentence}", which core principle holds true?`;
   }
 
   const correctAnswer = options.find(o => o.isCorrect)?.text || correctOptionText;
@@ -157,51 +163,72 @@ function buildContentMCQ(index: number, sentence: string, sentences: string[], d
     difficulty,
     question: qText,
     answer: correctAnswer,
-    explanation: `Direct quote/concept from your notes: "${sentence}". This statement directly satisfies the requirement.`,
-    mnemonic: `Remember: ${words.slice(0, 3).join(' ')} is essential to this section of your study text.`,
+    explanation: `Direct quote from your text: "${sentence}". Evaluated under [${teacherStyle}] standard. ${customDirective ? `Directive applied: ${customDirective}` : ''}`,
+    mnemonic: `Remember: ${words.slice(0, 3).join(' ')} is a core keyword in your lesson material.`,
     keyTakeaways: [
       `Key fact directly stated in paragraph: "${sentence.length > 60 ? sentence.substring(0, 60) + '...' : sentence}"`,
-      `Cross-verify distractor options against paragraph details.`
+      `Evaluation Style: ${teacherStyle}`
     ],
     options,
-    topicTag: 'Content Fact'
+    topicTag: `${teacherStyle}`
   };
 }
 
-function buildContentShort(index: number, sentence: string, sentences: string[], difficulty: Difficulty): QuestionItem {
+function buildContentShort(
+  index: number,
+  sentence: string,
+  sentences: string[],
+  difficulty: Difficulty,
+  teacherStyle: TeacherStyle,
+  customDirective: string
+): QuestionItem {
   const nextSentence = sentences[(index + 1) % sentences.length] || sentence;
   return {
     id: genId('short'),
     type: 'Short',
     difficulty,
-    question: `Explain the key principle described in your paragraph: "${sentence.length > 60 ? sentence.substring(0, 60) + '...' : sentence}"`,
+    question: `[${teacherStyle.toUpperCase()}] Summarize the principal mechanism described in your text: "${sentence.length > 60 ? sentence.substring(0, 60) + '...' : sentence}"`,
     answer: `${sentence} ${nextSentence !== sentence ? nextSentence : ''}`,
-    explanation: `Extracted directly from your provided text. This passage summarizes a core mechanism required for exam recall.`,
+    explanation: `Extracted directly from your provided text. Summarized according to [${teacherStyle}] criteria. ${customDirective ? `Directive: ${customDirective}` : ''}`,
     keyTakeaways: [
       `Main takeaway: ${sentence.length > 50 ? sentence.substring(0, 50) + '...' : sentence}`,
-      `Review key relationships described in your notes.`
+      `Style emphasis: ${teacherStyle}`
     ],
-    topicTag: 'Short Summary'
+    topicTag: 'Short Answer'
   };
 }
 
-function buildContentEssay(index: number, sentence: string, title: string, difficulty: Difficulty): QuestionItem {
+function buildContentEssay(
+  index: number,
+  sentence: string,
+  title: string,
+  difficulty: Difficulty,
+  teacherStyle: TeacherStyle,
+  customDirective: string
+): QuestionItem {
   return {
     id: genId('essay'),
     type: 'Essay',
     difficulty,
-    question: `Provide a detailed essay synthesis on "${title}", critically analyzing the mechanisms discussed in: "${sentence.length > 60 ? sentence.substring(0, 60) + '...' : sentence}"`,
-    answer: `Essay Response Outline derived from your content:\n1. Introduction: Define main topic ("${title}") and introduce core thesis.\n2. Key Component Analysis: Elaborate on "${sentence}".\n3. Systemic Implications: Discuss broader context and application.\n4. Conclusion: Summarize essential takeaways.`,
-    explanation: "This essay outline synthesizes the key concepts directly provided in your study notes.",
+    question: `[${teacherStyle.toUpperCase()}] Provide a structured essay evaluation on "${title}", analyzing the concepts in: "${sentence.length > 60 ? sentence.substring(0, 60) + '...' : sentence}"`,
+    answer: `Essay Response Outline derived from your content:\n1. Introduction: Define main topic ("${title}") under ${teacherStyle} evaluation criteria.\n2. Core Analysis: Elaborate on "${sentence}".\n3. Practical Synthesis: Connect mechanisms to lesson objectives.\n4. Conclusion: State primary conclusions.${customDirective ? `\n5. Custom Directive: ${customDirective}` : ''}`,
+    explanation: `This essay outline synthesizes the key concepts directly provided in your study notes using [${teacherStyle}] evaluation criteria.`,
     keyTakeaways: [
       `Structure essay using paragraph main points.`,
-      `Incorporate technical terms directly from your notes.`
+      `Evaluation Style: ${teacherStyle}`
     ],
     topicTag: 'Long Essay'
   };
 }
 
-function buildContentDefinition(index: number, sentence: string, sentences: string[], difficulty: Difficulty): QuestionItem {
+function buildContentDefinition(
+  index: number,
+  sentence: string,
+  sentences: string[],
+  difficulty: Difficulty,
+  teacherStyle: TeacherStyle,
+  customDirective: string
+): QuestionItem {
   const words = sentence.split(/\s+/);
   const term = words.slice(0, 3).join(' ').replace(/[^a-zA-Z0-9\s]/g, '');
 
@@ -209,18 +236,24 @@ function buildContentDefinition(index: number, sentence: string, sentences: stri
     id: genId('def'),
     type: 'Definition',
     difficulty,
-    question: `Define the concept "${term}" based on your provided study notes.`,
+    question: `[${teacherStyle.toUpperCase()}] Define the technical concept "${term}" from your lesson text.`,
     answer: sentence,
-    explanation: `Definition extracted directly from your paragraph: "${sentence}".`,
+    explanation: `Definition extracted directly from your paragraph: "${sentence}". Evaluated as [${teacherStyle}].`,
     keyTakeaways: [
       `Definition term: ${term}`,
       `Exact context: ${sentence.length > 50 ? sentence.substring(0, 50) + '...' : sentence}`
     ],
-    topicTag: 'Key Term'
+    topicTag: 'Key Concept'
   };
 }
 
-function buildContentFillBlank(index: number, sentence: string, difficulty: Difficulty): QuestionItem {
+function buildContentFillBlank(
+  index: number,
+  sentence: string,
+  difficulty: Difficulty,
+  teacherStyle: TeacherStyle,
+  customDirective: string
+): QuestionItem {
   const words = sentence.split(/\s+/).filter(w => w.length > 4);
   const blankWord = words[Math.floor(words.length / 2)] || "concept";
   const maskedSentence = sentence.replace(new RegExp(`\\b${blankWord}\\b`, 'i'), '________');
@@ -229,7 +262,7 @@ function buildContentFillBlank(index: number, sentence: string, difficulty: Diff
     id: genId('blank'),
     type: 'FillBlank',
     difficulty,
-    question: `Fill in the missing word from your text: "${maskedSentence}"`,
+    question: `[${teacherStyle.toUpperCase()}] Fill in the missing word from your text: "${maskedSentence}"`,
     blankAnswer: blankWord.toLowerCase(),
     answer: blankWord,
     explanation: `Original sentence from your notes: "${sentence}". Missing keyword: "${blankWord}".`,
@@ -296,7 +329,7 @@ function buildContentFlashcards(text: string, sentences: string[]): Flashcard[] 
       id: genId('fc'),
       front: words.slice(0, 3).join(' ') || `Concept #${cards.length + 1}`,
       back: s,
-      category: 'Provided Notes'
+      category: 'Lesson Notes'
     });
   }
 
@@ -312,9 +345,9 @@ function buildContentDiagram(title: string, sentences: string[]): VisualAidDiagr
 
   if (steps.length === 0) {
     steps.push(
-      { label: "Phase 1: Input Analysis", detail: "Primary concept definition extracted from text." },
-      { label: "Phase 2: Core Mechanism", detail: "Key interactions and functional rules." },
-      { label: "Phase 3: Final Synthesis", detail: "Summary conclusions and exam key points." }
+      { label: "Step 1: Primary Input", detail: "Initial concept definition extracted from lesson text." },
+      { label: "Step 2: Core Transformation", detail: "Key process interactions and functional rules." },
+      { label: "Step 3: Final Output", detail: "Summary conclusions and exam key points." }
     );
   }
 
@@ -322,11 +355,11 @@ function buildContentDiagram(title: string, sentences: string[]): VisualAidDiagr
 
   return [{
     id: genId('diag'),
-    title: `Visual Concept Flow: ${title}`,
-    description: `Interactive diagram map extracted directly from your provided study paragraph notes.`,
+    title: `Visual Concept & Process Map: ${title}`,
+    description: `Sequential step-by-step visual process flowchart extracted directly from your provided lesson text.`,
     type: 'flowchart',
     svgType: 'generic',
-    tags: [`Diagram: ${cleanTitle}`, 'Extracted Flow', 'User Notes'],
+    tags: [`Diagram: ${cleanTitle}`, 'Sequential Flow', 'Lesson Steps'],
     searchQueryTag: `Diagram: ${cleanTitle} Process Labeled`,
     keyComponents: steps
   }];

@@ -2,6 +2,8 @@ export type Difficulty = 'Easy' | 'Medium' | 'Hard';
 
 export type QuestionType = 'MCQ' | 'Short' | 'Essay' | 'Definition' | 'FillBlank';
 
+export type TeacherStyle = 'Conceptual' | 'Strict Exam' | 'Direct Recall' | 'Real-World Application';
+
 export interface MCQOption {
   id: string;
   label: 'A' | 'B' | 'C' | 'D';
@@ -60,7 +62,9 @@ export interface GeneratedStudyKit {
 export interface GeneratorOptions {
   difficulty: Difficulty;
   questionTypes: QuestionType[];
-  questionCount: number;
+  questionCount: number; // 3, 5, 8, 10
+  teacherStyle?: TeacherStyle;
+  customDirective?: string;
   includeFlashcards: boolean;
   includeDiagrams: boolean;
 }

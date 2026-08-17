@@ -10,11 +10,13 @@ import { GeneratedStudyKit, GeneratorOptions } from '../lib/types';
 import { generateStudyKit } from '../lib/generatorEngine';
 import { SAMPLE_PRESETS } from '../lib/sampleData';
 
-// Initial fallback kit created synchronously
-const initialDefaultKit = generateStudyKit(SAMPLE_PRESETS[0].text, {
+// Initial default kit pre-loaded with Photosynthesis sample
+const photosynthesisSample = SAMPLE_PRESETS.find(p => p.id === 'plant-photosynthesis') || SAMPLE_PRESETS[0];
+const initialDefaultKit = generateStudyKit(photosynthesisSample.text, {
   difficulty: 'Medium',
   questionTypes: ['MCQ', 'Short', 'Essay', 'Definition', 'FillBlank'],
   questionCount: 8,
+  teacherStyle: 'Conceptual',
   includeFlashcards: true,
   includeDiagrams: true
 });
@@ -62,7 +64,7 @@ export default function Home() {
     }, 600);
 
     setTimeout(() => {
-      setGenerationStep('Building interactive MCQs & simple solutions...');
+      setGenerationStep(`Building ${options.teacherStyle || 'Conceptual'} MCQs & simple solutions...`);
     }, 1200);
 
     setTimeout(() => {

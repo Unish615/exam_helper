@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { Difficulty, QuestionType, GeneratorOptions } from '../lib/types';
+import { Difficulty, QuestionType, GeneratorOptions, TeacherStyle } from '../lib/types';
 import { SAMPLE_PRESETS, SamplePreset } from '../lib/sampleData';
 
 interface HeroInputSectionProps {
@@ -16,7 +16,10 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
   generationStep
 }) => {
   const [activeTab, setActiveTab] = useState<'text' | 'file'>('text');
-  const [inputText, setInputText] = useState('');
+  
+  // Pre-load with Photosynthesis sample text as requested
+  const photosynthesisPreset = SAMPLE_PRESETS.find(p => p.id === 'plant-photosynthesis') || SAMPLE_PRESETS[0];
+  const [inputText, setInputText] = useState(photosynthesisPreset.text);
   
   // File upload state
   const [dragActive, setDragActive] = useState(false);
@@ -27,10 +30,12 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
 
   // Generator Options state
   const [difficulty, setDifficulty] = useState<Difficulty>('Medium');
+  const [teacherStyle, setTeacherStyle] = useState<TeacherStyle>('Conceptual');
+  const [customDirective, setCustomDirective] = useState<string>('');
   const [selectedTypes, setSelectedTypes] = useState<QuestionType[]>([
     'MCQ', 'Short', 'Essay', 'Definition', 'FillBlank'
   ]);
-  const [questionCount, setQuestionCount] = useState<number>(10);
+  const [questionCount, setQuestionCount] = useState<number>(8);
 
   const handleSelectPreset = (preset: SamplePreset) => {
     setActiveTab('text');
@@ -119,6 +124,8 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
       difficulty,
       questionTypes: selectedTypes,
       questionCount,
+      teacherStyle,
+      customDirective,
       includeFlashcards: true,
       includeDiagrams: true
     });
@@ -148,7 +155,7 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
         </h1>
 
         <p className="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-          Upload PDF/Text files or paste study notes. Nyoria generates 100% deduplicated MCQs with instant feedback, simple solutions, visual diagrams, and 3D flashcards.
+          Upload PDF/Text files or paste study notes. Pre-loaded with Photosynthesis sample text below. Nyoria generates deduplicated MCQs, 3D flashcards, and visual process flowcharts.
         </p>
 
         {/* Sample Topics */}
@@ -160,7 +167,11 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
             <button
               key={preset.id}
               onClick={() => handleSelectPreset(preset)}
-              className="px-2.5 py-1 rounded-lg bg-[#111827] hover:bg-[#1E293B] hover:border-indigo-500/40 text-slate-300 text-xs font-medium border border-[#1E293B] transition-all flex items-center gap-1.5 shadow-sm"
+              className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-all flex items-center gap-1.5 shadow-sm ${
+                inputText === preset.text
+                  ? 'bg-indigo-600/20 text-indigo-300 border-indigo-500/50 font-bold'
+                  : 'bg-[#111827] hover:bg-[#1E293B] text-slate-300 border-[#1E293B]'
+              }`}
             >
               <span>{preset.title.split(':')[0]}</span>
               <span className="text-[10px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-bold">
@@ -187,7 +198,7 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              Note Textarea
+              Source Text Input
             </button>
 
             <button
@@ -228,7 +239,7 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
             <textarea
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder="Paste your study notes, textbook chapters, or exam topics here... (e.g. Human Heart Circulation, Photosynthesis Calvin Cycle, Mitosis phases, TCP/IP Stack)"
+              placeholder="Paste study material, textbook section, or lesson text here..."
               rows={8}
               className="w-full p-4 rounded-xl bg-[#0B0F19] border border-[#1E293B] text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all font-sans leading-relaxed resize-y"
             />
@@ -317,19 +328,60 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
           </div>
         )}
 
-        {/* Control Bar */}
-        <div className="p-4 rounded-xl bg-[#0B0F19] border border-[#1E293B] space-y-4">
+        {/* Control Bar & Teacher Evaluation Style Selection */}
+        <div className="p-4 sm:p-5 rounded-xl bg-[#0B0F19] border border-[#1E293B] space-y-5">
           
-          <div className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-            Control Bar Options
+          <div className="flex items-center justify-between text-xs font-bold text-slate-300 uppercase tracking-wider">
+            <span>Teacher Evaluation & Generator Options</span>
+            <span className="text-indigo-400 font-mono">Customize Rigor</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             
-            {/* Difficulty Selector */}
+            {/* 1. Question Quantity Picker (3, 5, 8, 10) */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-slate-400 block">
-                Select Difficulty Level:
+              <label className="text-xs font-semibold text-slate-300 block">
+                Question Quantity:
+              </label>
+              <div className="grid grid-cols-4 gap-1.5 p-1 bg-[#111827] rounded-xl border border-[#1E293B]">
+                {[3, 5, 8, 10].map((num) => (
+                  <button
+                    key={num}
+                    type="button"
+                    onClick={() => setQuestionCount(num)}
+                    className={`py-1.5 px-2 rounded-lg text-xs font-black transition-all ${
+                      questionCount === num
+                        ? 'bg-indigo-600 text-white shadow-sm'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    {num} Qs
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 2. Teacher Evaluation Style Selection */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-slate-300 block">
+                Teacher Evaluation Style:
+              </label>
+              <select
+                value={teacherStyle}
+                onChange={(e) => setTeacherStyle(e.target.value as TeacherStyle)}
+                className="w-full px-3 py-2 rounded-xl bg-[#111827] border border-[#1E293B] text-slate-100 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+              >
+                <option value="Conceptual">Conceptual (Deep Principles & Why/How)</option>
+                <option value="Strict Exam">Strict Exam (High Rigor & Exact Terms)</option>
+                <option value="Direct Recall">Direct Recall (Factual Memory Checks)</option>
+                <option value="Real-World Application">Real-World Application (Practical Case Scenarios)</option>
+              </select>
+            </div>
+
+            {/* 3. Difficulty Level */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-slate-300 block">
+                Difficulty Level:
               </label>
               <div className="grid grid-cols-3 gap-1.5 p-1 bg-[#111827] rounded-xl border border-[#1E293B]">
                 {(['Easy', 'Medium', 'Hard'] as Difficulty[]).map((level) => (
@@ -339,7 +391,7 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
                     onClick={() => setDifficulty(level)}
                     className={`py-1.5 px-2 rounded-lg text-xs font-extrabold transition-all ${
                       difficulty === level
-                        ? 'bg-indigo-600 text-white font-black shadow-sm'
+                        ? 'bg-indigo-600 text-white shadow-sm'
                         : 'text-slate-400 hover:text-slate-200'
                     }`}
                   >
@@ -349,68 +401,51 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
               </div>
             </div>
 
-            {/* Content Options */}
-            <div className="space-y-2 md:col-span-2">
-              <label className="text-xs font-semibold text-slate-400 block">
-                Content Options:
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { id: 'MCQ', label: 'MCQs (Interactive)' },
-                  { id: 'Short', label: 'Short Notes' },
-                  { id: 'Essay', label: 'Long Answers' },
-                  { id: 'Definition', label: 'Definitions' },
-                  { id: 'FillBlank', label: 'Fill-in-Blanks' },
-                ].map((type) => {
-                  const isSelected = selectedTypes.includes(type.id as QuestionType);
-                  return (
-                    <button
-                      key={type.id}
-                      type="button"
-                      onClick={() => toggleType(type.id as QuestionType)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
-                        isSelected
-                          ? 'bg-indigo-600/20 text-indigo-300 border-indigo-500/50 shadow-sm'
-                          : 'bg-[#111827] text-slate-400 border-[#1E293B] hover:text-slate-200'
-                      }`}
-                    >
-                      <span>{isSelected ? '✓ ' : ''}{type.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
           </div>
 
-          {/* Question Count Slider */}
-          <div className="pt-2 border-t border-[#1E293B] flex items-center justify-between flex-wrap gap-4 text-xs text-slate-400">
-            <div className="flex items-center gap-3">
-              <span>Question Quantity:</span>
-              <div className="flex gap-1.5">
-                {[5, 10, 15, 20].map((num) => (
+          {/* Custom Prompt Directive Input Field */}
+          <div className="space-y-1.5 pt-1">
+            <label className="text-xs font-semibold text-slate-300 block">
+              Custom Prompt Directive (Optional):
+            </label>
+            <input
+              type="text"
+              value={customDirective}
+              onChange={(e) => setCustomDirective(e.target.value)}
+              placeholder="e.g. Focus heavily on chemical equations, enzyme kinetics, or common exam traps..."
+              className="w-full px-3.5 py-2 rounded-xl bg-[#111827] border border-[#1E293B] text-slate-100 placeholder-slate-500 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+            />
+          </div>
+
+          {/* Content Format Filter Badges */}
+          <div className="pt-2 border-t border-[#1E293B] space-y-2">
+            <label className="text-xs font-semibold text-slate-400 block">
+              Question Types Included:
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { id: 'MCQ', label: 'MCQs (Interactive)' },
+                { id: 'Short', label: 'Short Notes' },
+                { id: 'Essay', label: 'Long Answers' },
+                { id: 'Definition', label: 'Definitions' },
+                { id: 'FillBlank', label: 'Fill-in-Blanks' },
+              ].map((type) => {
+                const isSelected = selectedTypes.includes(type.id as QuestionType);
+                return (
                   <button
-                    key={num}
-                    onClick={() => setQuestionCount(num)}
-                    className={`px-2.5 py-1 rounded-md font-mono font-bold text-xs transition-all ${
-                      questionCount === num
-                        ? 'bg-indigo-600 text-white font-black'
-                        : 'bg-[#111827] text-slate-400 hover:text-slate-200'
+                    key={type.id}
+                    type="button"
+                    onClick={() => toggleType(type.id as QuestionType)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
+                      isSelected
+                        ? 'bg-indigo-600/20 text-indigo-300 border-indigo-500/50 shadow-sm'
+                        : 'bg-[#111827] text-slate-400 border-[#1E293B] hover:text-slate-200'
                     }`}
                   >
-                    {num}
+                    <span>{isSelected ? '✓ ' : ''}{type.label}</span>
                   </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4 text-slate-300">
-              <span className="text-emerald-400 font-medium">
-                ✓ 100% Unique MCQs
-              </span>
-              <span className="text-cyan-400 font-medium">
-                ✓ Visual Diagram Cards
-              </span>
+                );
+              })}
             </div>
           </div>
 
@@ -430,7 +465,7 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
             {isGenerating ? (
               <span>{generationStep || "Generating Nyoria Study Pack..."}</span>
             ) : (
-              <span>Generate Nyoria Study Pack</span>
+              <span>Generate Nyoria Study Pack ({questionCount} Questions • {teacherStyle})</span>
             )}
           </button>
         </div>
