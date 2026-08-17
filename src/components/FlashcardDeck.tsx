@@ -44,16 +44,16 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards: initia
   const learnedCount = cards.filter(c => c.learned).length;
 
   return (
-    <div className="bg-[#0D1322]/90 border border-[#1E293B] rounded-2xl p-5 sm:p-7 space-y-6 shadow-xl relative overflow-hidden">
+    <div className="bg-[#111827]/90 border border-[#1E293B] rounded-2xl p-5 sm:p-7 space-y-6 shadow-xl relative overflow-hidden">
       
       {/* Header */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-[#00F2FE]/10 text-[#00F2FE] border border-[#00F2FE]/30 text-xs font-bold uppercase tracking-wider">
+            <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 text-xs font-bold uppercase tracking-wider">
               3D Revision Flashcards
             </span>
-            <span className="text-xs text-slate-400 font-mono">
+            <span className="text-xs text-indigo-400 font-mono font-bold">
               Card {currentIndex + 1} of {cards.length}
             </span>
           </div>
@@ -64,8 +64,8 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards: initia
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="px-3 py-1 rounded-xl bg-[#090D16] border border-[#1E293B] text-xs font-semibold text-slate-300">
-            Mastered: <strong className="text-[#10B981] font-mono">{learnedCount}/{cards.length}</strong>
+          <div className="px-3 py-1 rounded-xl bg-[#0B0F19] border border-[#1E293B] text-xs font-semibold text-slate-300">
+            Mastered: <strong className="text-emerald-400 font-mono">{learnedCount}/{cards.length}</strong>
           </div>
 
           <button
@@ -90,12 +90,12 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards: initia
           {/* FRONT OF CARD */}
           <div className={`absolute inset-0 w-full h-full rounded-2xl p-6 sm:p-8 border flex flex-col justify-between backface-hidden transition-all duration-300 ${
             currentCard.learned
-              ? 'bg-[#090D16] border-[#10B981]/50 glow-emerald'
-              : 'bg-gradient-to-br from-[#090D16] via-[#0D1322] to-[#1E293B] border-[#00F2FE]/40 hover:border-[#00F2FE] glow-cyber'
+              ? 'bg-[#0B0F19] border-emerald-500/50 glow-emerald'
+              : 'bg-gradient-to-br from-[#0B0F19] via-[#111827] to-[#1E293B] border-indigo-500/40 hover:border-indigo-500 glow-primary'
           }`}>
             <div className="flex items-center justify-between text-xs text-slate-400">
-              <span className="font-semibold px-2.5 py-0.5 rounded bg-[#1E293B] text-[#00F2FE] border border-[#00F2FE]/30">
-                {currentCard.category || 'Term'}
+              <span className="font-semibold px-2.5 py-0.5 rounded bg-[#1E293B] text-indigo-300 border border-indigo-500/30">
+                {currentCard.category || 'Provided Content'}
               </span>
               <span className="text-slate-400">
                 Click card to flip
@@ -103,8 +103,8 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards: initia
             </div>
 
             <div className="my-auto text-center space-y-2 px-4">
-              <span className="text-xs font-mono text-[#00F2FE] uppercase tracking-widest block">
-                [ Key Term / Concept ]
+              <span className="text-xs font-mono text-indigo-400 uppercase tracking-widest block">
+                [ Term / Concept from Paragraph ]
               </span>
               <h4 className="text-xl sm:text-2xl font-extrabold text-white leading-tight">
                 {currentCard.front}
@@ -116,22 +116,22 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards: initia
                 onClick={toggleMastered}
                 className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors border ${
                   currentCard.learned
-                    ? 'bg-[#10B981]/20 text-[#10B981] border-[#10B981]/40'
+                    ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
                     : 'bg-[#1E293B] text-slate-300 hover:text-white border-slate-700'
                 }`}
               >
                 {currentCard.learned ? '✓ Mastered' : 'Mark Mastered'}
               </button>
 
-              <span className="text-xs text-slate-400">Front (1/2)</span>
+              <span className="text-xs text-slate-400 font-mono">Card {currentIndex + 1} of {cards.length}</span>
             </div>
           </div>
 
           {/* BACK OF CARD */}
-          <div className="absolute inset-0 w-full h-full rounded-2xl p-6 sm:p-8 border bg-[#0D1322] border-[#00F2FE]/50 flex flex-col justify-between rotate-y-180 backface-hidden shadow-2xl">
+          <div className="absolute inset-0 w-full h-full rounded-2xl p-6 sm:p-8 border bg-[#111827] border-indigo-500/50 flex flex-col justify-between rotate-y-180 backface-hidden shadow-2xl">
             <div className="flex items-center justify-between text-xs text-slate-400">
-              <span className="font-semibold text-[#10B981]">
-                Definition & Explanation
+              <span className="font-semibold text-emerald-400">
+                Definition & Context
               </span>
               <span className="text-slate-400">Click to flip back</span>
             </div>
@@ -143,10 +143,10 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards: initia
             </div>
 
             <div className="flex items-center justify-between pt-2 border-t border-[#1E293B]">
-              <span className="text-xs text-[#00F2FE] font-mono">
+              <span className="text-xs text-indigo-300 font-mono">
                 {currentCard.front}
               </span>
-              <span className="text-xs text-slate-400">Back (2/2)</span>
+              <span className="text-xs text-slate-400 font-mono">Card {currentIndex + 1} of {cards.length}</span>
             </div>
           </div>
 
@@ -164,7 +164,7 @@ export const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ flashcards: initia
 
         <button
           onClick={() => setIsFlipped(!isFlipped)}
-          className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#00F2FE] to-[#4FACFE] text-[#090D16] font-black text-xs sm:text-sm transition-all shadow-md glow-cyber"
+          className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-black text-xs sm:text-sm transition-all shadow-md glow-primary"
         >
           Flip Card
         </button>

@@ -21,25 +21,14 @@ function isDuplicateQuestion(newQ: string, existingQs: string[]): boolean {
 
 export function generateStudyKit(text: string, options: GeneratorOptions): GeneratedStudyKit {
   const cleanText = text.trim();
-  const lowerText = cleanText.toLowerCase();
-
-  let theme: 'heart' | 'photosynthesis' | 'biology' | 'cs' | 'general' = 'general';
-  if (lowerText.includes('heart') || lowerText.includes('atrium') || lowerText.includes('ventricle') || lowerText.includes('aorta') || lowerText.includes('valve')) {
-    theme = 'heart';
-  } else if (lowerText.includes('photosynthesis') || lowerText.includes('calvin') || lowerText.includes('thylakoid') || lowerText.includes('rubisco')) {
-    theme = 'photosynthesis';
-  } else if (lowerText.includes('cell') || lowerText.includes('mitosis') || lowerText.includes('chromosome') || lowerText.includes('prophase')) {
-    theme = 'biology';
-  } else if (lowerText.includes('tcp') || lowerText.includes('network') || lowerText.includes('protocol') || lowerText.includes('layer') || lowerText.includes('port')) {
-    theme = 'cs';
-  }
-
+  
+  // Extract sentences from user text
   const sentences = cleanText
-    .split(/(?<=[.?!])\s+/)
+    .split(/(?<=[.?!])\s+|\n+/)
     .map(s => s.trim())
     .filter(s => s.length > 15);
 
-  const title = extractTitle(cleanText, theme);
+  const title = extractTitle(cleanText);
   const questions: QuestionItem[] = [];
   const flashcards: Flashcard[] = [];
   const diagrams: VisualAidDiagram[] = [];
@@ -56,19 +45,19 @@ export function generateStudyKit(text: string, options: GeneratorOptions): Gener
     if (questions.length >= targetCount) break;
 
     const qType = requestedTypes[questions.length % requestedTypes.length];
-    const sentence = sentences[i % sentences.length] || `Core concept #${i + 1} from your provided study material.`;
+    const sentence = sentences[i % sentences.length] || cleanText.substring(0, 80);
     
     let candidateQ: QuestionItem | null = null;
     if (qType === 'MCQ') {
-      candidateQ = buildMCQ(questions.length, sentence, theme, options.difficulty);
+      candidateQ = buildContentMCQ(questions.length, sentence, sentences, options.difficulty);
     } else if (qType === 'Short') {
-      candidateQ = buildShortAnswer(questions.length, sentence, theme, options.difficulty);
+      candidateQ = buildContentShort(questions.length, sentence, sentences, options.difficulty);
     } else if (qType === 'Essay') {
-      candidateQ = buildEssay(questions.length, sentence, theme, options.difficulty);
+      candidateQ = buildContentEssay(questions.length, sentence, title, options.difficulty);
     } else if (qType === 'Definition') {
-      candidateQ = buildDefinition(questions.length, sentence, theme, options.difficulty);
+      candidateQ = buildContentDefinition(questions.length, sentence, sentences, options.difficulty);
     } else if (qType === 'FillBlank') {
-      candidateQ = buildFillBlank(questions.length, sentence, theme, options.difficulty);
+      candidateQ = buildContentFillBlank(questions.length, sentence, options.difficulty);
     }
 
     if (candidateQ && !isDuplicateQuestion(candidateQ.question, generatedQuestionTexts)) {
@@ -78,17 +67,17 @@ export function generateStudyKit(text: string, options: GeneratorOptions): Gener
   }
 
   if (options.includeFlashcards) {
-    flashcards.push(...buildDynamicFlashcards(cleanText, theme, sentences));
+    flashcards.push(...buildContentFlashcards(cleanText, sentences));
   }
 
   if (options.includeDiagrams) {
-    diagrams.push(...buildDiagrams(theme, title));
+    diagrams.push(...buildContentDiagram(title, sentences));
   }
 
   return {
     id: genId('kit'),
     title: title,
-    summary: `Extracted ${questions.length} deduplicated exam items (${questions.filter(q => q.type === 'MCQ').length} interactive MCQs), ${flashcards.length} flashcards, and ${diagrams.length} visual diagrams.`,
+    summary: `Extracted ${questions.length} deduplicated exam items strictly from your provided content (${questions.filter(q => q.type === 'MCQ').length} interactive MCQs), ${flashcards.length} flashcards, and ${diagrams.length} visual diagrams.`,
     createdAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
     difficulty: options.difficulty,
     questions,
@@ -98,30 +87,172 @@ export function generateStudyKit(text: string, options: GeneratorOptions): Gener
   };
 }
 
-function extractTitle(text: string, theme: string): string {
+function extractTitle(text: string): string {
   const firstLine = text.split('\n')[0].replace(/^#+\s*/, '').trim();
-  if (firstLine && firstLine.length < 60) return firstLine;
-  switch (theme) {
-    case 'heart': return 'Human Heart Anatomy & Blood Flow Circulation';
-    case 'photosynthesis': return 'Photosynthesis & Calvin Cycle Plant Physiology';
-    case 'biology': return 'Cell Division & Mitotic Cycle Study Kit';
-    case 'cs': return 'TCP/IP Network Stack & Protocol Architecture';
-    default: return 'Custom Nyoria Study Pack & Exam Kit';
+  if (firstLine && firstLine.length > 5 && firstLine.length < 65) {
+    return firstLine;
   }
+  const words = text.split(/\s+/).slice(0, 6).join(' ');
+  return `${words}... Study Kit`;
 }
 
-// Dynamically extracts term/definition flashcards according to the user's actual content
-function buildDynamicFlashcards(text: string, theme: string, sentences: string[]): Flashcard[] {
+// Build MCQ strictly from user provided paragraph sentences
+function buildContentMCQ(index: number, sentence: string, sentences: string[], difficulty: Difficulty): QuestionItem {
+  // Extract key concept words or clause
+  const words = sentence.split(/\s+/);
+  const coreFact = sentence;
+
+  // Distractors from other sentences or word perturbations
+  const otherSentences = sentences.filter(s => s !== sentence);
+  const distractor1 = otherSentences[0] 
+    ? (otherSentences[0].length > 60 ? otherSentences[0].substring(0, 60) + '...' : otherSentences[0]) 
+    : "This process operates independently without regulation.";
+  const distractor2 = otherSentences[1] 
+    ? (otherSentences[1].length > 60 ? otherSentences[1].substring(0, 60) + '...' : otherSentences[1]) 
+    : "The mechanism is completely reversed during standard phase.";
+  const distractor3 = "This condition occurs only under non-standard laboratory settings.";
+
+  // Shuffle options
+  const correctOptionText = sentence.length > 80 ? sentence.substring(0, 80) + '...' : sentence;
+  const rawOpts = [
+    { text: correctOptionText, isCorrect: true },
+    { text: distractor1, isCorrect: false },
+    { text: distractor2, isCorrect: false },
+    { text: distractor3, isCorrect: false },
+  ];
+
+  const labels: ('A' | 'B' | 'C' | 'D')[] = ['A', 'B', 'C', 'D'];
+  // Deterministic shift based on index
+  const shifted = [...rawOpts];
+  const shiftAmt = index % 4;
+  for (let s = 0; s < shiftAmt; s++) {
+    shifted.push(shifted.shift()!);
+  }
+
+  const options: MCQOption[] = shifted.map((opt, idx) => ({
+    id: genId('opt'),
+    label: labels[idx],
+    text: opt.text,
+    isCorrect: opt.isCorrect,
+  }));
+
+  // Create question text
+  let qText = "";
+  if (sentence.toLowerCase().includes("is") || sentence.toLowerCase().includes("are")) {
+    const parts = sentence.split(/\s+(?:is|are|refers to|consists of|functions as)\s+/i);
+    if (parts[0] && parts[0].length < 50) {
+      qText = `According to your provided notes, what is the primary role or definition of "${parts[0].replace(/^[A-Z0-9.#*\-\s]+/, '').trim()}"?`;
+    }
+  }
+  
+  if (!qText) {
+    qText = `Based on your provided study content: "${sentence.length > 70 ? sentence.substring(0, 70) + '...' : sentence}", which of the following statements is accurate?`;
+  }
+
+  const correctAnswer = options.find(o => o.isCorrect)?.text || correctOptionText;
+
+  return {
+    id: genId('mcq'),
+    type: 'MCQ',
+    difficulty,
+    question: qText,
+    answer: correctAnswer,
+    explanation: `Direct quote/concept from your notes: "${sentence}". This statement directly satisfies the requirement.`,
+    mnemonic: `Remember: ${words.slice(0, 3).join(' ')} is essential to this section of your study text.`,
+    keyTakeaways: [
+      `Key fact directly stated in paragraph: "${sentence.length > 60 ? sentence.substring(0, 60) + '...' : sentence}"`,
+      `Cross-verify distractor options against paragraph details.`
+    ],
+    options,
+    topicTag: 'Content Fact'
+  };
+}
+
+function buildContentShort(index: number, sentence: string, sentences: string[], difficulty: Difficulty): QuestionItem {
+  const nextSentence = sentences[(index + 1) % sentences.length] || sentence;
+  return {
+    id: genId('short'),
+    type: 'Short',
+    difficulty,
+    question: `Explain the key principle described in your paragraph: "${sentence.length > 60 ? sentence.substring(0, 60) + '...' : sentence}"`,
+    answer: `${sentence} ${nextSentence !== sentence ? nextSentence : ''}`,
+    explanation: `Extracted directly from your provided text. This passage summarizes a core mechanism required for exam recall.`,
+    keyTakeaways: [
+      `Main takeaway: ${sentence.length > 50 ? sentence.substring(0, 50) + '...' : sentence}`,
+      `Review key relationships described in your notes.`
+    ],
+    topicTag: 'Short Summary'
+  };
+}
+
+function buildContentEssay(index: number, sentence: string, title: string, difficulty: Difficulty): QuestionItem {
+  return {
+    id: genId('essay'),
+    type: 'Essay',
+    difficulty,
+    question: `Provide a detailed essay synthesis on "${title}", critically analyzing the mechanisms discussed in: "${sentence.length > 60 ? sentence.substring(0, 60) + '...' : sentence}"`,
+    answer: `Essay Response Outline derived from your content:\n1. Introduction: Define main topic ("${title}") and introduce core thesis.\n2. Key Component Analysis: Elaborate on "${sentence}".\n3. Systemic Implications: Discuss broader context and application.\n4. Conclusion: Summarize essential takeaways.`,
+    explanation: "This essay outline synthesizes the key concepts directly provided in your study notes.",
+    keyTakeaways: [
+      `Structure essay using paragraph main points.`,
+      `Incorporate technical terms directly from your notes.`
+    ],
+    topicTag: 'Long Essay'
+  };
+}
+
+function buildContentDefinition(index: number, sentence: string, sentences: string[], difficulty: Difficulty): QuestionItem {
+  const words = sentence.split(/\s+/);
+  const term = words.slice(0, 3).join(' ').replace(/[^a-zA-Z0-9\s]/g, '');
+
+  return {
+    id: genId('def'),
+    type: 'Definition',
+    difficulty,
+    question: `Define the concept "${term}" based on your provided study notes.`,
+    answer: sentence,
+    explanation: `Definition extracted directly from your paragraph: "${sentence}".`,
+    keyTakeaways: [
+      `Definition term: ${term}`,
+      `Exact context: ${sentence.length > 50 ? sentence.substring(0, 50) + '...' : sentence}`
+    ],
+    topicTag: 'Key Term'
+  };
+}
+
+function buildContentFillBlank(index: number, sentence: string, difficulty: Difficulty): QuestionItem {
+  const words = sentence.split(/\s+/).filter(w => w.length > 4);
+  const blankWord = words[Math.floor(words.length / 2)] || "concept";
+  const maskedSentence = sentence.replace(new RegExp(`\\b${blankWord}\\b`, 'i'), '________');
+
+  return {
+    id: genId('blank'),
+    type: 'FillBlank',
+    difficulty,
+    question: `Fill in the missing word from your text: "${maskedSentence}"`,
+    blankAnswer: blankWord.toLowerCase(),
+    answer: blankWord,
+    explanation: `Original sentence from your notes: "${sentence}". Missing keyword: "${blankWord}".`,
+    keyTakeaways: [
+      `Target key term: ${blankWord}`,
+      `Full context: ${sentence.length > 50 ? sentence.substring(0, 50) + '...' : sentence}`
+    ],
+    topicTag: 'Active Recall'
+  };
+}
+
+// Build 6 3D Revision Flashcards strictly from user content
+function buildContentFlashcards(text: string, sentences: string[]): Flashcard[] {
   const cards: Flashcard[] = [];
   const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 5);
 
-  // 1. Look for explicit Colon patterns (Term: Definition or Term - Definition)
+  // 1. Check explicit colon or dash lines (Term: Definition)
   for (const line of lines) {
     const colonMatch = line.match(/^([^:\-\(\)]{3,40})\s*[:\-\u2013]\s*(.+)$/);
     if (colonMatch && colonMatch[1] && colonMatch[2]) {
       const term = colonMatch[1].replace(/^[0-9.#*\-\s]+/, '').trim();
       const def = colonMatch[2].trim();
-      if (term.length > 2 && def.length > 10 && cards.length < 8) {
+      if (term.length > 2 && def.length > 8 && cards.length < 6) {
         cards.push({
           id: genId('fc'),
           front: term,
@@ -132,12 +263,12 @@ function buildDynamicFlashcards(text: string, theme: string, sentences: string[]
     }
   }
 
-  // 2. If sentence-based, extract subject terms from key sentences in the user's content
-  if (cards.length < 4) {
-    sentences.forEach((sent, idx) => {
+  // 2. Extract from sentences (Subject is Definition)
+  if (cards.length < 6) {
+    sentences.forEach((sent) => {
       if (cards.length >= 6) return;
-      const parts = sent.split(/\s+(?:is|are|refers to|consists of|produces|occurs in|functions as)\s+/i);
-      if (parts.length >= 2 && parts[0].length < 45 && parts[1].length > 15) {
+      const parts = sent.split(/\s+(?:is|are|refers to|consists of|produces|functions as)\s+/i);
+      if (parts.length >= 2 && parts[0].length < 45 && parts[1].length > 10) {
         cards.push({
           id: genId('fc'),
           front: parts[0].replace(/^[A-Z0-9.#*\-\s]+/, '').trim(),
@@ -145,7 +276,6 @@ function buildDynamicFlashcards(text: string, theme: string, sentences: string[]
           category: 'Concept'
         });
       } else if (sent.length > 20) {
-        // Fallback: term is first 4 words, definition is the full sentence
         const words = sent.split(/\s+/);
         const term = words.slice(0, 4).join(' ');
         cards.push({
@@ -158,205 +288,46 @@ function buildDynamicFlashcards(text: string, theme: string, sentences: string[]
     });
   }
 
-  // 3. Known Theme Fallback if text is short
-  if (cards.length === 0 && theme === 'heart') {
-    return [
-      { id: genId('fc'), front: "Right Atrium", back: "Receives deoxygenated blood returning from systemic body tissues via the Superior and Inferior Vena Cava.", category: "Heart Anatomy" },
-      { id: genId('fc'), front: "Right Ventricle", back: "Pumps deoxygenated blood through the pulmonary semilunar valve into pulmonary arteries leading to the lungs.", category: "Heart Anatomy" },
-      { id: genId('fc'), front: "Left Atrium", back: "Receives freshly oxygenated blood returning from pulmonary veins.", category: "Heart Anatomy" },
-      { id: genId('fc'), front: "Left Ventricle", back: "Pumps oxygenated blood through the Aorta to systemic body tissues under high pressure.", category: "Heart Anatomy" },
-    ];
+  // Guarantee at least 6 flashcards if content allows
+  while (cards.length < 6 && sentences.length > 0) {
+    const s = sentences[cards.length % sentences.length];
+    const words = s.split(/\s+/);
+    cards.push({
+      id: genId('fc'),
+      front: words.slice(0, 3).join(' ') || `Concept #${cards.length + 1}`,
+      back: s,
+      category: 'Provided Notes'
+    });
   }
 
-  return cards.slice(0, 8);
+  return cards.slice(0, 6);
 }
 
-function buildMCQ(index: number, sentence: string, theme: string, difficulty: Difficulty): QuestionItem {
-  if (theme === 'heart') {
-    const questionsPool = [
-      {
-        q: "Which chamber of the human heart receives oxygenated blood directly from the lungs via the pulmonary veins?",
-        ans: "Left Atrium",
-        opts: [
-          { id: 'a', label: 'A' as const, text: "Right Atrium", isCorrect: false },
-          { id: 'b', label: 'B' as const, text: "Right Ventricle", isCorrect: false },
-          { id: 'c', label: 'C' as const, text: "Left Atrium", isCorrect: true },
-          { id: 'd', label: 'D' as const, text: "Left Ventricle", isCorrect: false },
-        ],
-        expl: "Freshly oxygenated blood returns from pulmonary capillaries into the Left Atrium. It then passes through the Bicuspid (Mitral) valve into the Left Ventricle to be pumped systemically.",
-        mnemonic: "Left side = Lungs & Oxygenated blood! Right side = Returning deoxygenated blood.",
-        takeaways: ["Pulmonary veins carry oxygen-rich blood.", "Left Atrium acts as the receiving chamber for oxygenated blood."]
-      },
-      {
-        q: "Why does the Left Ventricle have a significantly thicker muscular wall (myocardium) than the Right Ventricle?",
-        ans: "It must generate high pressure to pump blood throughout the entire systemic body circulation.",
-        opts: [
-          { id: 'a', label: 'A' as const, text: "It stores deoxygenated blood under high carbon dioxide pressure.", isCorrect: false },
-          { id: 'b', label: 'B' as const, text: "It must generate high pressure to pump blood throughout the entire systemic body circulation.", isCorrect: true },
-          { id: 'c', label: 'C' as const, text: "It prevents pulmonary valve prolapse during cardiac resting phase.", isCorrect: false },
-          { id: 'd', label: 'D' as const, text: "It filters blood before passing it to the Sinoatrial Node.", isCorrect: false },
-        ],
-        expl: "The Right Ventricle only pumps blood a short distance to the lungs (pulmonary circuit), whereas the Left Ventricle must pump blood against high systemic resistance to the entire body via the Aorta.",
-        mnemonic: "Left Ventricle = Heavy Lifter for systemic body pressure!",
-        takeaways: ["Systemic circuit requires higher pressure than pulmonary circuit.", "Left Ventricle myocardium is 3x thicker than Right Ventricle."]
-      },
-      {
-        q: "Which heart valve prevents backflow of blood from the Right Ventricle back into the Right Atrium?",
-        ans: "Tricuspid Valve",
-        opts: [
-          { id: 'a', label: 'A' as const, text: "Bicuspid (Mitral) Valve", isCorrect: false },
-          { id: 'b', label: 'B' as const, text: "Aortic Valve", isCorrect: false },
-          { id: 'c', label: 'C' as const, text: "Tricuspid Valve", isCorrect: true },
-          { id: 'd', label: 'D' as const, text: "Pulmonary Valve", isCorrect: false },
-        ],
-        expl: "The Tricuspid Valve located between the Right Atrium and Right Ventricle closes during ventricular contraction (systole) to prevent regurgitation.",
-        mnemonic: "TRI before you BI! Tricuspid is on the Right, Bicuspid is on the Left.",
-        takeaways: ["Atrioventricular (AV) valves prevent backflow into atria.", "Tricuspid valve has 3 cusps."]
-      }
-    ];
-    const picked = questionsPool[index % questionsPool.length];
-    return {
-      id: genId('mcq'),
-      type: 'MCQ',
-      difficulty,
-      question: picked.q,
-      answer: picked.ans,
-      explanation: picked.expl,
-      mnemonic: picked.mnemonic,
-      keyTakeaways: picked.takeaways,
-      options: picked.opts,
-      topicTag: 'Heart Anatomy'
-    };
+// Build Visual Aid Diagram card strictly from user content
+function buildContentDiagram(title: string, sentences: string[]): VisualAidDiagram[] {
+  const steps = sentences.slice(0, 5).map((s, idx) => ({
+    label: `Step ${idx + 1}: ${s.split(/\s+/).slice(0, 4).join(' ')}`,
+    detail: s
+  }));
+
+  if (steps.length === 0) {
+    steps.push(
+      { label: "Phase 1: Input Analysis", detail: "Primary concept definition extracted from text." },
+      { label: "Phase 2: Core Mechanism", detail: "Key interactions and functional rules." },
+      { label: "Phase 3: Final Synthesis", detail: "Summary conclusions and exam key points." }
+    );
   }
 
-  // Fallback MCQ
-  return {
-    id: genId('mcq'),
-    type: 'MCQ',
-    difficulty,
-    question: `Based on your material: "${sentence.substring(0, 70)}...", which statement is accurate?`,
-    answer: "Statement correctly highlights the core mechanism described in the text.",
-    explanation: `Detailed analysis of: ${sentence}. Cross-verify with key terminology in your notes.`,
-    mnemonic: "Focus on key noun-verb relationships in exam options.",
-    keyTakeaways: ["Key insight directly matches provided study text.", "Pay attention to context clues in test questions."],
-    options: [
-      { id: 'a', label: 'A', text: sentence.length > 50 ? sentence.substring(0, 50) + "..." : sentence, isCorrect: true },
-      { id: 'b', label: 'B', text: "Process operates in reverse without requiring energy or regulation.", isCorrect: false },
-      { id: 'c', label: 'C', text: "Phenomenon only applies to isolated laboratory conditions.", isCorrect: false },
-      { id: 'd', label: 'D', text: "Component is permanently disabled during initial phase.", isCorrect: false },
-    ],
-    topicTag: 'Key Concepts'
-  };
-}
-
-function buildShortAnswer(index: number, sentence: string, theme: string, difficulty: Difficulty): QuestionItem {
-  if (theme === 'heart') {
-    return {
-      id: genId('short'),
-      type: 'Short',
-      difficulty,
-      question: "Trace the exact flow path of oxygenated blood from the lungs back to the systemic body tissues.",
-      answer: "Lungs -> Pulmonary Veins -> Left Atrium -> Bicuspid (Mitral) Valve -> Left Ventricle -> Aortic Valve -> Aorta -> Systemic Body Tissues.",
-      explanation: "Oxygenated blood returns from pulmonary capillaries into the Left Atrium, enters the Left Ventricle, and is pumped under high pressure through the Aorta to nourish systemic body tissues.",
-      mnemonic: "PV -> LA -> LV -> Aorta -> Body!",
-      keyTakeaways: [
-        "Pulmonary veins are the only veins carrying oxygen-rich blood.",
-        "Left Ventricle contracts forcefully to distribute blood via Aorta."
-      ],
-      topicTag: 'Circulation Path'
-    };
-  }
-
-  return {
-    id: genId('short'),
-    type: 'Short',
-    difficulty,
-    question: `Summarize the principal concept discussed regarding: "${sentence.substring(0, 60)}..."`,
-    answer: sentence,
-    explanation: "This concept represents a foundational principle in your study material. Understanding its key mechanism is vital for short-answer exam questions.",
-    keyTakeaways: ["Core definition matches textbook reference.", "Review supporting evidence and examples."],
-    topicTag: 'Summary'
-  };
-}
-
-function buildEssay(index: number, sentence: string, theme: string, difficulty: Difficulty): QuestionItem {
-  return {
-    id: genId('essay'),
-    type: 'Essay',
-    difficulty,
-    question: theme === 'heart'
-      ? "Compare and contrast Systemic Circulation and Pulmonary Circulation in human cardiac physiology."
-      : `Synthesize and critically evaluate the primary mechanisms detailed in your study notes regarding: "${sentence.substring(0, 65)}..."`,
-    answer: "Structuring your response:\n1. Introduction: Define core terms and state main thesis.\n2. Body Paragraph 1: Discuss primary mechanisms and structural rules.\n3. Body Paragraph 2: Evaluate real-world applications and edge cases.\n4. Conclusion: Summarize findings and overall significance.",
-    explanation: "High-scoring essay responses demonstrate clear logical flow, accurate technical vocabulary, and thorough explanation of cause-and-effect relationships.",
-    keyTakeaways: ["Use thematic headings to structure your essay response.", "Include specific examples from your notes to validate claims."],
-    topicTag: 'Comprehensive Essay'
-  };
-}
-
-function buildDefinition(index: number, sentence: string, theme: string, difficulty: Difficulty): QuestionItem {
-  return {
-    id: genId('def'),
-    type: 'Definition',
-    difficulty,
-    question: theme === 'heart' ? "Define Sinoatrial (SA) Node in human heart physiology." : `Define the key technical term in: "${sentence.substring(0, 50)}..."`,
-    answer: theme === 'heart' ? "The Sinoatrial (SA) Node is the natural cardiac pacemaker located in the upper wall of the Right Atrium that generates spontaneous electrical impulses setting the heart rhythm." : sentence,
-    explanation: "Precise definitions require stating both the anatomical or technical term and its functional biological role.",
-    keyTakeaways: ["SA Node initiates electrical action potentials.", "Propagates signal to AV Node and Purkinje fibers."],
-    topicTag: 'Definitions'
-  };
-}
-
-function buildFillBlank(index: number, sentence: string, theme: string, difficulty: Difficulty): QuestionItem {
-  return {
-    id: genId('blank'),
-    type: 'FillBlank',
-    difficulty,
-    question: theme === 'heart'
-      ? "Oxygenated blood exits the Left Ventricle into the ________, the largest artery in the human body."
-      : "The principle of conservation of ________ states that energy cannot be created or destroyed.",
-    blankAnswer: theme === 'heart' ? "aorta" : "energy",
-    answer: theme === 'heart' ? "aorta" : "energy",
-    explanation: theme === 'heart'
-      ? "The Aorta branches into major systemic arteries distributing oxygenated blood throughout the body."
-      : "First Law of Thermodynamics.",
-    keyTakeaways: ["Fill-in-the-blank questions test exact terminology recall."],
-    topicTag: 'Active Recall'
-  };
-}
-
-function buildDiagrams(theme: string, title: string): VisualAidDiagram[] {
-  if (theme === 'heart') {
-    return [{
-      id: genId('diag'),
-      title: "Human Heart Blood Circulation & Valve Flow",
-      description: "Visual roadmap showing step-by-step deoxygenated vs oxygenated blood flow through heart chambers, valves, and systemic vessels.",
-      type: 'flowchart',
-      svgType: 'heart',
-      tags: ['Diagram: Human Heart Blood Flow Labeled', 'Cardiology', 'Vena Cava', 'Pulmonary Circuit', 'Aorta'],
-      searchQueryTag: "Diagram: Human Heart Blood Flow Labeled",
-      keyComponents: [
-        { label: "1. Vena Cava -> Right Atrium", detail: "Deoxygenated blood enters Right Atrium from systemic body." },
-        { label: "2. Tricuspid Valve -> Right Ventricle", detail: "Passes through Tricuspid valve into Right Ventricle." },
-        { label: "3. Pulmonary Artery -> Lungs", detail: "Pumps through Pulmonary Valve to lungs for gas exchange." },
-        { label: "4. Pulmonary Veins -> Left Atrium", detail: "Oxygenated blood returns into Left Atrium." },
-        { label: "5. Mitral Valve -> Left Ventricle -> Aorta", detail: "Enters Left Ventricle and pumps via Aorta to body tissues." },
-      ]
-    }];
-  }
+  const cleanTitle = title.replace(/[^a-zA-Z0-9\s]/g, '').trim();
 
   return [{
     id: genId('diag'),
-    title: "Concept Relationships & System Flow",
-    description: "Visual summary map of key topic dependencies extracted from your study notes.",
+    title: `Visual Concept Flow: ${title}`,
+    description: `Interactive diagram map extracted directly from your provided study paragraph notes.`,
     type: 'flowchart',
     svgType: 'generic',
-    tags: ['Diagram: System Overview', 'Key Concepts', 'Study Flow'],
-    searchQueryTag: "Diagram: System Overview Labeled",
-    keyComponents: [
-      { label: "Foundational Principles", detail: "Core definitions and baseline rules" },
-      { label: "Intermediate Dynamics", detail: "Process interactions and transformations" },
-      { label: "Advanced Applications", detail: "Exam synthesis and problem solving" }
-    ]
+    tags: [`Diagram: ${cleanTitle}`, 'Extracted Flow', 'User Notes'],
+    searchQueryTag: `Diagram: ${cleanTitle} Process Labeled`,
+    keyComponents: steps
   }];
 }

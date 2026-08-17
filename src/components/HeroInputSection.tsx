@@ -131,18 +131,18 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
     <section className="relative py-8 sm:py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       
       {/* Background Glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[300px] bg-[#00F2FE]/15 blur-[130px] rounded-full pointer-events-none -z-10" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[300px] bg-indigo-600/15 blur-[130px] rounded-full pointer-events-none -z-10" />
 
       {/* Hero Header */}
       <div className="text-center space-y-4 max-w-3xl mx-auto mb-8 sm:mb-10">
         
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#00F2FE]/10 border border-[#00F2FE]/30 text-[#00F2FE] text-xs font-bold">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-bold">
           <span>Interactive Study & Exam Preparation Platform</span>
         </div>
 
         <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
           Supercharge Your Exams with <br className="hidden sm:inline" />
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#00F2FE] via-[#4FACFE] to-[#10B981]">
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-violet-300 to-purple-400">
             Smart Question Generation
           </span>
         </h1>
@@ -160,10 +160,10 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
             <button
               key={preset.id}
               onClick={() => handleSelectPreset(preset)}
-              className="px-2.5 py-1 rounded-lg bg-[#0D1322] hover:bg-[#1E293B] hover:border-[#00F2FE]/50 text-slate-300 text-xs font-medium border border-[#1E293B] transition-all flex items-center gap-1.5 shadow-sm"
+              className="px-2.5 py-1 rounded-lg bg-[#111827] hover:bg-[#1E293B] hover:border-indigo-500/40 text-slate-300 text-xs font-medium border border-[#1E293B] transition-all flex items-center gap-1.5 shadow-sm"
             >
               <span>{preset.title.split(':')[0]}</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#00F2FE]/20 text-[#00F2FE] font-bold">
+              <span className="text-[10px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-bold">
                 {preset.category}
               </span>
             </button>
@@ -173,17 +173,17 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
       </div>
 
       {/* Main Dual-Input Box */}
-      <div className="bg-[#0D1322]/90 border border-[#1E293B] rounded-2xl p-4 sm:p-6 shadow-2xl space-y-6">
+      <div className="bg-[#111827]/90 border border-[#1E293B] rounded-2xl p-4 sm:p-6 shadow-2xl space-y-6">
         
         {/* Dual Input Tabs Header */}
         <div className="flex items-center justify-between border-b border-[#1E293B] pb-3 flex-wrap gap-3">
           
-          <div className="flex items-center gap-2 bg-[#090D16] p-1 rounded-xl border border-[#1E293B]">
+          <div className="flex items-center gap-2 bg-[#0B0F19] p-1 rounded-xl border border-[#1E293B]">
             <button
               onClick={() => setActiveTab('text')}
               className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${
                 activeTab === 'text'
-                  ? 'bg-gradient-to-r from-[#00F2FE] to-[#4FACFE] text-[#090D16] font-black shadow-md'
+                  ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -194,25 +194,25 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
               onClick={() => setActiveTab('file')}
               className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-2 ${
                 activeTab === 'file'
-                  ? 'bg-gradient-to-r from-[#00F2FE] to-[#4FACFE] text-[#090D16] font-black shadow-md'
+                  ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <span>Drag-and-Drop PDF/File Upload</span>
               {uploadedFile && (
-                <span className="w-2 h-2 rounded-full bg-[#10B981] animate-ping" />
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
               )}
             </button>
           </div>
 
           {/* Word / Character Counter */}
           <div className="flex items-center gap-3 text-xs text-slate-400 font-mono">
-            <span>Words: <strong className="text-[#00F2FE]">{wordCount}</strong></span>
+            <span>Words: <strong className="text-indigo-300">{wordCount}</strong></span>
             <span>Chars: <strong className="text-slate-200">{charCount}</strong></span>
             {inputText.trim() && (
               <button
                 onClick={() => { setInputText(''); setUploadedFile(null); }}
-                className="text-slate-500 hover:text-rose-400 px-2 py-0.5 rounded bg-[#090D16] text-[11px] transition-colors border border-[#1E293B]"
+                className="text-slate-500 hover:text-rose-400 px-2 py-0.5 rounded bg-[#0B0F19] text-[11px] transition-colors border border-[#1E293B]"
                 title="Clear input"
               >
                 Clear
@@ -230,14 +230,14 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
               onChange={(e) => setInputText(e.target.value)}
               placeholder="Paste your study notes, textbook chapters, or exam topics here... (e.g. Human Heart Circulation, Photosynthesis Calvin Cycle, Mitosis phases, TCP/IP Stack)"
               rows={8}
-              className="w-full p-4 rounded-xl bg-[#090D16] border border-[#1E293B] text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#00F2FE]/50 focus:border-[#00F2FE] transition-all font-sans leading-relaxed resize-y"
+              className="w-full p-4 rounded-xl bg-[#0B0F19] border border-[#1E293B] text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all font-sans leading-relaxed resize-y"
             />
             
             {!inputText && (
               <div className="absolute bottom-4 right-4 flex items-center gap-2">
                 <button
                   onClick={handlePasteClipboard}
-                  className="px-3 py-1.5 rounded-lg bg-[#0D1322] hover:bg-[#1E293B] text-slate-200 text-xs font-semibold border border-[#1E293B] transition-colors shadow-sm"
+                  className="px-3 py-1.5 rounded-lg bg-[#111827] hover:bg-[#1E293B] text-slate-200 text-xs font-semibold border border-[#1E293B] transition-colors shadow-sm"
                 >
                   Paste from Clipboard
                 </button>
@@ -255,10 +255,10 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
               onClick={() => fileInputRef.current?.click()}
               className={`relative border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-300 ${
                 dragActive
-                  ? 'border-[#00F2FE] bg-[#00F2FE]/10 scale-[1.01]'
+                  ? 'border-indigo-500 bg-indigo-500/10 scale-[1.01]'
                   : uploadedFile
-                  ? 'border-[#10B981]/50 bg-[#10B981]/5'
-                  : 'border-[#1E293B] hover:border-slate-700 bg-[#090D16]'
+                  ? 'border-emerald-500/50 bg-emerald-500/5'
+                  : 'border-[#1E293B] hover:border-slate-700 bg-[#0B0F19]'
               }`}
             >
               <input
@@ -270,7 +270,7 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
               />
 
               <div className="flex flex-col items-center justify-center space-y-3">
-                <div className="px-4 py-2 rounded-xl bg-[#00F2FE]/10 text-[#00F2FE] font-bold border border-[#00F2FE]/30 text-xs uppercase tracking-wider">
+                <div className="px-4 py-2 rounded-xl bg-indigo-600/10 text-indigo-300 font-bold border border-indigo-500/20 text-xs uppercase tracking-wider">
                   File Dropper Zone
                 </div>
 
@@ -291,9 +291,9 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
                     <span>Uploading & parsing file...</span>
                     <span>{uploadProgress}%</span>
                   </div>
-                  <div className="w-full h-2 bg-[#0D1322] rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-[#111827] rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-[#00F2FE] via-[#4FACFE] to-[#10B981] transition-all duration-300"
+                      className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 transition-all duration-300"
                       style={{ width: `${uploadProgress}%` }}
                     />
                   </div>
@@ -302,14 +302,14 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
 
               {/* Uploaded File Info */}
               {uploadedFile && !isUploading && (
-                <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0D1322] border border-[#10B981]/40 text-[#10B981] text-xs font-bold shadow-md">
+                <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#111827] border border-emerald-500/40 text-emerald-400 text-xs font-bold shadow-md">
                   <span>✓ {uploadedFile.name} ({uploadedFile.size}) — {uploadedFile.count} words extracted</span>
                 </div>
               )}
             </div>
 
             {inputText && uploadedFile && (
-              <div className="p-3 rounded-xl bg-[#090D16] border border-[#1E293B] text-xs text-slate-400 max-h-32 overflow-y-auto space-y-1">
+              <div className="p-3 rounded-xl bg-[#0B0F19] border border-[#1E293B] text-xs text-slate-400 max-h-32 overflow-y-auto space-y-1">
                 <span className="font-semibold text-slate-300">Extracted text preview:</span>
                 <p className="line-clamp-3 italic text-slate-400">&ldquo;{inputText}&rdquo;</p>
               </div>
@@ -318,7 +318,7 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
         )}
 
         {/* Control Bar */}
-        <div className="p-4 rounded-xl bg-[#090D16] border border-[#1E293B] space-y-4">
+        <div className="p-4 rounded-xl bg-[#0B0F19] border border-[#1E293B] space-y-4">
           
           <div className="text-xs font-bold text-slate-300 uppercase tracking-wider">
             Control Bar Options
@@ -331,7 +331,7 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
               <label className="text-xs font-semibold text-slate-400 block">
                 Select Difficulty Level:
               </label>
-              <div className="grid grid-cols-3 gap-1.5 p-1 bg-[#0D1322] rounded-xl border border-[#1E293B]">
+              <div className="grid grid-cols-3 gap-1.5 p-1 bg-[#111827] rounded-xl border border-[#1E293B]">
                 {(['Easy', 'Medium', 'Hard'] as Difficulty[]).map((level) => (
                   <button
                     key={level}
@@ -339,7 +339,7 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
                     onClick={() => setDifficulty(level)}
                     className={`py-1.5 px-2 rounded-lg text-xs font-extrabold transition-all ${
                       difficulty === level
-                        ? 'bg-gradient-to-r from-[#00F2FE] to-[#4FACFE] text-[#090D16] font-black shadow-sm'
+                        ? 'bg-indigo-600 text-white font-black shadow-sm'
                         : 'text-slate-400 hover:text-slate-200'
                     }`}
                   >
@@ -370,8 +370,8 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
                       onClick={() => toggleType(type.id as QuestionType)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
                         isSelected
-                          ? 'bg-[#00F2FE]/20 text-[#00F2FE] border-[#00F2FE]/50 shadow-sm'
-                          : 'bg-[#0D1322] text-slate-400 border-[#1E293B] hover:text-slate-200'
+                          ? 'bg-indigo-600/20 text-indigo-300 border-indigo-500/50 shadow-sm'
+                          : 'bg-[#111827] text-slate-400 border-[#1E293B] hover:text-slate-200'
                       }`}
                     >
                       <span>{isSelected ? '✓ ' : ''}{type.label}</span>
@@ -394,8 +394,8 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
                     onClick={() => setQuestionCount(num)}
                     className={`px-2.5 py-1 rounded-md font-mono font-bold text-xs transition-all ${
                       questionCount === num
-                        ? 'bg-[#00F2FE] text-[#090D16] font-black'
-                        : 'bg-[#0D1322] text-slate-400 hover:text-slate-200'
+                        ? 'bg-indigo-600 text-white font-black'
+                        : 'bg-[#111827] text-slate-400 hover:text-slate-200'
                     }`}
                   >
                     {num}
@@ -405,10 +405,10 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
             </div>
 
             <div className="flex items-center gap-4 text-slate-300">
-              <span className="text-[#10B981] font-medium">
+              <span className="text-emerald-400 font-medium">
                 ✓ 100% Unique MCQs
               </span>
-              <span className="text-[#00F2FE] font-medium">
+              <span className="text-cyan-400 font-medium">
                 ✓ Visual Diagram Cards
               </span>
             </div>
@@ -423,7 +423,7 @@ export const HeroInputSection: React.FC<HeroInputSectionProps> = ({
             onClick={handleSubmit}
             className={`w-full py-4 rounded-xl font-black text-base tracking-wide flex items-center justify-center gap-3 transition-all duration-300 shadow-xl ${
               inputText.trim() && !isGenerating
-                ? 'bg-gradient-to-r from-[#00F2FE] via-[#4FACFE] to-[#10B981] hover:opacity-95 text-[#090D16] shadow-[#00F2FE]/25 hover:scale-[1.005] glow-cyber cursor-pointer'
+                ? 'bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-indigo-600/30 hover:scale-[1.005] glow-primary cursor-pointer'
                 : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'
             }`}
           >

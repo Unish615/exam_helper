@@ -31,7 +31,7 @@ export const SavedKitsDrawer: React.FC<SavedKitsDrawerProps> = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="fixed inset-0 bg-[#090D16]/85 backdrop-blur-sm"
+          className="fixed inset-0 bg-[#0B0F19]/85 backdrop-blur-sm"
         />
 
         {/* Drawer Container */}
@@ -41,7 +41,7 @@ export const SavedKitsDrawer: React.FC<SavedKitsDrawerProps> = ({
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="w-screen max-w-md bg-[#0D1322] border-l border-[#1E293B] shadow-2xl flex flex-col justify-between z-10"
+            className="w-screen max-w-md bg-[#111827] border-l border-[#1E293B] shadow-2xl flex flex-col justify-between z-10"
           >
             {/* Header */}
             <div className="p-5 border-b border-[#1E293B] flex items-center justify-between">
@@ -52,7 +52,7 @@ export const SavedKitsDrawer: React.FC<SavedKitsDrawerProps> = ({
 
               <button
                 onClick={onClose}
-                className="px-2.5 py-1 rounded-lg bg-[#090D16] text-slate-400 hover:text-white border border-[#1E293B] text-xs font-bold transition-colors"
+                className="px-2.5 py-1 rounded-lg bg-[#0B0F19] text-slate-400 hover:text-white border border-[#1E293B] text-xs font-bold transition-colors"
               >
                 Close
               </button>
@@ -71,10 +71,10 @@ export const SavedKitsDrawer: React.FC<SavedKitsDrawerProps> = ({
                 savedKits.map((kit) => (
                   <div
                     key={kit.id}
-                    className="p-4 rounded-xl bg-[#090D16] border border-[#1E293B] hover:border-[#00F2FE]/40 transition-all space-y-2 group"
+                    className="p-4 rounded-xl bg-[#0B0F19] border border-[#1E293B] hover:border-indigo-500/40 transition-all space-y-2 group"
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <h4 className="text-sm font-bold text-slate-100 group-hover:text-[#00F2FE] transition-colors line-clamp-1">
+                      <h4 className="text-sm font-bold text-slate-100 group-hover:text-indigo-300 transition-colors line-clamp-1">
                         {kit.title}
                       </h4>
                       <button
@@ -101,7 +101,7 @@ export const SavedKitsDrawer: React.FC<SavedKitsDrawerProps> = ({
                           onSelectKit(kit);
                           onClose();
                         }}
-                        className="px-3 py-1 rounded-lg bg-[#1E293B] hover:bg-[#00F2FE]/20 text-[#00F2FE] font-semibold transition-colors border border-[#00F2FE]/30"
+                        className="px-3 py-1 rounded-lg bg-[#1E293B] hover:bg-indigo-600/20 text-indigo-300 font-semibold transition-colors border border-indigo-500/30"
                       >
                         Load Set →
                       </button>
@@ -112,7 +112,7 @@ export const SavedKitsDrawer: React.FC<SavedKitsDrawerProps> = ({
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-[#1E293B] bg-[#090D16] text-center text-xs text-slate-400">
+            <div className="p-4 border-t border-[#1E293B] bg-[#0B0F19] text-center text-xs text-slate-400">
               {savedKits.length} study set{savedKits.length === 1 ? '' : 's'} saved
             </div>
 
