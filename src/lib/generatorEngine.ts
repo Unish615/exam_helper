@@ -290,18 +290,21 @@ function buildContentFillBlank(
   };
 }
 
-// Build 6 3D Revision Flashcards strictly from user content
+// Build 6 3D Revision Flashcards strictly from user content (Fixed Regex & Clean Terms)
 function buildContentFlashcards(text: string, sentences: string[]): Flashcard[] {
   const cards: Flashcard[] = [];
   const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 5);
+  const addedTerms = new Set<string>();
 
   // 1. Check explicit colon or dash lines (Term: Definition)
   for (const line of lines) {
     const colonMatch = line.match(/^([^:\-\(\)]{3,40})\s*[:\-\u2013]\s*(.+)$/);
     if (colonMatch && colonMatch[1] && colonMatch[2]) {
-      const term = colonMatch[1].replace(/^[0-9.#*\-\s]+/, '').trim();
+      // FIX: Replace ONLY numbers, bullets, hashes, dashes at start — DO NOT STRIP CAPITAL LETTERS!
+      const term = colonMatch[1].replace(/^[0-9.#*–\-\s]+/, '').trim();
       const def = colonMatch[2].trim();
-      if (term.length > 2 && def.length > 8 && cards.length < 6) {
+      if (term.length > 2 && def.length > 8 && !addedTerms.has(term.toLowerCase()) && cards.length < 6) {
+        addedTerms.add(term.toLowerCase());
         cards.push({
           id: genId('fc'),
           front: term,
@@ -318,21 +321,29 @@ function buildContentFlashcards(text: string, sentences: string[]): Flashcard[] 
       if (cards.length >= 6) return;
       const parts = sent.split(/\s+(?:is|are|refers to|consists of|produces|functions as)\s+/i);
       if (parts.length >= 2 && parts[0].length < 45 && parts[1].length > 10) {
-        cards.push({
-          id: genId('fc'),
-          front: parts[0].replace(/^[A-Z0-9.#*\-\s]+/, '').trim(),
-          back: parts[1].trim(),
-          category: 'Concept'
-        });
+        // FIX: Replace ONLY numbers, bullets, hashes, dashes at start — DO NOT STRIP CAPITAL LETTERS!
+        const term = parts[0].replace(/^[0-9.#*–\-\s]+/, '').trim();
+        if (term.length > 2 && !addedTerms.has(term.toLowerCase())) {
+          addedTerms.add(term.toLowerCase());
+          cards.push({
+            id: genId('fc'),
+            front: term,
+            back: parts[1].trim(),
+            category: 'Concept'
+          });
+        }
       } else if (sent.length > 20) {
         const words = sent.split(/\s+/);
-        const term = words.slice(0, 4).join(' ');
-        cards.push({
-          id: genId('fc'),
-          front: term,
-          back: sent,
-          category: 'Study Note'
-        });
+        const term = words.slice(0, 4).join(' ').replace(/^[0-9.#*–\-\s]+/, '').trim();
+        if (term.length > 2 && !addedTerms.has(term.toLowerCase())) {
+          addedTerms.add(term.toLowerCase());
+          cards.push({
+            id: genId('fc'),
+            front: term,
+            back: sent,
+            category: 'Study Note'
+          });
+        }
       }
     });
   }
@@ -341,12 +352,23 @@ function buildContentFlashcards(text: string, sentences: string[]): Flashcard[] 
   while (cards.length < 6 && sentences.length > 0) {
     const s = sentences[cards.length % sentences.length];
     const words = s.split(/\s+/);
-    cards.push({
-      id: genId('fc'),
-      front: words.slice(0, 3).join(' ') || `Concept #${cards.length + 1}`,
-      back: s,
-      category: 'Lesson Notes'
-    });
+    const term = words.slice(0, 3).join(' ').replace(/^[0-9.#*–\-\s]+/, '').trim() || `Concept #${cards.length + 1}`;
+    if (!addedTerms.has(term.toLowerCase())) {
+      addedTerms.add(term.toLowerCase());
+      cards.push({
+        id: genId('fc'),
+        front: term,
+        back: s,
+        category: 'Lesson Notes'
+      });
+    } else {
+      cards.push({
+        id: genId('fc'),
+        front: `${term} (${cards.length + 1})`,
+        back: s,
+        category: 'Lesson Notes'
+      });
+    }
   }
 
   return cards.slice(0, 6);
