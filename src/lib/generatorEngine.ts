@@ -26,7 +26,7 @@ export function generateStudyKit(text: string, options: GeneratorOptions): Gener
   const sentences = cleanText
     .split(/(?<=[.?!])\s+|\n+/)
     .map(s => s.trim())
-    .filter(s => s.length > 15);
+    .filter(s => s.length > 12);
 
   // Fallback if sentences are short
   if (sentences.length === 0) {
@@ -290,85 +290,102 @@ function buildContentFillBlank(
   };
 }
 
-// Build 6 3D Revision Flashcards strictly from user content (Fixed Regex & Clean Terms)
+// Hyper-accurate Real-time Flashcard Extractor (Supports Java, Python, Math, Science, Law, etc.)
 function buildContentFlashcards(text: string, sentences: string[]): Flashcard[] {
   const cards: Flashcard[] = [];
-  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 5);
   const addedTerms = new Set<string>();
 
-  // 1. Check explicit colon or dash lines (Term: Definition)
+  const sanitizeTerm = (raw: string): string => {
+    let clean = raw.replace(/^[0-9.#*–\-\s]+/, '').trim();
+    // Do not cut short single vague words like "The" or "A" or "Light" if full term is longer
+    clean = clean.replace(/^(the|a|an|in|on|of|at|by|for|with)\s+/i, '');
+    return clean.trim();
+  };
+
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 5);
+
+  // 1. Explicit colon or dash patterns (e.g., Term: Definition)
   for (const line of lines) {
-    const colonMatch = line.match(/^([^:\-\(\)]{3,40})\s*[:\-\u2013]\s*(.+)$/);
+    const colonMatch = line.match(/^([^:\-\(\)]{2,50})\s*[:\-\u2013]\s*(.+)$/);
     if (colonMatch && colonMatch[1] && colonMatch[2]) {
-      // FIX: Replace ONLY numbers, bullets, hashes, dashes at start — DO NOT STRIP CAPITAL LETTERS!
-      const term = colonMatch[1].replace(/^[0-9.#*–\-\s]+/, '').trim();
+      const term = sanitizeTerm(colonMatch[1]);
       const def = colonMatch[2].trim();
-      if (term.length > 2 && def.length > 8 && !addedTerms.has(term.toLowerCase()) && cards.length < 6) {
+      if (term.length >= 3 && def.length > 8 && !addedTerms.has(term.toLowerCase()) && cards.length < 6) {
         addedTerms.add(term.toLowerCase());
         cards.push({
           id: genId('fc'),
           front: term,
           back: def,
-          category: 'Key Term'
+          category: 'Key Concept'
         });
       }
     }
   }
 
-  // 2. Extract from sentences (Subject is Definition)
+  // 2. Sentence-based verb extraction (is, are, refers to, allows, provides, executes, defines)
   if (cards.length < 6) {
-    sentences.forEach((sent) => {
-      if (cards.length >= 6) return;
-      const parts = sent.split(/\s+(?:is|are|refers to|consists of|produces|functions as)\s+/i);
-      if (parts.length >= 2 && parts[0].length < 45 && parts[1].length > 10) {
-        // FIX: Replace ONLY numbers, bullets, hashes, dashes at start — DO NOT STRIP CAPITAL LETTERS!
-        const term = parts[0].replace(/^[0-9.#*–\-\s]+/, '').trim();
-        if (term.length > 2 && !addedTerms.has(term.toLowerCase())) {
+    for (const sent of sentences) {
+      if (cards.length >= 6) break;
+      const parts = sent.split(/\s+(?:is|are|refers to|consists of|produces|functions as|allows|executes|defines|implements|extends|manages|handles)\s+/i);
+      if (parts.length >= 2 && parts[0].length >= 3 && parts[0].length < 50 && parts[1].length > 10) {
+        const term = sanitizeTerm(parts[0]);
+        if (term.length >= 3 && !addedTerms.has(term.toLowerCase())) {
           addedTerms.add(term.toLowerCase());
           cards.push({
             id: genId('fc'),
             front: term,
             back: parts[1].trim(),
-            category: 'Concept'
+            category: 'Definition'
           });
         }
-      } else if (sent.length > 20) {
-        const words = sent.split(/\s+/);
-        const term = words.slice(0, 4).join(' ').replace(/^[0-9.#*–\-\s]+/, '').trim();
-        if (term.length > 2 && !addedTerms.has(term.toLowerCase())) {
+      }
+    }
+  }
+
+  // 3. Technical multi-word phrase extraction from sentences
+  if (cards.length < 6) {
+    for (const sent of sentences) {
+      if (cards.length >= 6) break;
+      const words = sent.split(/\s+/).filter(w => w.length > 2);
+      if (words.length >= 4) {
+        // Take 3 to 5 words for a meaningful technical phrase
+        const term = sanitizeTerm(words.slice(0, Math.min(4, words.length)).join(' '));
+        if (term.length >= 4 && !addedTerms.has(term.toLowerCase())) {
           addedTerms.add(term.toLowerCase());
           cards.push({
             id: genId('fc'),
             front: term,
             back: sent,
-            category: 'Study Note'
+            category: 'Lesson Context'
           });
         }
       }
-    });
+    }
   }
 
-  // Guarantee at least 6 flashcards if content allows
+  // Fallback fill to guarantee exactly 6 cards
+  let fallbackIdx = 1;
   while (cards.length < 6 && sentences.length > 0) {
-    const s = sentences[cards.length % sentences.length];
+    const s = sentences[(cards.length + fallbackIdx) % sentences.length];
     const words = s.split(/\s+/);
-    const term = words.slice(0, 3).join(' ').replace(/^[0-9.#*–\-\s]+/, '').trim() || `Concept #${cards.length + 1}`;
+    const term = sanitizeTerm(words.slice(0, 4).join(' ')) || `Core Concept #${cards.length + 1}`;
     if (!addedTerms.has(term.toLowerCase())) {
       addedTerms.add(term.toLowerCase());
       cards.push({
         id: genId('fc'),
         front: term,
         back: s,
-        category: 'Lesson Notes'
+        category: 'Study Note'
       });
     } else {
       cards.push({
         id: genId('fc'),
-        front: `${term} (${cards.length + 1})`,
+        front: `${term} (Part ${cards.length + 1})`,
         back: s,
-        category: 'Lesson Notes'
+        category: 'Study Note'
       });
     }
+    fallbackIdx++;
   }
 
   return cards.slice(0, 6);
